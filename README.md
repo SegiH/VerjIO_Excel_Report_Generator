@@ -66,6 +66,7 @@ result[1] is the filename if result[0] is OK or the error message if result[0] r
 
 
 General tips:
+
 When an SQL statement is provided as a data source, you must also provide the name of the database connection. 
 
 ColumnSize is optional and can be used to specify the column width. If you do not provide ColumnSize, all columns will be set to autosize the width automatically. If you provide an array with null for any values like in the example above, that column will also be set to autosize the width.
