@@ -2,14 +2,14 @@ This is an application that recieves a JSON object as a parameter and will gener
 
 Features
 --------
-1. Create multiple sheets using SQL or table resource as a data source
-2. Specify Formulas to add to a sheet includinng the option to add a formula for each row of a table
+1. Create multiple sheets using an SQL statement or a table resource as the data source
+2. Specify Formulas to add to a sheet including the option to add a formula for each row of a table
 3. Add hyperlinks in a sheet
 4. Add custom text anywhere that you specify
 
 Installation
 ------------
-1. Download the latest version of JExcel API from https://sourceforge.net/projects/jexcelapi/files/jexcelapi/ extract the zip file and locate jxl.jar or use the provided jxl.jar.
+1. Download the latest version of JExcel API from https://sourceforge.net/projects/jexcelapi/files/jexcelapi/ , extract the zip file and locate jxl.jar or use the provided jxl.jar.
 2. Copy jxl.jar to VerjIO\UfsServer\tomcat\webapps\ufs\WEB-INF\lib
 3. Restart Verj IO
 4. Create shared JavaScript script
@@ -23,13 +23,13 @@ Installation
 	
         importPackage(Packages.jxl.write);
 	
-6. Paste the latest version of the createExcelReport function into the script replacing the pervious version of the function if there is one.
+6. Paste the latest version of the createExcelReport function into the script replacing the previous version of the function if there is one.
 
 Usage
 -----
 In order to create an Excel report, you need to build a JSON object to tell the application how to create the Excel document.
 
-Example 1:
+Example:
 
      var excelReportObj = {
           FileName: "Sales Report",
@@ -77,6 +77,8 @@ result[1] is the filename if result[0] is OK or the error message if result[0] r
 General tips:
 
 See the provided JSON template for all of the options
+
+If the number of columns specified in ColumnHeaders doesn't match the number of arrays in Columns, the application will return an error. They must have the same number of columns.
 
 When an SQL statement is provided as a data source, you must also provide the name of the database connection. 
 
