@@ -2,9 +2,7 @@ VerjIO_Excel_Report_Generator
 
 Installation
 ------------
-1. Install JExcel API
-   a. Use the provided jxl.jar or
-   b. Download  the latest version from https://sourceforge.net/projects/jexcelapi/files/jexcelapi/ extract the zip file and         locate jxl.jar
+1. Install JExcel API using the provided jxl.jar or download the latest version from https://sourceforge.net/projects/jexcelapi/files/jexcelapi/ extract the zip file and locate jxl.jar.
 2. Copy jxl.jar to VerjIO\UfsServer\tomcat\webapps\ufs\WEB-INF\lib
 3. Restart Verj IO
 4. Create shared script 
