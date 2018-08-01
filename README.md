@@ -1,4 +1,4 @@
-This is an application that recieves a JSON object as a parameter and will generate an Excel report based on the provided parameters. 
+This is an Verj IO function that recieves a JSON object as a parameter and will generate an Excel report based on the provided parameters. 
 
 Features
 --------
