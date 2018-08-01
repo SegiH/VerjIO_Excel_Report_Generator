@@ -1,4 +1,11 @@
-VerjIO_Excel_Report_Generator
+This is an application that recieves a JSON object as a parameter and will generate an Excel report based on the provided parameters. 
+
+Features
+--------
+1. Create multiple sheets using SQL or table resource as a data source
+2. Insert Formulas for each row of a table
+3. Insert hyperlinks
+4. Add custom text anywhere that you specify
 
 Installation
 ------------
