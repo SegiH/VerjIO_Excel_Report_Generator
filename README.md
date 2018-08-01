@@ -5,12 +5,17 @@ Installation
 1. Download the latest version of JExcel API from https://sourceforge.net/projects/jexcelapi/files/jexcelapi/ extract the zip file and locate jxl.jar or use the provided jxl.jar.
 2. Copy jxl.jar to VerjIO\UfsServer\tomcat\webapps\ufs\WEB-INF\lib
 3. Restart Verj IO
-4. Create shared script 
-5. Add these imports at the top of the script:
-   importPackage(java.io);
-   importPackage(Packages.jxl);
-   importPackage(Packages.jxl.*);
-   importPackage(Packages.jxl.write);
+4. Create shared JavaScript script
+5. Add the following imports at the top of the script:
+
+        importPackage(java.io);
+	
+	importPackage(Packages.jxl);
+	
+	importPackage(Packages.jxl.*);
+	
+	importPackage(Packages.jxl.write);
+	
 6. Paste the latest version of the createExcelReport function replacing the pervious version
 
 Usage
