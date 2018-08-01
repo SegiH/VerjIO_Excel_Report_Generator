@@ -54,7 +54,7 @@ Example 1:
 
 In the example above, the generated Excel file will be named "Sales Report as of 08-01-2018-09-20-10.xls". The date will automatically be added to the file name to make sure that each report always has a unique name.
 
-The first sheet will be named Sales Report with 6 columns. The Columns property specify the database column names and their type. This sheet uses an SQL as the data source
+The first sheet will be named Sales Report with 6 columns. The Columns property specify the database column names and their type. This sheet uses an SQL statement as the data source
 
 The second sheet will be named Shipment Report and have the 3 columns specified. This sheet uses a table resource as the data source.
 
@@ -66,6 +66,8 @@ result[1] is the filename if result[0] is OK or the error message if result[0] r
 
 
 General tips:
+
+See the provided JSON template for all of the options
 
 When an SQL statement is provided as a data source, you must also provide the name of the database connection. 
 
