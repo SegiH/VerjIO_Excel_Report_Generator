@@ -3,8 +3,8 @@ This is an application that recieves a JSON object as a parameter and will gener
 Features
 --------
 1. Create multiple sheets using SQL or table resource as a data source
-2. Insert Formulas for each row of a table
-3. Insert hyperlinks
+2. Specify Formulas to add to a sheet includinng the option to add a formula for each row of a table
+3. Add hyperlinks in a sheet
 4. Add custom text anywhere that you specify
 
 Installation
