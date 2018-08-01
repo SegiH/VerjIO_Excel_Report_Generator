@@ -23,7 +23,7 @@ Installation
 	
         importPackage(Packages.jxl.write);
 	
-6. Paste the latest version of the createExcelReport function replacing the pervious version
+6. Paste the latest version of the createExcelReport function into the script replacing the pervious version of the function if there is one.
 
 Usage
 -----
