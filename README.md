@@ -2,7 +2,7 @@ VerjIO_Excel_Report_Generator
 
 Installation
 ------------
-1. Install JExcel API using the provided jxl.jar or download the latest version from https://sourceforge.net/projects/jexcelapi/files/jexcelapi/ extract the zip file and locate jxl.jar.
+1. Download the latest version of JExcel API from https://sourceforge.net/projects/jexcelapi/files/jexcelapi/ extract the zip file and locate jxl.jar or use the provided jxl.jar.
 2. Copy jxl.jar to VerjIO\UfsServer\tomcat\webapps\ufs\WEB-INF\lib
 3. Restart Verj IO
 4. Create shared script 
@@ -29,6 +29,13 @@ Example 1:
                Columns: [["OrderNum","INTEGER"],["OrderLine","INTEGER"],["StatusDescription","CHAR"],["Customer","CHAR"],["PartNum","CHAR"],["PartDescription","CHAR"]],
                SQL: "SELECT OrderNum,OrderLine,Status,PartNum,PartDescription FROM Sales Orders",
                DBConnection: "PRODUCTION",
+          },{ 
+               SheetName: "Shipment Report", 
+               SheetIndex: 1,
+               ColumnSize: [20,10,12,null,20,15], 
+               ColumnHeaders: "Shipment Num,Shipment Date,Shipment Qty",
+               Columns: [["ShipNum","INTEGER"],["ShipDate","DATE"],["ShipQty","INTEGER"]],
+               TableData: "ShipmentS",
           },
           ]
      };
@@ -42,16 +49,20 @@ Example 1:
 
 In the example above, the generated Excel file will be named "Sales Report as of 08-01-2018-09-20-10.xls". The date will automatically be added to the file name to make sure that each report always has a unique name.
 
-This Excel file will have 1 sheet named "Sales Report" with 6 columns. The Columns property specify the database column names and their type. Valid types are BOOLEAN, CHAR, CURRENCY, DATE, DATETIME, INTEGER and NUMERIC
+The first sheet will be named Sales Report with 6 columns. The Columns property specify the database column names and their type. This sheet uses an SQL as the data source
 
-ColumnSize is optional and can be used to specify the column width. If you do not provide ColumnSize, all columns will be set to autosize the width automatically. If you provide an array with null for any values like in the example above, that column will also be set to autosize the width.
-
-The data source in the example above uses an SQL statement. When an SQL statement is provided as a data source, you must also provide the name of the database connection. 
+The second sheet will be named Shipment Report and have the 3 columns specified. This sheet uses a table resource as the data source.
 
 createExcelReport() returns an array
 
 result[0] is the status OK or ERROR
+
 result[1] is the filename if result[0] is OK or the error message if result[0] returns ERROR
 
 
+General tips:
+When an SQL statement is provided as a data source, you must also provide the name of the database connection. 
 
+ColumnSize is optional and can be used to specify the column width. If you do not provide ColumnSize, all columns will be set to autosize the width automatically. If you provide an array with null for any values like in the example above, that column will also be set to autosize the width.
+
+Valid data types are BOOLEAN, CHAR, CURRENCY, DATE, DATETIME, INTEGER and NUMERIC
