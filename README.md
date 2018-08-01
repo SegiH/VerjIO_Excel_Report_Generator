@@ -32,7 +32,7 @@ Example 1:
                ColumnSize: [10,null,15,null,10,35], 
                ColumnHeaders: "Order Number,Order Line,Status,Customer,Part Num,Part Description",
                Columns: [["OrderNum","INTEGER"],["OrderLine","INTEGER"],["StatusDescription","CHAR"],["Customer","CHAR"],["PartNum","CHAR"],["PartDescription","CHAR"]],
-               SQL: "SELECT OrderNum,OrderLine,Status,PartNum,PartDescription FROM Sales Orders",
+               SQL: "SELECT OrderNum,OrderLine,Status,PartNum,PartDescription FROM SalesOrders",
                DBConnection: "PRODUCTION",
           },{ 
                SheetName: "Shipment Report", 
