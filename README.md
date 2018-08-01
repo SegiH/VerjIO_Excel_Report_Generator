@@ -21,7 +21,7 @@ In order to create an Excel report, you need to build a JSON object to tell the 
 
 Example 1:
 
- var excelReportObj = {
+     var excelReportObj = {
           FileName: "Sales Report",
           Sheets: [{ 
                SheetName: "Sales Report", 
