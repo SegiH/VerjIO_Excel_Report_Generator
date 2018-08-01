@@ -4,7 +4,7 @@ Installation
 ------------
 1. Install JExcel API
    a. Use the provided jxl.jar or
-   b. Download  the latest version from https://sourceforge.net/projects/jexcelapi/files/jexcelapi/ and extract the zip file and         locate jxl.jar
+   b. Download  the latest version from https://sourceforge.net/projects/jexcelapi/files/jexcelapi/ extract the zip file and         locate jxl.jar
 2. Copy jxl.jar to VerjIO\UfsServer\tomcat\webapps\ufs\WEB-INF\lib
 3. Restart Verj IO
 4. Create shared script 
@@ -48,5 +48,12 @@ This Excel file will have 1 sheet named "Sales Report" with 6 columns. The Colum
 
 ColumnSize is optional and can be used to specify the column width. If you do not provide ColumnSize, all columns will be set to autosize the width automatically. If you provide an array with null for any values like in the example above, that column will also be set to autosize the width.
 
-The data source in the example above uses an SQL statement. When an SQL statement is provided as a data source, you must also 
+The data source in the example above uses an SQL statement. When an SQL statement is provided as a data source, you must also provide the name of the database connection. 
+
+createExcelReport() returns an array
+
+result[0] is the status OK or ERROR
+result[1] is the filename if result[0] is OK or the error message if result[0] returns ERROR
+
+
 
