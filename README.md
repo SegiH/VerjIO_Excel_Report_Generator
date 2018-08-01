@@ -10,11 +10,11 @@ Installation
 
         importPackage(java.io);
 	
-	importPackage(Packages.jxl);
+        importPackage(Packages.jxl);
 	
-	importPackage(Packages.jxl.*);
+        importPackage(Packages.jxl.*);
 	
-	importPackage(Packages.jxl.write);
+        importPackage(Packages.jxl.write);
 	
 6. Paste the latest version of the createExcelReport function replacing the pervious version
 
