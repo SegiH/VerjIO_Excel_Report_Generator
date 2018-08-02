@@ -1,3 +1,6 @@
+// This is a reportObj that contains all of the possible properties that you can pass to createExcelReport()
+// Not everything is mandatory
+
 var reportObj = {
      FileName: "EOL Report",
      Sheets: [{ 
