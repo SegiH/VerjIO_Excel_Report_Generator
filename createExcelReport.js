@@ -37,7 +37,7 @@ function createExcelReport(reportObj) {
 
      var alignLeftFormat=new WritableCellFormat();
      alignLeftFormat.setAlignment(Alignment.LEFT);
-     alignLeftFormat.setBorder(Border.ALL,BorderLineStyle.THIN);
+     alignLeftFormat.setBorder(Border.ALL,BorderLineStyle.THIN); 
 
      var cellCurrency=new NumberFormat(NumberFormat.CURRENCY_DOLLAR + "##,###,##0.00", NumberFormat.COMPLEX_FORMAT);
      var cellCurrencyFormat=new WritableCellFormat(cellCurrency);
