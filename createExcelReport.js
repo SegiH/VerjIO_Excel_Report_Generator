@@ -240,13 +240,40 @@ function createExcelReport(reportObj) {
           // *** SHEET HEADING ***
           if (reportObj.Sheets[reportObjSheetCounter].SheetHeader != null) {
           	   try {
-          	        var sheetHeader=reportObj.Sheets[reportObjSheetCounter].SheetHeader;
+          	        var sheetHeader=reportObj.Sheets[reportObjSheetCounter].SheetHeader[0];
           	   } catch (e) {
                     alert("An error occurred when SheetHeader= " + reportObj.Sheets[reportObjSheetCounter].SheetHeader);
                	    event.stopExecution();
                }
-               
-               sheet.addCell(new Label(sheetHeader[1],sheetHeader[2],sheetHeader[0],mainHeadingStyle));
+
+               var styledFormat=null;
+                    
+               if (sheetHeader.Style != null) {
+                    styledFormat=createStyleFormat(sheetHeader.Style[0]);
+               }
+
+               // Write the heading factoring in the DataType property
+               switch (reportObj.Sheets[reportObjSheetCounter].SheetHeader.DataType) {
+                    case "BOOLEAN":
+                    case "INTEGER":
+                    case "NUMERIC":
+                         sheet.addCell(new Packages.jxl.write.Number(sheetHeader.Column,sheetHeader.Row,sheetHeader.Value,(styledFormat != null ? styledFormat : mainHeadingStyle)));
+                         break
+                    case "DATE":
+              	    case "DATETIME":
+                         dateVal=new Date(sheetHeader.Value).mmddyyyy();
+
+                         sheet.addCell(new Label(sheetHeader.Column,sheetHeader.Row,dateVal,(styledFormat != null ? styledFormat : mainHeadingStyle)));
+                         break;
+                    case "CHAR":
+                    default:
+                         if (styledFormat != null)
+                              sheet.addCell(new Label(sheetHeader.Column,sheetHeader.Row,sheetHeader.Value,styledFormat));
+                         else 
+                              sheet.addCell(new Label(sheetHeader.Column,sheetHeader.Row,sheetHeader.Value));
+              }
+                    
+               //sheet.addCell(new Label(sheetHeader.Column,sheetHeader.Row,sheetHeader.Value,(styledFormat != null ? styledFormat : mainHeadingStyle)));
                rowCounter++;
           }
 
@@ -364,9 +391,13 @@ function createExcelReport(reportObj) {
                          case "BOOLEAN":
                          case "INTEGER":
                          case "NUMERIC":
-                              rowWritten=true;
-                         	    sheet.addCell(new Packages.jxl.write.Number(currColumnIndex,rowCounter, data[dataCounter][colCounter][1] ,cellFormat));
-                         	    break;
+                              // If the data is null, don't attempt to write a null value as a number because it will throw an error message
+                              // Instead, let the switch fall though so its written as a char type
+                              if (data[dataCounter][colCounter][1] != null) {
+                                   rowWritten=true;
+                         	         sheet.addCell(new Packages.jxl.write.Number(currColumnIndex,rowCounter, data[dataCounter][colCounter][1] ,cellFormat));
+                         	         break;
+                              }
                          case "CHAR":
                               rowWritten=true;
                               sheet.addCell(new Label(currColumnIndex,rowCounter, data[dataCounter][colCounter][1] ,cellFormat));                         
@@ -460,7 +491,6 @@ function createExcelReport(reportObj) {
                     }
 
                     try {
-                    	   //alert("ColumnNum="+columnNum+", rownum="+(rowNum)+", formula="+formula+", format=" + reportObj.Sheets[reportObjSheetCounter].Formulas[formulaCounter].DataType);
                          sheet.addCell(new Formula(columnNum,(rowNum),formula,format));
                     } catch(e) {
                          alert("an error occurred writing the formula with the error " + e + " when columnNum="+columnNum+", rownum="+(rowNum-1)+", formula="+formula+", format=" + reportObj.Sheets[reportObjSheetCounter].Formulas[formulaCounter].DataType);
@@ -521,8 +551,35 @@ function createExcelReport(reportObj) {
                          alert("An error occurred when CustomCellText=" + reportObj.CustomCellText);
                          event.stopExecution();
                     }
+
+                   
+                    var styledFormat=null;
                     
-                    destinationSheet.addCell(new Label(columnNum,rowNum,value));
+                    if (reportObj.CustomCellText[customCellTextCounter].Style != null) {
+                    	alert("custom cell style");
+                         styledFormat=createStyleFormat(reportObj.CustomCellText[customCellTextCounter].Style[0]);
+                    }
+
+                    // Write the CustomCellText factoring in the DataType property
+                    switch (reportObj.CustomCellText[customCellTextCounter].DataType) {
+                         case "BOOLEAN":
+                         case "INTEGER":
+                         case "NUMERIC":
+                              destinationSheet.addCell(new Packages.jxl.write.Number(columnNum,rowNum,value,(styledFormat != null ? styledFormat : null)));
+                              break;
+                         case "DATE":
+                    	   case "DATETIME":
+                              dateVal=new Date(value).mmddyyyy();
+
+                    	        destinationSheet.addCell(new Label(columnNum,rowNum,dateVal,(styledFormat != null ? styledFormat : null)));
+                    	        break;
+                         case "CHAR":
+                         default:
+                              if (styledFormat != null)
+                                   destinationSheet.addCell(new Label(columnNum,rowNum,value,styledFormat));
+                              else 
+                                   destinationSheet.addCell(new Label(columnNum,rowNum,value));
+                    }
                }
           }
 
@@ -546,4 +603,163 @@ function createExcelReport(reportObj) {
      	    FileServices.deleteFile(reportObj.FileName);
           return ["OK-NODATA",""];	
      }
+}
+
+// Build Jexcel format style based on the style properties specified in the style object
+function createStyleFormat(style) {
+     var color=null,BGColor=null;
+
+     if (style.Color != null)
+          color=style.Color.toString().toUpperCase();
+          
+     // Since the JExcel API doesn't offer a way to translate a color string into a Colour property, I have to use a switch
+     switch (color) {
+          case "BLACK":
+               color=Colour.BLACK
+               break;
+          case "BLUE":
+               color=Colour.BLUE
+               break;
+          case "BROWN":
+               color=Colour.BROWN
+               break;
+          case "GOLD":
+               color=Colour.GOLD
+               break;
+          case "GREEN":
+               color=Colour.GREEN 
+               break;
+          case "ORANGE":
+               color=Colour.ORANGE
+               break;
+          case "PINK":
+               color=Colour.PINK
+               break;
+          case "RED":
+               color=Colour.RED
+               break;
+          case "WHITE":
+               color=Colour.WHITE
+               break;
+          case "YELLOW":
+               color=Colour.YELLOW
+               break;
+          default:
+               color=Colour.BLACK               
+     }
+
+      if (style.BackgroundColor != null)
+          BGColor=style.BackgroundColor.toString().toUpperCase();
+          
+      switch (BGColor) {
+          case "BLACK":
+               BGColor=Colour.BLACK
+               break;
+          case "BLUE":
+               BGColor=Colour.BLUE
+               break;
+          case "BROWN":
+               BGColor=Colour.BROWN
+               break;
+          case "GOLD":
+               BGColor=Colour.GOLD
+               break;
+          case "GREEN":
+               BGColor=Colour.GREEN 
+               break;
+          case "ORANGE":
+               BGColor=Colour.ORANGE
+               break;
+          case "PINK":
+               BGColor=Colour.PINK
+               break;
+          case "RED":
+               BGColor=Colour.RED
+               break;
+          case "WHITE":
+               BGColor=Colour.WHITE
+               break;
+          case "YELLOW":
+               BGColor=Colour.YELLOW
+               break;
+          default:
+               BGColor=Colour.BLACK    
+     }
+
+     var size=(style.Size != null ? style.Size : 12);     
+     var bold=(style.Bold == true ? true : false);
+     var italic=(style.Italic == true ? true : false);
+     var underline=(style.Underline == true ? true : false);
+     var borders=(style.Borders == true ? true : false);
+
+     if (borders==true) {
+               switch (style.BorderStyle.toUpperCase()) {
+          case "DASH_DOT":
+               borderStyle=BorderLineStyle.DASH_DOT;
+               break;
+          case "DASH_DOT_DOT":
+               borderStyle=BorderLineStyle.DASH_DOT_DOT;
+               break;
+          case "DASHED":
+               borderStyle=BorderLineStyle.DASHED;
+               break;
+          case "DOTTED":
+               borderStyle=BorderLineStyle.DOTTED;
+               break;
+          case "DOUBLE":
+               borderStyle=BorderLineStyle.DOUBLE;
+               break;
+          case "HAIR":
+               borderStyle=BorderLineStyle.HAIR;
+               break;
+          case "MEDIUM":
+               borderStyle=BorderLineStyle.MEDIUM;
+               break;
+          case "MEDIUM_DASH_DOT":
+               borderStyle=BorderLineStyle.MEDIUM_DASH_DOT;
+               break;
+          case "MEDIUM_DASH_DOT_DOT":
+               borderStyle=BorderLineStyle.MEDIUM_DASH_DOT_DOT;
+               break;
+          case "MEDIUM_DASHED":
+               borderStyle=BorderLineStyle.MEDIUM_DASHED;
+               break;
+          case "NONE":
+               borderStyle=BorderLineStyle.NONE;
+               break;
+          case "SLANTED_DASH_DOT":
+               borderStyle=BorderLineStyle.SLANTED_DASH_DOT;
+               break;
+          case "THICK":
+               borderStyle=BorderLineStyle.THICK;
+               break;
+          case "THIN":
+               borderStyle=BorderLineStyle.THIN;
+               break;
+          default:
+               borderStyle=BorderLineStyle.THIN;
+          }
+     }
+
+     var formatFont=new WritableFont(WritableFont.TIMES,size,(bold==true ? WritableFont.BOLD : WritableFont.NO_BOLD),italic);
+   
+     /*
+     if (underline == true) {
+     	    var u=Packages.jxl.Format.UnderlineStyle;
+
+     	    // throws the error TypeError: [JavaPackage jxl.Format.UnderlineStyle] is not a function, it is object
+          formatFont.setUnderlineStyle(Packages.jxl.Format.UnderlineStyle.SINGLE);
+     }*/
+          
+     formatFont.setColour(color);
+
+     var format=new WritableCellFormat(formatFont);
+          
+     format.setBackground(BGColor);
+     
+     if (borders == true) {
+          format.setBorder(Border.ALL,borderStyle);
+     }
+
+     return format;
 }
