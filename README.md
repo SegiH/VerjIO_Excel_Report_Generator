@@ -23,7 +23,7 @@ Installation
 	
         importPackage(Packages.jxl.write);
 	
-6. Paste the latest version of the createExcelReport function into the script replacing the previous version of the function if there is one.
+6. Paste the contents of createExcelReport.js into the script replacing the previous version code if it is there.
 
 Usage
 -----
