@@ -59,7 +59,7 @@ Example:
 	        event.stopExecution();
      }
      
-     print ("The file name is " + result[0]);
+     print ("The file name is " + result[1]);
 
 In the example above, the generated Excel file will be named "Sales Report as of 08-01-2018-09-20-10.xls". The date will automatically be added to the file name to make sure that each report always has a unique name.
 
