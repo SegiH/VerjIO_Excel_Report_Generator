@@ -83,14 +83,16 @@ General Tips
 
 4. Valid data types are "BOOLEAN", "CHAR", "CURRENCY", "DATE", "DATETIME", "INTEGER" and "NUMERIC".
 
-5. The report object below contains all of the possible properties that you can pass to createExcelReport()
+5. Valid color values can be found in the object colorObject defined in createStyleFormat(). You can also supply an RGB string ike "83,162,240" as the color value to use a specific RGB value instead of a color name.
+
+6. Valid border styles can be found in the object borderStylesObject defined in createStyleFormat(). 
+
+7. Valid underline styles can be found in underlineStyleObject defined in createStyleFormat().
+
+JSON Reference
+--------------
+The report object below contains all of the possible properties that you can pass to createExcelReport()
 but not all of them are required.
-
-6. Valid color values can be found in the object colorObject defined in createStyleFormat(). You can also supply an RGB string ike "83,162,240" as the color value to use a specific RGB value instead of a color name.
-
-7. Valid border styles can be found in the object borderStylesObject defined in createStyleFormat(). 
-
-8. Valid underline styles can be found in underlineStyleObject defined in createStyleFormat().
 
        var reportObj = {
             FileName: "EOL Report",
