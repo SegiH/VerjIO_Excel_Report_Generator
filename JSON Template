@@ -1,9 +1,8 @@
 // This is a reportObj that contains all of the possible properties that you can pass to createExcelReport()
 // Not everything is mandatory
 
-// Valid color values are AQUA, BLACK, BLUE, BLUE_GREY, BRIGHT_GREEN, BROWN, CORAL, DARK_BLUE, DARK_GREEN, GOLD, GREEN, ORANGE, PINK, RED, WHITE, YELLOW 
-// Valid border styles are DASH_DOT, DASH_DOT_DOT, DASHED, DOTTED, DOUBLE, HAIR, MEDIUM, MEDIUM_DASH_DOT, MEDIUM_DASH_DOT_DOT, MEDIUM_DASHED, NONE, SLANTED_DASH_DOT, THICK or THIN. 
-
+// Valid color values can be found in the object colorObject defined in createStyleFormat()
+// Valid border styles can be found in the object borderStylesObject defined in createStyleFormat() 
 
 var reportObj = {
      FileName: "EOL Report",
@@ -16,7 +15,7 @@ var reportObj = {
                Column: 3,
                Row: 0,
                Style: [{ // Optional style sub object
-                    Color: "white", // Optional. Defaults to black if not specified
+                    Color: "WHITE", // Optional. Defaults to black if not specified
                     Size: "14", // Optional. Defaults to 12 if not specified
                     BackgroundColor: "green", // Optional. Defaults to white if not specified
                     Bold: true, // Optional. Defaults to false if not specified
