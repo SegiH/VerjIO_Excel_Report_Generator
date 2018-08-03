@@ -72,14 +72,88 @@ result[0] is the status OK, OK-NODATA or ERROR
 
 result[1] is the filename if result[0] is OK, the error message if result[0] returns ERROR or empty if result[0] returned OK-NODATA which means that there wasn't any data to write to the report.
 
-General tips
+General Tips
+------------
 
-See the provided JSON template for all of the options
+1. The number of columns specified in ColumnHeaders must match the number of arrays provided in Columns or an error will be thrown.
 
-If the number of columns specified in ColumnHeaders doesn't match the number of arrays in Columns, the application will return an error. They must have the same number of columns.
+2. When an SQL statement is provided as a data source, you must also provide the name of the database connection or an error will be thrown. Since database resources in Verj IO have a link to the database connection name, this isn't needed for table data.
 
-When an SQL statement is provided as a data source, you must also provide the name of the database connection. 
+3. ColumnSize is optional and can be used to specify the column width. If you do not provide ColumnSize, all columns will be set to autosize the width automatically. If you provide an array with null for any values like in the example above, the columns that has a null width will be set to autosize the width automatically.
 
-ColumnSize is optional and can be used to specify the column width. If you do not provide ColumnSize, all columns will be set to autosize the width automatically. If you provide an array with null for any values like in the example above, that column will also be set to autosize the width.
+4. Valid data types are BOOLEAN, CHAR, CURRENCY, DATE, DATETIME, INTEGER and NUMERIC.
 
-Valid data types are BOOLEAN, CHAR, CURRENCY, DATE, DATETIME, INTEGER and NUMERIC
+5. The report object below contains all of the possible properties that you can pass to createExcelReport()
+but not all of them are required.
+
+6. Valid color values can be found in the object colorObject defined in createStyleFormat(). You can also supply an RGB string ike "83,162,240" as the color value to use a specific RGB value.
+
+7. Valid border styles can be found in the object borderStylesObject defined in createStyleFormat(). Valid underline styles can be found in underlineStyleObject defined in createStyleFormat().
+
+       var reportObj = {
+            FileName: "EOL Report",
+            Sheets: [{ 
+            StartRow: 3, // Start on row 3
+            SheetName: "EOL Parts",
+            SheetIndex: 0,
+            SheetHeader: [{ // Add heading in Cell D1
+                 Value: "EOL Parts Report as of " + getCurrentDate(),
+                 Column: 3,
+                 Row: 0,
+                 Style: [{ // Optional style sub object
+                      Color: "WHITE", // Optional. Defaults to black if not specified
+                      Size: "14", // Optional. Defaults to 12 if not specified
+                      BackgroundColor: "green", // Optional. Defaults to white if not specified
+                      Bold: true, // Optional. Defaults to false if not specified
+                      Italic: true, // Optional. Defaults to false if not specified
+                      Underline: true, // Optional. Defaults to false if not specified
+                      UnderlineStyle: "single", // Optional/ Defauts to single if not specified
+                      Borders: true, // Optional. Defaults to false if not specified
+                      BorderStyle: "THICK", // Optional. Defaults to THIN if not specified but Borders: true is specified
+                 }],
+          }], 
+          ColumnSize: [20,10,null,15], // (Optional) Use null if you want to auto size         
+          ColumnHeaders: "ID, Part Num,Part Description,Mfg Part Num,Ship Date,Status,Close Date",
+          Columns: [["EOLID","INTEGER"],["PartNum","CHAR"],["PartDescription","CHAR"],["MfgPartNum","CHAR"],["LastShipDate","DATE"],["Status","CHAR"],["CloseDate","DATE"]],
+          SQL: "SELECT * FROM EOL", // SQL based data
+          DBConnection: "PRODUCTION", // (Mandatory if SQL statement is provided
+          
+          Formulas: [{
+               Column: 0, // Column A since columns start with 0
+               Row: 10, // Optional. Will be written after last row of data if not specified               
+               Formula: "=SUM(A1:A<CURRENTROW>)", // Use <CURRENTROW> as a placeholder for the current row number
+               DataType: "INTEGER",
+               FormulaRowOffset: -1, // Optional) offset the value of <CURRENTROW>. So you could use -1 to to refer to CURRENTROW-1
+               LineFormula: true, // (Optional flag to indicate that this formula needs to be written for each row)
+          },
+          ],
+          HyperLinks: [{
+               Column: 0, // Column A since columns start with 0
+               Row: 10, // Optional. Will be written after last row of data if not specified               
+               Value: "http://www.google.com",
+               DestinationSheet: "sheet2",
+               DestinationColumn: 2, // Column C since columns start with 0
+               DestinationRow: 2, // Row 3 since rows start with 0
+          },
+          ],
+     ],
+     CustomCellText: [{
+          DestinationSheet: "sheet1", // (Optional)
+          Column: 0, // Column A since columns start with 0
+          Row: 10, // Optional. Will be written after last row of data if not specified,
+          Value: "Some Text",
+          DataType: "CHAR", // Optional. Defaults to CHAR if not specified
+          Style: [{ // Optional style sub object
+               Color: "white", // Optional. Defaults to black if not specified
+               Size: "14", // Optional. Defaults to 12 if not specified
+               BackgroundColor: "green", // Optional. Defaults to white if not specified
+               Bold: true, // Optional. Defaults to false if not specified
+               Italic: true, // Optional. Defaults to false if not specified
+               Underline: true, // Optional. Defaults to false if not specified
+               UnderlineStyle: "single", // Optional/ Defauts to single if not specified
+               Borders: true, // Optional. Defaults to false if not specified
+               BorderStyle: "THICK", // Optional. Defaults to THIN if not specified but Borders: true is specified
+          }],
+          },
+          ],
+};
