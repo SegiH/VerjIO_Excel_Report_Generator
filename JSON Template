@@ -3,7 +3,7 @@
 
 // Valid color values can be found in the object colorObject defined in createStyleFormat()
 // Valid border styles can be found in the object borderStylesObject defined in createStyleFormat() 
-
+// Valid underline styles can be found in underlineStyleObject defined in createStyleFormat() 
 var reportObj = {
      FileName: "EOL Report",
      Sheets: [{ 
@@ -21,6 +21,7 @@ var reportObj = {
                     Bold: true, // Optional. Defaults to false if not specified
                     Italic: true, // Optional. Defaults to false if not specified
                     Underline: true, // Optional. Defaults to false if not specified
+                    UnderlineStyle: "single", // Optional/ Defauts to single if not specified
                     Borders: true, // Optional. Defaults to false if not specified
                     BorderStyle: "THICK", // Optional. Defaults to THIN if not specified but Borders: true is specified
                }],
@@ -63,6 +64,7 @@ var reportObj = {
                Bold: true, // Optional. Defaults to false if not specified
                Italic: true, // Optional. Defaults to false if not specified
                Underline: true, // Optional. Defaults to false if not specified
+               UnderlineStyle: "single", // Optional/ Defauts to single if not specified
                Borders: true, // Optional. Defaults to false if not specified
                BorderStyle: "THICK", // Optional. Defaults to THIN if not specified but Borders: true is specified
           }],
