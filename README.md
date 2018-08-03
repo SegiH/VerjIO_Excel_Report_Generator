@@ -158,3 +158,7 @@ but not all of them are required.
                  }],
                  },],
             };
+
+Known Issues
+------------
+When specifying a background color, some of the colors are not applied as the background color of the cell and the cell remains a white background color.
