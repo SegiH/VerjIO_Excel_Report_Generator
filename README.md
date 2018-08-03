@@ -63,33 +63,34 @@ Example:
 
 In the example above, the generated Excel file will be named "Sales Report as of 08-01-2018-09-20-10.xls". The date will automatically be added to the file name to make sure that each report always has a unique name.
 
-The first sheet will be named Sales Report with 6 columns. The Columns property specify the database column names and their type. This sheet uses an SQL statement as the data source
+The first sheet will be named Sales Report and will have a table with the 6 columns specified in ColumnHeaders. The Columns property specify the database column names and their type. This sheet uses an SQL statement as the data source.
 
 The second sheet will be named Shipment Report and have the 3 columns specified. This sheet uses a table resource as the data source.
 
 createExcelReport() returns an array with 2 indexes
 
-result[0] is the status OK, OK-NODATA or ERROR
+result[0] is the status which can be "OK", "OK-NODATA" or "ERROR"
 
 result[1] is the filename if result[0] is OK, the error message if result[0] returns ERROR or empty if result[0] returned OK-NODATA which means that there wasn't any data to write to the report.
 
 General Tips
 ------------
-
 1. The number of columns specified in ColumnHeaders must match the number of arrays provided in Columns or an error will be thrown.
 
 2. When an SQL statement is provided as a data source, you must also provide the name of the database connection or an error will be thrown. Since database resources in Verj IO have a link to the database connection name, this isn't needed for table data.
 
-3. ColumnSize is optional and can be used to specify the column width. If you do not provide ColumnSize, all columns will be set to autosize the width automatically. If you provide an array with null for any values like in the example above, the columns that has a null width will be set to autosize the width automatically.
+3. ColumnSize is optional and can be used to specify the column width. If you do not provide ColumnSize, all columns will be set to autosize the width automatically. If you provide an array with null for any values like in the example above, the columns that have null for the width will be set to autosize the width automatically.
 
-4. Valid data types are BOOLEAN, CHAR, CURRENCY, DATE, DATETIME, INTEGER and NUMERIC.
+4. Valid data types are "BOOLEAN", "CHAR", "CURRENCY", "DATE", "DATETIME", "INTEGER" and "NUMERIC".
 
 5. The report object below contains all of the possible properties that you can pass to createExcelReport()
 but not all of them are required.
 
-6. Valid color values can be found in the object colorObject defined in createStyleFormat(). You can also supply an RGB string ike "83,162,240" as the color value to use a specific RGB value.
+6. Valid color values can be found in the object colorObject defined in createStyleFormat(). You can also supply an RGB string ike "83,162,240" as the color value to use a specific RGB value instead of a color name.
 
-7. Valid border styles can be found in the object borderStylesObject defined in createStyleFormat(). Valid underline styles can be found in underlineStyleObject defined in createStyleFormat().
+7. Valid border styles can be found in the object borderStylesObject defined in createStyleFormat(). 
+
+8. Valid underline styles can be found in underlineStyleObject defined in createStyleFormat().
 
        var reportObj = {
             FileName: "EOL Report",
