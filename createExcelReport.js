@@ -677,6 +677,14 @@ function createStyleFormat(style) {
           "THIN" : BorderLineStyle.THIN,
      }
 
+     var underlineStyleObject = {
+          "DOUBLE" : Packages.jxl.format.UnderlineStyle.DOUBLE,
+          "DOUBLE_ACCOUNTING" : Packages.jxl.format.UnderlineStyle.DOUBLE_ACCOUNTING,
+          "NO_UNDERLINE" : Packages.jxl.format.UnderlineStyle.NO_UNDERLINE,
+          "SINGLE" : Packages.jxl.format.UnderlineStyle.SINGLE,
+          "SINGLE_ACCOUNTING" : Packages.jxl.format.UnderlineStyle.SINGLE_ACCOUNTING,
+     }
+
      if (style.Color != null && colorObject[style.Color.toString().toUpperCase()] != null)
           color=colorObject[style.Color.toString().toUpperCase()];
      else
@@ -701,14 +709,14 @@ function createStyleFormat(style) {
      }
 
      var formatFont=new WritableFont(WritableFont.TIMES,size,(bold==true ? WritableFont.BOLD : WritableFont.NO_BOLD),italic);
-   
-     /*
-     if (underline == true) {
-     	    var u=Packages.jxl.Format.UnderlineStyle;
 
-     	    // throws the error TypeError: [JavaPackage jxl.Format.UnderlineStyle] is not a function, it is object
-          formatFont.setUnderlineStyle(Packages.jxl.Format.UnderlineStyle.SINGLE);
-     }*/
+     // Set the underline if specified
+     if (underline == true) {
+     	    if (style.UnderlineStyle != null && underlineStyleObject[style.UnderlineStyle] != null)
+     	         formatFont.setUnderlineStyle(underlineStyleObject[style.UnderlineStyle]);
+          else     	    
+               formatFont.setUnderlineStyle(Packages.jxl.format.UnderlineStyle.SINGLE);
+     }
           
      formatFont.setColour(color);
 
