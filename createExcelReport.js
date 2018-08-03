@@ -15,8 +15,7 @@ function createExcelReport(reportObj) {
      var stmt,rs,con;
      var rowWritten=false;
      
-     // *** START OF STYLE DEFINITIONS ***
-     
+     // *** START OF STYLE DEFINITIONS ***     
      var mainHeadingFont=new WritableFont(WritableFont.TIMES,24, WritableFont.BOLD,false);
      var mainHeadingStyle=new WritableCellFormat(mainHeadingFont);
 
@@ -37,20 +36,17 @@ function createExcelReport(reportObj) {
 
      var alignLeftFormat=new WritableCellFormat();
      alignLeftFormat.setAlignment(Alignment.LEFT);
-     alignLeftFormat.setBorder(Border.ALL,BorderLineStyle.THIN); 
+     alignLeftFormat.setBorder(Border.ALL,BorderLineStyle.THIN);
 
      var cellCurrency=new NumberFormat(NumberFormat.CURRENCY_DOLLAR + "##,###,##0.00", NumberFormat.COMPLEX_FORMAT);
      var cellCurrencyFormat=new WritableCellFormat(cellCurrency);
      cellCurrencyFormat.setBorder(Border.ALL,BorderLineStyle.THIN);
 
      var autosize=new CellView()
-     autosize.setAutosize(true);
-     
+     autosize.setAutosize(true);     
      // *** END OF STYLE DEFINITIONS ***
 
      // *** START OF VALIDATION ***
-
-	   // Validate that filename was provided
 	   if (typeof reportObj.FileName == 'undefined') {
 	        return ["ERROR","The property FileName was not specified"]; 	
 	   }
@@ -193,8 +189,7 @@ function createExcelReport(reportObj) {
 	             }
           }
 	   }
-	        
-     // *** END OF VALIDATION ***
+	   // *** END OF VALIDATION ***
 	   
      // Build the file name
 	   reportObj.FileName=reportObj.FileName + " as of " + todayStr + ".xls";
@@ -205,7 +200,7 @@ function createExcelReport(reportObj) {
      // Override the default light blue with our own RGB colors
      workbook.setColourRGB(Colour.LIGHT_BLUE,83,162,240);
 
-     // *** Start creating the Excel document ***
+     // *** START OF GENERATING THE EXCEL DOCUMENT ***
      
      // *** Loop through the report object for each sheet object ***
      for (reportObjSheetCounter=0;reportObj.Sheets[reportObjSheetCounter] != null;reportObjSheetCounter++) {
@@ -233,6 +228,7 @@ function createExcelReport(reportObj) {
 
           rowCounter=0;
 
+          // Optional setting that If provided, indicates which row to start writing the data to
           if (reportObj.Sheets[reportObjSheetCounter].StartRow != null) {
                rowCounter+=parseInt(reportObj.Sheets[reportObjSheetCounter].StartRow);	
           }
@@ -272,8 +268,7 @@ function createExcelReport(reportObj) {
                          else 
                               sheet.addCell(new Label(sheetHeader.Column,sheetHeader.Row,sheetHeader.Value));
               }
-                    
-               //sheet.addCell(new Label(sheetHeader.Column,sheetHeader.Row,sheetHeader.Value,(styledFormat != null ? styledFormat : mainHeadingStyle)));
+
                rowCounter++;
           }
 
@@ -375,7 +370,7 @@ function createExcelReport(reportObj) {
                
           currColumnIndex=0;
 
-          // Loop through each "line" in the array
+          // *** START OF LOOP THAT GOES THROUGH DATA ARRAY AND WRITES THE DATA ***
           for (var dataCounter=0;dataCounter<data.length;dataCounter++) {
           	   if (currColumnIndex=columnHeaders.length)
           	        currColumnIndex=0;
@@ -466,6 +461,7 @@ function createExcelReport(reportObj) {
                                    
                rowCounter++;
           }
+          // *** END OF LOOP THAT GOES THROUGH DATA ARRAY AND WRITES THE DATA ***
           
           // **** Formulas *** After writing the current sheet, write any non-line formulas if specified
           if (typeof reportObj.Sheets[reportObjSheetCounter].Formulas != 'undefined') {
@@ -588,6 +584,7 @@ function createExcelReport(reportObj) {
                sheet.removeColumn(blacklistColumnIndexes[i]);
           }
      }
+     // *** END OF GENERATING THE EXCEL DOCUMENT ***
 
      try {
           workbook.write();
@@ -609,82 +606,86 @@ function createExcelReport(reportObj) {
 function createStyleFormat(style) {
      var color=null,BGColor=null;
 
-     if (style.Color != null)
-          color=style.Color.toString().toUpperCase();
-          
-     // Since the JExcel API doesn't offer a way to translate a color string into a Colour property, I have to use a switch
-     switch (color) {
-          case "BLACK":
-               color=Colour.BLACK
-               break;
-          case "BLUE":
-               color=Colour.BLUE
-               break;
-          case "BROWN":
-               color=Colour.BROWN
-               break;
-          case "GOLD":
-               color=Colour.GOLD
-               break;
-          case "GREEN":
-               color=Colour.GREEN 
-               break;
-          case "ORANGE":
-               color=Colour.ORANGE
-               break;
-          case "PINK":
-               color=Colour.PINK
-               break;
-          case "RED":
-               color=Colour.RED
-               break;
-          case "WHITE":
-               color=Colour.WHITE
-               break;
-          case "YELLOW":
-               color=Colour.YELLOW
-               break;
-          default:
-               color=Colour.BLACK               
+     // Since the JExcel API doesn't provide a way to translate a string color into a Colour object, I use an object instead
+     var colorObject = {
+          "AQUA" : Colour.AQUA,
+          "BLACK": Colour.BLACK,
+          "BLUE": Colour.BLUE,
+          "BLUE_GREY" : Colour.BLUE_GREY,
+          "BRIGHT_GREEN" : Colour.BRIGHT_GREEN,
+          "BROWN" : Colour.BROWN,
+          "CORAL" : Colour.CORAL,
+          "DARK_BLUE" : Colour.DARK_BLUE,
+          "DARK_GREEN" : Colour.DARK_GREEN,
+          "DARK_PURPLE" : Colour.DARK_PURPLE,
+          "DARK_RED" : Colour.DARK_RED,
+          "DARK_TEAL" : Colour.DARK_TEAL,
+          "DARK_YELLOW" : Colour.DARK_YELLOW,
+          "GOLD" : Colour.GOLD,
+          "GRAY_25" : Colour.GRAY_25,
+          "GRAY_50" : Colour.GRAY_50,
+          "GRAY_80" : Colour.GRAY_80,
+          "GREEN" : Colour.GREEN,
+          "GRAY_25_PERCENT" : Colour.GREY_25_PERCENT,
+          "GRAY_40_PERCENT" : Colour.GREY_40_PERCENT,
+          "GRAY_50_PERCENT" : Colour.GREY_50_PERCENT,
+          "GRAY_80_PERCENT" : Colour.GREY_80_PERCENT,
+          "ICE_BLUE" : Colour.ICE_BLUE,
+          "INDIGO" : Colour.INDIGO,
+          "IVORY" : Colour.IVORY,
+          "LAVENDER" : Colour.LAVENDER,
+          "LIGHT_BLUE" : Colour.LIGHT_BLUE,
+          "LIGHT_GREEN" : Colour.LIGHT_GREEN,
+          "LIGHT_ORANGE" : Colour.LIGHT_ORANGE,
+          "LIGHT_TURQUOISE" : Colour.LIGHT_TURQUOISE,
+          "LIME" : Colour.LIME,
+          "OCEAN_BLUE" : Colour.OCEAN_BLUE,
+          "OLIVE_GREEN" : Colour.OLIVE_GREEN,          
+          "ORANGE" : Colour.ORANGE,
+          "PALE_BLUE" : Colour.PALE_BLUE,
+          "PALETTE_BLACK" : Colour.PALETTE_BLACK,
+          "PERIWINKLE" : Colour.PERIWINKLE,
+          "PINK" : Colour.PINK,
+          "PLUM" : Colour.PLUM,
+          "RED" : Colour.RED,
+          "ROSE" : Colour.ROSE,
+          "SEA_GREEN" : Colour.SEA_GREEN,
+          "SKY_BLUE" : Colour.SKY_BLUE,
+          "TAN" : Colour.TAN,
+          "TEAL": Colour.TEAL,
+          "TURQUOISE" : Colour.TURQUOISE,
+          "VERY_LIGHT_YELLOW" : Colour.VERY_LIGHT_YELLOW,
+          "VIOLET" : Colour.VIOLET,
+          "WHITE" : Colour.WHITE,
+          "YELLOW" : Colour.YELLOW
      }
 
-      if (style.BackgroundColor != null)
-          BGColor=style.BackgroundColor.toString().toUpperCase();
-          
-      switch (BGColor) {
-          case "BLACK":
-               BGColor=Colour.BLACK
-               break;
-          case "BLUE":
-               BGColor=Colour.BLUE
-               break;
-          case "BROWN":
-               BGColor=Colour.BROWN
-               break;
-          case "GOLD":
-               BGColor=Colour.GOLD
-               break;
-          case "GREEN":
-               BGColor=Colour.GREEN 
-               break;
-          case "ORANGE":
-               BGColor=Colour.ORANGE
-               break;
-          case "PINK":
-               BGColor=Colour.PINK
-               break;
-          case "RED":
-               BGColor=Colour.RED
-               break;
-          case "WHITE":
-               BGColor=Colour.WHITE
-               break;
-          case "YELLOW":
-               BGColor=Colour.YELLOW
-               break;
-          default:
-               BGColor=Colour.BLACK    
+     var borderStylesObject = {
+          "DASH_DOT" : BorderLineStyle.DASH_DOT,
+          "DASH_DOT_DOT" : BorderLineStyle.DASH_DOT_DOT,
+          "DASHED" : BorderLineStyle.DASHED,
+          "DOTTED" : BorderLineStyle.DOTTED,
+          "DOUBLE" : BorderLineStyle.DOUBLE,
+          "HAIR" : BorderLineStyle.HAIR,
+          "MEDIUM" : BorderLineStyle.MEDIUM,
+          "MEDIUM_DASH_DOT" : BorderLineStyle.MEDIUM_DASH_DOT,
+          "MEDIUM_DASH_DOT_DOT" : BorderLineStyle.MEDIUM_DASH_DOT_DOT,
+          "MEDIUM_DASHED" : BorderLineStyle.MEDIUM_DASHED,
+          "NONE" : BorderLineStyle.NONE,
+          "SLANTED_DASH_DOT" : BorderLineStyle.SLANTED_DASH_DOT,
+          "THICK" : BorderLineStyle.THICK,
+          "THIN" : BorderLineStyle.THIN,
      }
+
+     if (style.Color != null && colorObject[style.Color.toString().toUpperCase()] != null)
+          color=colorObject[style.Color.toString().toUpperCase()];
+     else
+          color=Colour.BLACK;
+
+     if (style.BackgroundColor != null && colorObject[style.BackgroundColor.toString().toUpperCase()] != null)
+          BGColor=colorObject[style.BackgroundColor.toString().toUpperCase()];
+     else
+          BGColor=Colour.WHITE;
 
      var size=(style.Size != null ? style.Size : 12);     
      var bold=(style.Bold == true ? true : false);
@@ -693,52 +694,10 @@ function createStyleFormat(style) {
      var borders=(style.Borders == true ? true : false);
 
      if (borders==true) {
-               switch (style.BorderStyle.toUpperCase()) {
-          case "DASH_DOT":
-               borderStyle=BorderLineStyle.DASH_DOT;
-               break;
-          case "DASH_DOT_DOT":
-               borderStyle=BorderLineStyle.DASH_DOT_DOT;
-               break;
-          case "DASHED":
-               borderStyle=BorderLineStyle.DASHED;
-               break;
-          case "DOTTED":
-               borderStyle=BorderLineStyle.DOTTED;
-               break;
-          case "DOUBLE":
-               borderStyle=BorderLineStyle.DOUBLE;
-               break;
-          case "HAIR":
-               borderStyle=BorderLineStyle.HAIR;
-               break;
-          case "MEDIUM":
-               borderStyle=BorderLineStyle.MEDIUM;
-               break;
-          case "MEDIUM_DASH_DOT":
-               borderStyle=BorderLineStyle.MEDIUM_DASH_DOT;
-               break;
-          case "MEDIUM_DASH_DOT_DOT":
-               borderStyle=BorderLineStyle.MEDIUM_DASH_DOT_DOT;
-               break;
-          case "MEDIUM_DASHED":
-               borderStyle=BorderLineStyle.MEDIUM_DASHED;
-               break;
-          case "NONE":
-               borderStyle=BorderLineStyle.NONE;
-               break;
-          case "SLANTED_DASH_DOT":
-               borderStyle=BorderLineStyle.SLANTED_DASH_DOT;
-               break;
-          case "THICK":
-               borderStyle=BorderLineStyle.THICK;
-               break;
-          case "THIN":
+          if (borderStylesObject[style.BorderStyle.toString().toUpperCase()] != null)
+               borderStyle=borderStylesObject[style.BorderStyle.toString().toUpperCase()];
+          else
                borderStyle=BorderLineStyle.THIN;
-               break;
-          default:
-               borderStyle=BorderLineStyle.THIN;
-          }
      }
 
      var formatFont=new WritableFont(WritableFont.TIMES,size,(bold==true ? WritableFont.BOLD : WritableFont.NO_BOLD),italic);
