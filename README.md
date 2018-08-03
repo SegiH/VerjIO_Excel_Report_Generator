@@ -6,6 +6,7 @@ Features
 2. Specify Formulas to add to a sheet including the option to add a formula for each row of a table
 3. Add hyperlinks in a sheet
 4. Add custom text anywhere that you specify
+5. Add custom styling
 
 Installation
 ------------
