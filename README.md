@@ -22,7 +22,7 @@ Installation
 	
         importPackage(Packages.jxl.*);
 	
-	importPackage(Packages.jxl.format.*);
+        importPackage(Packages.jxl.format.*);
 	
         importPackage(Packages.jxl.write);
 	
