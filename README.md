@@ -77,7 +77,7 @@ General Tips
 ------------
 1. The number of columns specified in ColumnHeaders must match the number of arrays provided in Columns or an error will be thrown.
 
-2. When an SQL statement is provided as a data source, you must also provide the name of the database connection or an error will be thrown. Since database resources in Verj IO have a link to the database connection name, this isn't needed for table data.
+2. When an SQL statement is provided as a data source, you must also provide the name of the database connection or an error will be thrown. Since database resources in Verj IO have a link to the database connection name and tables are linked to a database resource, this isn't needed for table data.
 
 3. ColumnSize is optional and can be used to specify the column width. If you do not provide ColumnSize, all columns will be set to autosize the width automatically. If you provide an array with null for any values like in the example above, the columns that have null for the width will be set to autosize the width automatically.
 
