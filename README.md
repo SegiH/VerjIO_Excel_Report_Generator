@@ -70,12 +70,11 @@ The first sheet will be named Sales Report with 6 columns. The Columns property 
 
 The second sheet will be named Shipment Report and have the 3 columns specified. This sheet uses a table resource as the data source.
 
-createExcelReport() returns an array
+createExcelReport() returns an array with 2 indexes
 
-result[0] is the status OK or ERROR
+result[0] is the status OK, OK-NODATA or ERROR
 
-result[1] is the filename if result[0] is OK or the error message if result[0] returns ERROR
-
+result[1] is the filename if result[0] is OK, the error message if result[0] returns ERROR or empty if result[0] returned OK-NODATA which means that there wasn't any data to write to the report.
 
 General tips:
 
