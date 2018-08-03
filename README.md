@@ -22,6 +22,8 @@ Installation
 	
         importPackage(Packages.jxl.*);
 	
+	importPackage(Packages.jxl.format.*);
+	
         importPackage(Packages.jxl.write);
 	
 6. Paste the contents of createExcelReport.js into the script replacing the previous version code if it is there.
