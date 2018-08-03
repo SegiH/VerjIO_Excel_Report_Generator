@@ -18,11 +18,7 @@ Installation
 
         importPackage(java.io);
 	
-        importPackage(Packages.jxl);
-	
         importPackage(Packages.jxl.*);
-	
-        importPackage(Packages.jxl.format.*);
 	
         importPackage(Packages.jxl.write);
 	
