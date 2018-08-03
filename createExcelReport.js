@@ -654,6 +654,7 @@ function createStyleFormat(style) {
           "TAN" : Colour.TAN,
           "TEAL": Colour.TEAL,
           "TURQUOISE" : Colour.TURQUOISE,
+          "UNKNOWN" : Colour.UNKNOWN, // This color is used when the user wants to use an RGB color
           "VERY_LIGHT_YELLOW" : Colour.VERY_LIGHT_YELLOW,
           "VIOLET" : Colour.VIOLET,
           "WHITE" : Colour.WHITE,
@@ -685,9 +686,16 @@ function createStyleFormat(style) {
           "SINGLE_ACCOUNTING" : Packages.jxl.format.UnderlineStyle.SINGLE_ACCOUNTING,
      }
 
-     if (style.Color != null && colorObject[style.Color.toString().toUpperCase()] != null)
-          color=colorObject[style.Color.toString().toUpperCase()];
-     else
+     if (style.Color != null) {
+          if (style.Color.toString().indexOf(",") == -1 && colorObject[style.Color.toString().toUpperCase()] != null)
+               color=colorObject[style.Color.toString().toUpperCase()];
+          else {
+          	   var rgb=style.Color.toString().split(",");
+          	   
+          	   workbook.setColourRGB(Colour.UNKNOWN,parseInt(rgb[0]),parseInt(rgb[1]),parseInt(rgb[2]));
+          	   color=Colour.UNKNOWN;
+          }
+     } else
           color=Colour.BLACK;
 
      if (style.BackgroundColor != null && colorObject[style.BackgroundColor.toString().toUpperCase()] != null)
