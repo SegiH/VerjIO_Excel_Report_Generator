@@ -1,7 +1,9 @@
 // This is a reportObj that contains all of the possible properties that you can pass to createExcelReport()
 // Not everything is mandatory
 
-// Valid color values can be found in the object colorObject defined in createStyleFormat()
+// Valid color values can be found in the object colorObject defined in createStyleFormat(). You can also
+// supply an RGB string ike "83,162,240" as the color value to use a specific RGB value
+
 // Valid border styles can be found in the object borderStylesObject defined in createStyleFormat() 
 // Valid underline styles can be found in underlineStyleObject defined in createStyleFormat() 
 var reportObj = {
