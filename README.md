@@ -1,8 +1,8 @@
-VerjIO_Excel_Report_Generator is a Verj IO function that recieves a JSON object as a parameter and will generate an Excel report based on the provided JSON "recipe" to build the report. A sample JSON object is provided below. 
+VerjIO_Excel_Report_Generator is a Verj IO function that recieves a JSON object as a parameter and will generate an Excel report based on the provided JSON "recipe" to build the report. A sample JSON object is provided below. The report is saved as an XLS that should be  backwards compatible with Excel 2010 and newer.
 
 Features
 --------
-1. Create multiple sheets using an SQL statement or a table resource as the data source for each sheet
+1. Create multiple sheets with a table in each sheet using an SQL statement or a table resource as the data source for each sheet
 2. Add formulas to each sheet including the option to specify that a formula should be written for each row of a table
 3. Add hyperlinks in each sheet
 4. Add custom text anywhere that you specify
