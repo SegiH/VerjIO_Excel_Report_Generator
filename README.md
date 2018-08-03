@@ -72,7 +72,7 @@ result[0] is the status OK, OK-NODATA or ERROR
 
 result[1] is the filename if result[0] is OK, the error message if result[0] returns ERROR or empty if result[0] returned OK-NODATA which means that there wasn't any data to write to the report.
 
-General tips:
+General tips
 
 See the provided JSON template for all of the options
 
