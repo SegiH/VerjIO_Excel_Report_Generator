@@ -622,7 +622,7 @@ function createStyleFormat(style) {
      // Since the JExcel API doesn't provide a way to translate a string color into a Colour object, I use an object instead
      var colorObject = {
           "AQUA" : Colour.AQUA,
-          "BLACK": Colour.BLACK,
+          "BLACK": Colour.PALETTE_BLACK,
           "BLUE": Colour.BLUE,
           "BLUE_GREY" : Colour.BLUE_GREY,
           "BRIGHT_GREEN" : Colour.BRIGHT_GREEN,
