@@ -387,19 +387,32 @@ function createExcelReport(reportObj) {
                          case "INTEGER":
                          case "NUMERIC":
                               // If the data is null, don't attempt to write a null value as a number because it will throw an error message
-                              // Instead, let the switch fall though so its written as a char type
-                              if (data[dataCounter][colCounter][1] != null) {
-                                   rowWritten=true;
+                              // Instead, write empty string if its null
+                              rowWritten=true;
+                              
+                              
+                              if (data[dataCounter][colCounter][1] != null)                                   
                          	         sheet.addCell(new Packages.jxl.write.Number(currColumnIndex,rowCounter, data[dataCounter][colCounter][1] ,cellFormat));
-                         	         break;
-                              }
+                              else
+                                   sheet.addCell(new Label(currColumnIndex,rowCounter, "" ,cellFormat));
+
+                              break;
                          case "CHAR":
                               rowWritten=true;
+
                               sheet.addCell(new Label(currColumnIndex,rowCounter, data[dataCounter][colCounter][1] ,cellFormat));                         
+
                               break;
                          case "CURRENCY":
                     	         rowWritten=true;
-                    	         sheet.addCell(new Packages.jxl.write.Number(currColumnIndex,rowCounter, data[dataCounter][colCounter][1],cellCurrencyFormat));
+
+                    	         // If the data is null, don't attempt to write a null value as a number because it will throw an error message
+                              // Instead, write empty string if its null
+                    	         if (data[dataCounter][colCounter][1] != null)
+                    	              sheet.addCell(new Packages.jxl.write.Number(currColumnIndex,rowCounter, data[dataCounter][colCounter][1],cellCurrencyFormat));
+                    	         else
+                                   sheet.addCell(new Label(currColumnIndex,rowCounter, "" ,cellFormat));
+                                   
                     	         break;
                     	   case "DATE":
                     	   case "DATETIME":
@@ -725,7 +738,11 @@ function createStyleFormat(style) {
           else     	    
                formatFont.setUnderlineStyle(Packages.jxl.format.UnderlineStyle.SINGLE);
      }
-          
+
+     /*if (system.securityManager.getCredential("REALNAME")=="Segi Hovav") {
+          alert("the bgcolor is " + style.BackgroundColor + " and it is " + (BGColor==Colour.BLACK ? "equal" : "not equal")  );	
+     }*/
+     
      formatFont.setColour(color);
 
      var format=new WritableCellFormat(formatFont);
