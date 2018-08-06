@@ -161,4 +161,6 @@ but not all of them are required.
 
 Known Issues
 ------------
-If you try to specify a black background color, it will not work and the cell will have a white background color instead.
+If you try to specify BackgroundColor: "black" in a style, it will not work as expected. The background color will not be set to black but will instead be set to white. Even specifying the RGB color for black gives the same results.
+
+a black background color, it will not work and the cell will have a white background color instead.
