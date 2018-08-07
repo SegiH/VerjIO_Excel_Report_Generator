@@ -4,10 +4,11 @@ Features
 --------
 1. Create multiple sheets with a table in each sheet using an SQL statement or a table resource as the data source for each sheet
 2. Add formulas to each sheet including the option to specify that a formula should be written for each row of a table
-3. Add hyperlinks in each sheet
-4. Add custom text anywhere that you specify
-5. Add heading text
-6. Add custom styling
+3. Specify cells to merge
+4. Add hyperlinks in each sheet
+5. Add custom text anywhere that you specify
+6. Add heading text
+7. Add custom styling
 
 Installation
 ------------
@@ -104,6 +105,7 @@ but not all of them are required.
                       Value: "EOL Parts Report as of " + getCurrentDate(),
                       Column: 3,
                       Row: 0,
+		      MergeCells: "3,5", // Optional. Merges columns 3 thru 5
                       Style: [{ // Optional style sub object
                            Color: "WHITE", // Optional. Defaults to black if not specified
                            Size: "14", // Optional. Defaults to 12 if not specified
@@ -119,6 +121,7 @@ but not all of them are required.
                ColumnSize: [20,10,null,15], // (Optional) Use null if you want to auto size         
                ColumnHeaders: "ID, Part Num,Part Description,Mfg Part Num,Ship Date,Status,Close Date",
                Columns: [["EOLID","INTEGER"],["PartNum","CHAR"],["PartDescription","CHAR"],["MfgPartNum","CHAR"],["LastShipDate","DATE"],["Status","CHAR"],["CloseDate","DATE"]],
+	       MergeCells: ["1,2","3,4"], // Optional. Merges columns 1 & 2 and 3 & 4
                SQL: "SELECT * FROM EOL", // SQL based data
                DBConnection: "PRODUCTION", // (Mandatory if SQL statement is provided
           
