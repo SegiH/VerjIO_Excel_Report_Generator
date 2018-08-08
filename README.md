@@ -105,7 +105,7 @@ but not all of them are required.
                       Value: "EOL Parts Report as of " + getCurrentDate(),
                       Column: 3,
                       Row: 0,
-		      MergeCells: "3,5", // Optional. Merges columns 3 thru 5
+		      MergeCells: "3,5", // Optional. Merges columns 3 thru 5 on the same row. You can also specify col,row,col,row to merge across more than 1 row
                       Style: [{ // Optional style sub object
                            Color: "WHITE", // Optional. Defaults to black if not specified
                            Size: "14", // Optional. Defaults to 12 if not specified
@@ -121,7 +121,7 @@ but not all of them are required.
                ColumnSize: [20,10,null,15], // (Optional) Use null if you want to auto size         
                ColumnHeaders: "ID, Part Num,Part Description,Mfg Part Num,Ship Date,Status,Close Date",
                Columns: [["EOLID","INTEGER"],["PartNum","CHAR"],["PartDescription","CHAR"],["MfgPartNum","CHAR"],["LastShipDate","DATE"],["Status","CHAR"],["CloseDate","DATE"]],
-	       MergeCells: ["1,2","3,4"], // Optional. Merges columns 1 & 2 and 3 & 4
+	       MergeCells: ["1,2","3,1,4,1"], // Optional. Merges columns 1 & 2 on the last row after data has been writtem. The second merge merges columns 3 & 4 on row 1. 
                SQL: "SELECT * FROM EOL", // SQL based data
                DBConnection: "PRODUCTION", // (Mandatory if SQL statement is provided
           
@@ -148,7 +148,8 @@ but not all of them are required.
                  Row: 10, // Optional. Will be written after last row of data if not specified,
                  Value: "Some Text",
                  DataType: "CHAR", // Optional. Defaults to CHAR if not specified
-                 Style: [{ // Optional style sub object
+                 MergeCells: ["0,10,3,10"], // Optional. If specified, you must specify start_column,start_row ,end_column,end_row
+		 Style: [{ // Optional style sub object
                       Color: "white", // Optional. Defaults to black if not specified
                       Size: "14", // Optional. Defaults to 12 if not specified
                       BackgroundColor: "green", // Optional. Defaults to white if not specified
