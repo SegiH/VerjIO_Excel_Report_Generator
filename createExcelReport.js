@@ -217,7 +217,7 @@ function createExcelReport(reportObj) {
                          var len=reportObj.CustomCellText[customCellTextCounter].MergeCells[mergeCounter].split(",").length;
 
                          if (len != 4) {
-	                            return ["ERROR","The property MergeCells in CustomText at index " + customCellTextCounter + " with MergeCell index " + mergeCounter + " has an invalid size"];
+	                            return ["ERROR","The property MergeCells in CustomText at index " + customCellTextCounter + " with MergeCell index " + mergeCounter + " has an invalid size. You must specify start column,start row,end column,end row"];
 	                       }
                     }
                }
@@ -301,9 +301,13 @@ function createExcelReport(reportObj) {
                     styledFormat=createStyleFormat(sheetHeader.Style[0]);
                }
 
+               if (sheetHeader.DataType=="INT") { // Alias for INTEGER data type
+                    sheetHeader.DataType="INTEGER";
+               }
+               
                // Write the heading factoring in the DataType property
                switch (sheetHeader.DataType) {
-                    case "BOOLEAN":
+                    case "BOOLEAN":                         
                     case "INTEGER":
                     case "NUMERIC":
                          sheet.addCell(new Packages.jxl.write.Number(sheetHeader.Column,sheetHeader.Row,sheetHeader.Value,(styledFormat != null ? styledFormat : mainHeadingStyle)));
@@ -472,7 +476,11 @@ function createExcelReport(reportObj) {
                     // that Excel doesn't complaign that the field is a number in a text cell
                     if (data[dataCounter][colCounter][2] == "CHAR" && data[dataCounter][colCounter][1] != null && isInt(data[dataCounter][colCounter][1]))
                          data[dataCounter][colCounter][2]="INTEGER";
-                         
+
+                    // If the type is INT but the value is a CHAR, change the type to an CHAR so it will be written as a CHAR
+                    if (data[dataCounter][colCounter][2] == "INTEGER" && data[dataCounter][colCounter][1] != null && !isInt(data[dataCounter][colCounter][1]))
+                         data[dataCounter][colCounter][2]="CHAR";
+                    
                     switch(data[dataCounter][colCounter][2]) { // Type
                          case "BOOLEAN":
                          case "INTEGER":
@@ -706,10 +714,7 @@ function createExcelReport(reportObj) {
                          for (var mergeCounter=0;mergeCounter < reportObj.CustomCellText[customCellTextCounter].MergeCells.length;mergeCounter++) {
                               var mergeCell=reportObj.CustomCellText[customCellTextCounter].MergeCells[mergeCounter].split(",");
 
-                              if (mergeCell.length == 2)
-                                   sheet.mergeCells(parseInt(mergeCell[0]),rowNum,parseInt(mergeCell[1]),rowNum);
-                              else
-                                   sheet.mergeCells(parseInt(mergeCell[0]),parseInt(mergeCell[1]),parseInt(mergeCell[2]),parseInt(mergeCell[3]));
+                              sheet.mergeCells(parseInt(mergeCell[0]),parseInt(mergeCell[1]),parseInt(mergeCell[2]),parseInt(mergeCell[3]));
                          }
                     }
                }
@@ -853,13 +858,14 @@ function createStyleFormat(style) {
      var italic=(style.Italic == true ? true : false);
      var underline=(style.Underline == true ? true : false);
      var borders=(style.Borders == true ? true : false);
-     var alignment=(style.Alignment != null && alignmentStylesObject[style.Alignment] != null ? alignmentStylesObject[style.Alignment] : null);
+     var alignment=(style.Alignment != null && alignmentStylesObject[style.Alignment.toString().toUpperCase()] != null ? alignmentStylesObject[style.Alignment.toString().toUpperCase()] : null);
      
      if (borders==true) {
-          if (borderStylesObject[style.BorderStyle.toString().toUpperCase()] != null)
+          if (style.BorderStyle == null || (style.BorderStyle != null && borderStylesObject[style.BorderStyle.toString().toUpperCase()] != null)) {
                borderStyle=borderStylesObject[style.BorderStyle.toString().toUpperCase()];
-          else
+          } else {
                borderStyle=BorderLineStyle.THIN;
+          }
      }
 
      var formatFont=new WritableFont(WritableFont.TIMES,size,(bold==true ? WritableFont.BOLD : WritableFont.NO_BOLD),italic);
