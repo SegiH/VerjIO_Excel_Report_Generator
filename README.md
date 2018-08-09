@@ -110,8 +110,8 @@ but not all of them are required.
                       Row: 0,
 		      MergeCells: "3,5", // Optional. Merges columns 3 thru 5 on the same row. You can also specify col,row,col,row to merge across more than 1 row
                       Style: [{ // Optional style sub object
-                           Alignment: "left",
-			   Color: "WHITE", // Optional. Defaults to black if not specified
+                           Alignment: "left", // Optional. defaults to General if not specified
+			       Color: "WHITE", // Optional. Defaults to black if not specified
                            Size: "14", // Optional. Defaults to 12 if not specified
                            BackgroundColor: "green", // Optional. Defaults to white if not specified
                            Bold: true, // Optional. Defaults to false if not specified
@@ -154,6 +154,7 @@ but not all of them are required.
                  DataType: "CHAR", // Optional. Defaults to CHAR if not specified
                  MergeCells: ["0,10,3,10"], // Optional. If specified, you must specify start_column,start_row ,end_column,end_row
 		 Style: [{ // Optional style sub object
+		      Alignment: "center", // Optional. defaults to General if not specified
                       Color: "white", // Optional. Defaults to black if not specified
                       Size: "14", // Optional. Defaults to 12 if not specified
                       BackgroundColor: "green", // Optional. Defaults to white if not specified
