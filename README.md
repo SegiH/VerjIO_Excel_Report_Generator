@@ -99,7 +99,8 @@ but not all of them are required.
             FileName: "EOL Report",
             Sheets: [{ 
                  StartRow: 3, // Start on row 3
-                 SheetName: "EOL Parts",
+                 FitWidth: true, // Optional. Will force sheet to fit all columns on the page width-wise
+		 SheetName: "EOL Parts",
                  SheetIndex: 0,
                  SheetHeader: [{ // Add heading in Cell D1
                       Value: "EOL Parts Report as of " + getCurrentDate(),
