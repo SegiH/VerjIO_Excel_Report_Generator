@@ -90,6 +90,8 @@ General Tips
 
 7. Valid underline styles can be found in underlineStyleObject defined in createStyleFormat().
 
+8. Valid alignment styles can be found in alignmentStylesObject defined in createStyleFormat().
+
 JSON Reference
 --------------
 The report object below contains all of the possible properties that you can pass to createExcelReport()
@@ -108,7 +110,8 @@ but not all of them are required.
                       Row: 0,
 		      MergeCells: "3,5", // Optional. Merges columns 3 thru 5 on the same row. You can also specify col,row,col,row to merge across more than 1 row
                       Style: [{ // Optional style sub object
-                           Color: "WHITE", // Optional. Defaults to black if not specified
+                           Alignment: "left",
+			   Color: "WHITE", // Optional. Defaults to black if not specified
                            Size: "14", // Optional. Defaults to 12 if not specified
                            BackgroundColor: "green", // Optional. Defaults to white if not specified
                            Bold: true, // Optional. Defaults to false if not specified
