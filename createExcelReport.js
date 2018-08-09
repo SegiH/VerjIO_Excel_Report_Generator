@@ -272,6 +272,10 @@ function createExcelReport(reportObj) {
                }
           }
 
+          if (typeof reportObj.Sheets[reportObjSheetCounter].FitWidth !== 'undefined' && reportObj.Sheets[reportObjSheetCounter].FitWidth == true) {
+               sheet.getSettings().setFitWidth(1);
+          }
+          
           rowCounter=0;
 
           // Optional setting that If provided, indicates which row to start writing the data to
@@ -284,13 +288,11 @@ function createExcelReport(reportObj) {
           	   try {
           	        var sheetHeader=reportObj.Sheets[reportObjSheetCounter].SheetHeader[0];
           	   } catch (e) {
-                    alert("An error occurred when SheetHeader= " + reportObj.Sheets[reportObjSheetCounter].SheetHeader);
-
                     // Close and delete the workbook
                     workbook.close();
                     if (FileServices.existsFile(reportObj.FileName)) FileServices.deleteFile(reportObj.FileName);
-                    
-               	    event.stopExecution();
+
+                    return ["ERROR","An error occurred when SheetHeader= " + reportObj.Sheets[reportObjSheetCounter].SheetHeader];
                }
 
                var styledFormat=null;
@@ -345,8 +347,7 @@ function createExcelReport(reportObj) {
                     workbook.close();
                     if (FileServices.existsFile(reportObj.FileName)) FileServices.deleteFile(reportObj.FileName);
                     
-                    alert("An error occurred when columnHeaders= " + columnHeaders + ", length=" + columnHeaders.length + ",columnCounter="+columnCounter+ " and value=" + columnHeaders[columnCounter]);
-               	    event.stopExecution();
+                    return ["ERROR","An error occurred when columnHeaders= " + columnHeaders + ", length=" + columnHeaders.length + ",columnCounter="+columnCounter+ " and value=" + columnHeaders[columnCounter]];
                }
           }
 
@@ -356,8 +357,7 @@ function createExcelReport(reportObj) {
           try {
                var columns=eval(reportObj.Sheets[reportObjSheetCounter].Columns);
           } catch (e) {
-               alert("An error occurred when Columns= " + reportObj.Sheets[reportObjSheetCounter].Columns);
-               event.stopExecution();
+               return ["ERROR","An error occurred when Columns= " + reportObj.Sheets[reportObjSheetCounter].Columns];
           }
 
           // *** Save all of the data in an array ***
@@ -365,6 +365,9 @@ function createExcelReport(reportObj) {
 
           // *** SQL based data ***
           if (reportObj.Sheets[reportObjSheetCounter].SQL != null) { 
+               columnNotFound=false;
+               invalidColumn="";
+               
                // Read the data
                services.database.executeSelectStatement(reportObj.Sheets[reportObjSheetCounter].DBConnection,reportObj.Sheets[reportObjSheetCounter].SQL,     
                function (columnData) {
@@ -373,22 +376,40 @@ function createExcelReport(reportObj) {
 
                	   // Loop through all columns in provided column list
                     for (var key in columns) {
+                    	   columnFound=false;
+                    	   
                     	   // Loop through each column of the current row
                          for (var colName in columnData) { 
                          	    // If the current column is the one we are looking for
-                              if (reportObj.Sheets[reportObjSheetCounter].Columns[key][0].toUpperCase() == colName.toUpperCase()) {
+                              if (columns[key][0].toUpperCase() == colName.toUpperCase()) {
+
                                    // add column name, column value, column type and date format for date type
                               	   lineArr = new Array(columns[key][0],(columnData[columns[key][0]] != null ? columnData[columns[key][0]] : null),columns[key][1],columns[key][2]);
 
                                    rowArr.push(lineArr);
+                                   
+                                   columnFound=true;
+                                   
                                    break;
                               }
                          }
+
+                         if (columnFound == false) {
+                         	    invalidColumn=columns[key][0];
+                              break;
+                         }
+                    }
+
+                    if (columnFound == false) {
+                         return;
                     }
 
                     // push line array
                     data.push(rowArr);
                });
+
+               if (columnFound == false)
+                    return ["ERROR","The column " + invalidColumn + " was not found in the database. Please check the spelling of the column name"];
           } else if (reportObj.Sheets[reportObjSheetCounter].TableData != null) { // *** TABLE BASED DATA *** 
                allRows=tables.getTable(reportObj.Sheets[reportObjSheetCounter].TableData);
                rows=allRows.getRows();               
@@ -401,13 +422,19 @@ function createExcelReport(reportObj) {
                     // Loop through each column for the current row
                     for (columnCounter=0;columnCounter<columnHeaders.length;columnCounter++) {
                          try {
-                              currColumnValue=tables.getTable(reportObj.Sheets[reportObjSheetCounter].TableData).getColumn(columns[columnCounter][0]).displayValue;                         
+                         	    // Make sure htat the column name is valid
+                         	    if (tables.getTable(reportObj.Sheets[reportObjSheetCounter].TableData).getColumn(columns[columnCounter][0]) == null)
+                         	         return ["ERROR","The column " + columns[columnCounter][0] + " was not found in the database. Please check the spelling of the column name"];
+                              
+                              currColumnValue=tables.getTable(reportObj.Sheets[reportObjSheetCounter].TableData).getColumn(columns[columnCounter][0]).displayValue;
+
+                              if (currColumnValue != null)
+                                   currColumnValue=currColumnValue.replaceAll("<BR>","");
                          } catch(e) {
                          	    workbook.close();
                               if (FileServices.existsFile(reportObj.FileName)) FileServices.deleteFile(reportObj.FileName);
                               
-                              alert("An error occurred when columnCounter=" + columnCounter + ", columns[columnCounter][0]=" + columns[columnCounter][0] + ", columns[columnCounter]=" + columns[columnCounter] + " for the index " + columnCounter + " when columns=" + reportObj.Sheets[reportObjSheetCounter].Columns + " with the error message " + e);
-                              event.stopExecution();
+                              return ["ERROR","An error occurred when columnCounter=" + columnCounter + ", columns[columnCounter][0]=" + columns[columnCounter][0] + ", columns[columnCounter]=" + columns[columnCounter] + " for the index " + columnCounter + " when columns=" + reportObj.Sheets[reportObjSheetCounter].Columns + " with the error message " + e];
                          }
 
                          currColumnType=columns[columnCounter][1];
@@ -430,11 +457,8 @@ function createExcelReport(reportObj) {
                  for (var colCounter=0;colCounter<columnHeaders.length;colCounter++) {
                       alert("[" + colCounter + "]=" + data[dataCounter][colCounter]);
                  }
-          }
+          }*/
 
-          if (system.securityManager.getCredential("REALNAME")=="Segi Hovav")
-               return;*/
-               
           currColumnIndex=0;
 
           // *** START OF LOOP THAT GOES THROUGH DATA ARRAY AND WRITES THE DATA ***
@@ -546,8 +570,7 @@ function createExcelReport(reportObj) {
                          	    workbook.close();
                               if (FileServices.existsFile(reportObj.FileName)) FileServices.deleteFile(reportObj.FileName);
                               
-                              alert("An error occurred when Formulas=" + reportObj.Sheets[reportObjSheetCounter].Formulas);
-                              event.stopExecution();
+                              return ["ERROR","An error occurred when Formulas=" + reportObj.Sheets[reportObjSheetCounter].Formulas];
                          }
 
                          sheet.addCell(new Formula(columnNum,rowNum,formula,format));
@@ -580,8 +603,7 @@ function createExcelReport(reportObj) {
                     	   workbook.close();
                          if (FileServices.existsFile(reportObj.FileName)) FileServices.deleteFile(reportObj.FileName);
                               
-                         alert("An error occurred when Formulas=" + reportObj.Sheets[reportObjSheetCounter].Formulas);
-                         event.stopExecution();
+                         return ["ERROR","An error occurred when Formulas=" + reportObj.Sheets[reportObjSheetCounter].Formulas];
                     }
 
                     try {
@@ -589,7 +611,8 @@ function createExcelReport(reportObj) {
                     } catch(e) {
                     	   workbook.close();
                          if (FileServices.existsFile(reportObj.FileName)) FileServices.deleteFile(reportObj.FileName);
-                         alert("an error occurred writing the formula with the error " + e + " when columnNum="+columnNum+", rownum="+(rowNum-1)+", formula="+formula+", format=" + reportObj.Sheets[reportObjSheetCounter].Formulas[formulaCounter].DataType);
+                         
+                         return ["ERROR","An error occurred writing the formula with the error " + e + " when columnNum="+columnNum+", rownum="+(rowNum-1)+", formula="+formula+", format=" + reportObj.Sheets[reportObjSheetCounter].Formulas[formulaCounter].DataType];
                     }
                }
           }
@@ -614,8 +637,7 @@ function createExcelReport(reportObj) {
                     	   workbook.close();
                          if (FileServices.existsFile(reportObj.FileName)) FileServices.deleteFile(reportObj.FileName);
                          
-                         alert("An error occurred when Hyperlinks=" + reportObj.Sheets[reportObjSheetCounter].Hyperlinks);
-                         event.stopExecution();
+                         return ["ERROR","An error occurred when Hyperlinks=" + reportObj.Sheets[reportObjSheetCounter].Hyperlinks];
                     }
                     
                     // Validate that DestinationSheet is a valid sheet. We can't do this in the validation because the sheet won't exist use in the section that does the validation
@@ -643,15 +665,13 @@ function createExcelReport(reportObj) {
                          var destinationSheet=workbook.getSheet(reportObj.CustomCellText[customCellTextCounter].DestinationSheet);
 
                          if (destinationSheet==null) {
-                              alert("DestinationSheet is null for CustomCellText["+customCellTextCounter+"] when DestinationSheetValue="+reportObj.CustomCellText[customCellTextCounter].DestinationSheet);
-                              event.stopExecution();
+                              return ["ERROR","DestinationSheet is null for CustomCellText["+customCellTextCounter+"] when DestinationSheetValue="+reportObj.CustomCellText[customCellTextCounter].DestinationSheet];
                          }
                     } catch(e) {
                     	   workbook.close();
                          if (FileServices.existsFile(reportObj.FileName)) FileServices.deleteFile(reportObj.FileName);
                               
-                         alert("An error occurred when CustomCellText=" + reportObj.CustomCellText);
-                         event.stopExecution();
+                         return ["ERROR","An error occurred when CustomCellText=" + reportObj.CustomCellText];
                     }
 
                    
@@ -707,8 +727,7 @@ function createExcelReport(reportObj) {
           workbook.close();
      } catch(e) {
           if (FileServices.existsFile(reportObj.FileName)) FileServices.deleteFile(reportObj.FileName);
-          alert("An error saving the workbook with the error " + e);
-          event.stopExecution();
+          return ["ERROR","An error saving the workbook with the error " + e];
      }
      
      if (rowWritten==true) {
@@ -795,12 +814,21 @@ function createStyleFormat(style) {
           "THIN" : BorderLineStyle.THIN,
      }
 
-     var underlineStyleObject = {
+     var underlineStylesObject = {
           "DOUBLE" : Packages.jxl.format.UnderlineStyle.DOUBLE,
           "DOUBLE_ACCOUNTING" : Packages.jxl.format.UnderlineStyle.DOUBLE_ACCOUNTING,
           "NO_UNDERLINE" : Packages.jxl.format.UnderlineStyle.NO_UNDERLINE,
           "SINGLE" : Packages.jxl.format.UnderlineStyle.SINGLE,
           "SINGLE_ACCOUNTING" : Packages.jxl.format.UnderlineStyle.SINGLE_ACCOUNTING,
+     }
+
+     var alignmentStylesObject = {
+          "CENTER": Alignment.CENTRE,
+          "FILL": Alignment.FILL,
+          "GENERAL": Alignment.GENERAL,
+          "JUSTIFY": Alignment.JUSTIFY,
+          "LEFT": Alignment.LEFT,
+          "RIGHT": Alignment.RIGHT,
      }
 
      if (style.Color != null) {
@@ -825,7 +853,8 @@ function createStyleFormat(style) {
      var italic=(style.Italic == true ? true : false);
      var underline=(style.Underline == true ? true : false);
      var borders=(style.Borders == true ? true : false);
-
+     var alignment=(style.Alignment != null && alignmentStylesObject[style.Alignment] != null ? alignmentStylesObject[style.Alignment] : null);
+     
      if (borders==true) {
           if (borderStylesObject[style.BorderStyle.toString().toUpperCase()] != null)
                borderStyle=borderStylesObject[style.BorderStyle.toString().toUpperCase()];
@@ -837,16 +866,12 @@ function createStyleFormat(style) {
 
      // Set the underline if specified
      if (underline == true) {
-     	    if (style.UnderlineStyle != null && underlineStyleObject[style.UnderlineStyle] != null)
-     	         formatFont.setUnderlineStyle(underlineStyleObject[style.UnderlineStyle]);
+     	    if (style.UnderlineStyle != null && underlineStylesObject[style.UnderlineStyle] != null)
+     	         formatFont.setUnderlineStyle(underlineStylesObject[style.UnderlineStyle]);
           else     	    
                formatFont.setUnderlineStyle(Packages.jxl.format.UnderlineStyle.SINGLE);
      }
 
-     /*if (system.securityManager.getCredential("REALNAME")=="Segi Hovav") {
-          alert("the bgcolor is " + style.BackgroundColor + " and it is " + (BGColor==Colour.BLACK ? "equal" : "not equal")  );	
-     }*/
-     
      formatFont.setColour(color);
 
      var format=new WritableCellFormat(formatFont);
@@ -855,6 +880,10 @@ function createStyleFormat(style) {
      
      if (borders == true) {
           format.setBorder(Border.ALL,borderStyle);
+     }
+
+     if (alignment != null) {
+          format.setAlignment(alignment);
      }
 
      return format;
