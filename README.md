@@ -103,7 +103,7 @@ General Tips
 	
 	   // Do something like email the report here if you want
 	   
-	   return ["OK","The report has bee generated"];
+	   return ["OK","The report has been generated"];
 	   } // End of generateKPIReport() server side shared function
 	   
       In the HTML entities for the control that calls createExcelReport() directly or calls another server side function which calls createExcelReport() you would need to have something like this:
