@@ -94,7 +94,7 @@ General Tips
 
 9. When checking the return value of createExcelReport(), if the call to createExcelReport() is made from a client side function, the result array returned by createExcelReport() must be passed down to the client control that called the server side function. Otherwise, the user will not see the result of the report being generated. In the server side function that gets called from the client, the call to createExcelReport() might look like this:
        
-       // Part of the logic from the server side function generateKPIReport()       
+       // Part of the logic from the server side function generateKPIReport() that gets called from the client side
        var result=createExcelReport(excelReportObj);
        
        if (result[0]=="ERROR" || result[0]=="OK-NODATA") {
