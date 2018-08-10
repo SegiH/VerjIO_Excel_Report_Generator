@@ -92,6 +92,51 @@ General Tips
 
 8. Valid alignment styles can be found in alignmentStylesObject defined in createStyleFormat().
 
+9. When checking the return value of createExcelReport(), if the call to createExcelReport() is made from a client side function, the result array returned by createExcelReport() must be passed down to the client control that called the server side function. Otherwise, the user will not see the result of the report being generated. In the server side function that gets called from the client, the call to createExcelReport() might look like this:
+       
+       // Part of the logic from the server side function generateKPIReport()       
+       var result=createExcelReport(excelReportObj);
+       
+       if (result[0]=="ERROR" || result[0]=="OK-NODATA") {
+            return result;
+        }
+	
+	   // Do something like email the report here if you want
+	   
+	   return ["OK","The report has bee generated"];
+	   } // End of generateKPIReport() server side shared function
+	   
+      In the HTML entities for the control that calls createExcelReport() directly or calls another server side function which calls createExcelReport() you would need to have something like this:
+
+       var result=$eb.executeFunction("generateKPIReport",reportYear,false,true); // Call from client to server side function that calls createExcelReport()
+      
+       if (result[0]=="ERROR" || result[1]=="OK")
+            alert(result[1]);
+       else if (result[0]=="OK-NODATA")
+            alert("There is no data available for the report");
+
+10. If the call to createExcelReport() in a script that is run in a before form event, you should print the result if an error occurrs.
+       
+            var result=createExcelReport(excelReportObj);	
+	    
+	    if (result[0]=="ERROR")
+                 print(result[1]);
+            else if (result[0]=="OK-NODATA")
+                 print("There is data available for the report");
+
+11. If the call to createExcelReport() is made in a server side script, you can check the return value as follows:
+     
+            var result=createExcelReport(excelReportObj);	
+	    
+	    if (result[0]=="ERROR") {
+                 alert(result[1]);
+		 event.stopExecution();
+            } else if (result[0]=="OK-NODATA")
+                 alert("There is data available for the report");
+		 event.stopExecution();
+            else if (result[0]=="OK")
+	         alert(result[1]);
+   
 JSON Reference
 --------------
 The report object below contains all of the possible properties that you can pass to createExcelReport()
