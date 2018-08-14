@@ -166,15 +166,15 @@ but not all of them are required.
                   NamedStyle: "Heading", // Used named style definition. Don't use NamedStyle and Style together. Use only one
 		      Style: [{ // Optional style sub object
                        Alignment: "left", // Optional. defaults to General if not specified 
-			       Color: "WHITE", // Optional. Defaults to black if not specified
-                           Size: "14", // Optional. Defaults to 12 if not specified
-                           BackgroundColor: "green", // Optional. Defaults to white if not specified
-                           Bold: true, // Optional. Defaults to false if not specified
-                           Italic: true, // Optional. Defaults to false if not specified
-                           Underline: true, // Optional. Defaults to false if not specified
-                           UnderlineStyle: "single", // Optional/ Defauts to single if not specified
-                           Borders: true, // Optional. Defaults to false if not specified
-                           BorderStyle: "THICK", // Optional. Defaults to THIN if not specified but Borders: true is specified
+                       Color: "WHITE", // Optional. Defaults to black if not specified
+                       Size: "14", // Optional. Defaults to 12 if not specified
+                       BackgroundColor: "green", // Optional. Defaults to white if not specified
+                       Bold: true, // Optional. Defaults to false if not specified
+                       Italic: true, // Optional. Defaults to false if not specified
+                       Underline: true, // Optional. Defaults to false if not specified
+                       UnderlineStyle: "single", // Optional/ Defauts to single if not specified
+                       Borders: true, // Optional. Defaults to false if not specified
+                       BorderStyle: "THICK", // Optional. Defaults to THIN if not specified but Borders: true is specified
                       }],
                }], 
                ColumnSize: [20,10,null,15], // (Optional) Use null if you want to auto size         
