@@ -2,6 +2,7 @@ function createExcelReport(reportObj) {
      var allRows,rows;
      var blacklistedColumn, blacklistedColumnCounter;
      var blacklistColumnIndexes=[];
+     var namedStyles=[];
      var columnCounter,columnSizeCounter;
      var columnFound=false,columnNames,currColumnName,currColumnValue;
      var formulaCounter;
@@ -46,11 +47,40 @@ function createExcelReport(reportObj) {
      autosize.setAutosize(true);     
      // *** END OF STYLE DEFINITIONS ***
 
+     // Add all named styles to an array. Used with the validation
+     if (typeof reportObj.NamedStyles != 'undefined') {
+          for (namedStylesCounter=0;namedStylesCounter <  reportObj.NamedStyles.length;namedStylesCounter++) {
+               styledObj=createStyleFormat(reportObj.NamedStyles[namedStylesCounter]);
+
+               namedStyles.push([reportObj.NamedStyles[namedStylesCounter].Name,styledObj]);
+          }
+     }
+     
      // *** START OF VALIDATION ***
 	   if (typeof reportObj.FileName == 'undefined') {
 	        return ["ERROR","The property FileName was not specified"]; 	
 	   }
 
+     // If named styles was provided
+     if (typeof reportObj.NamedStyles != 'undefined') {
+          // Store the names in an array to make sure that it is unique
+          styleNames = [];
+          
+          for (namedStylesCounter=0;namedStylesCounter <  reportObj.NamedStyles.length;namedStylesCounter++) {
+               // Make sure that the name
+               if (reportObj.NamedStyles[namedStylesCounter].Name == null) {
+                    return ["ERROR","The named style at index " + namedStylesCounter + " does not have a name property"]; 	
+               }
+
+               for (styleNameCounter=0;styleNameCounter<styleNames.length;styleNameCounter++) {
+                    if (reportObj.NamedStyles[namedStylesCounter].Name.toString().toUpperCase()==styleNames[styleNameCounter].toString().toUpperCase())
+                         return ["ERROR","The named style " + reportObj.NamedStyles[namedStylesCounter].Name + " is defined more than once. Please make sure that the named style is unique."]; 	
+               }
+
+               styleNames.push(reportObj.NamedStyles[namedStylesCounter].Name);
+          }
+     }
+     
 	   // Validate that reportObj has a Sheets property
 	   if (typeof reportObj.Sheets == 'undefined') {
 	        return ["ERROR","The property Sheets was not specified"]; 	
@@ -59,8 +89,7 @@ function createExcelReport(reportObj) {
 	   var sheetArray=[]; // Holds names of all sheets
 	   
 	   // Loop through each Sheet object
-	   for (reportObjSheetCounter=0;reportObj.Sheets[reportObjSheetCounter] != null;reportObjSheetCounter++) {	        
-	   	
+	   for (reportObjSheetCounter=0;reportObj.Sheets[reportObjSheetCounter] != null;reportObjSheetCounter++) {	   	
 	        // Validate that the current sheet has a SheetName property
 	        if (typeof reportObj.Sheets[reportObjSheetCounter].SheetName == 'undefined') {
 	             return ["ERROR","The property SheetName in Sheet " + reportObjSheetCounter + " was not specified"]; 	
@@ -83,7 +112,7 @@ function createExcelReport(reportObj) {
 
 	        // If the sheet has a header, validate the MergeCells property if defined
 	        if (typeof reportObj.Sheets[reportObjSheetCounter].SheetHeader != 'undefined') {
-	             
+	             // Validate MergeCells length
 	             if (typeof reportObj.Sheets[reportObjSheetCounter].SheetHeader[0].MergeCells != 'undefined') {
                     var len=reportObj.Sheets[reportObjSheetCounter].SheetHeader[0].MergeCells.split(",").length;
 	                  
@@ -91,6 +120,25 @@ function createExcelReport(reportObj) {
 	                       return ["ERROR","The property SheetHeader in Sheet " + reportObjSheetCounter + " has a MergeCells property with an invalid size. You can either specify MergeCells:\"2,4\" to merge rows 2-4 on the same row or MergeCells:\"2,2,4,4\" to merge from cell 2,2-4,4"];
 	                  }
 	             }
+
+	             // Make sure that the user only specifies Style or NamedStyle but not both
+	             if (typeof reportObj.Sheets[reportObjSheetCounter].SheetHeader[0].NamedStyle != 'undefined' && typeof reportObj.Sheets[reportObjSheetCounter].SheetHeader[0].Style != 'undefined')
+	                  return ["ERROR","The sheet header at index " + reportObjSheetCounter + " has a Style and NamedStyle property. Please specify only one"];
+
+               // If a named style was provided, make sure that the name references a valid named style
+               if (typeof reportObj.Sheets[reportObjSheetCounter].SheetHeader[0].NamedStyle != 'undefined') {
+	                  namedStyleFound=false;
+
+	                  for (namedStylesCounter=0;namedStylesCounter <  namedStyles.length;namedStylesCounter++) {
+                         if (namedStyles[namedStylesCounter][0].toString().toUpperCase() === reportObj.Sheets[reportObjSheetCounter].SheetHeader[0].NamedStyle.toString().toUpperCase()) {
+                              namedStyleFound=true;
+                              break;
+                         }
+                    }
+
+                    if (namedStyleFound==false)
+                         return ["ERROR","The NamedStyle property " + reportObj.Sheets[reportObjSheetCounter].SheetHeader[0].NamedStyle + " in sheet " + reportObjSheetCounter + " does not appear to be a valid NamedStyle. Please refer to a valid named style"];
+               }
 	        }
 
 	        // Validate that TableData or SQL query was provided
@@ -140,21 +188,26 @@ function createExcelReport(reportObj) {
           // If 1 or more formulas were provided, validate the formula related properties
 	        if (typeof reportObj.Sheets[reportObjSheetCounter].Formulas != 'undefined') {
                for (formulaCounter=0;formulaCounter < reportObj.Sheets[reportObjSheetCounter].Formulas.length;formulaCounter++) {
-                    // Validate that Column was provided	                       
+                    // Validate that Column was provided
 	                  if (typeof reportObj.Sheets[reportObjSheetCounter].Formulas[formulaCounter].Column == 'undefined') {
-	                       return ["ERROR","The property Column in Sheet " + reportObjSheetCounter + ", Formulas[" + formulaCounter + "] was not specified"];	
+	                       return ["ERROR","The property Column in Sheet " + reportObjSheetCounter + ", Formulas[" + formulaCounter + "] was not specified"];
 	                  }
 
-	                  // Validate that Formula was provided	                       
+	                  // Validate that Formula was provided
 	                  if (typeof reportObj.Sheets[reportObjSheetCounter].Formulas[formulaCounter].Formula == 'undefined') {
-	                       return ["ERROR","The property Formula in Sheet " + reportObjSheetCounter + ", Formulas[" + formulaCounter + "] was not specified"];	
+	                       return ["ERROR","The property Formula in Sheet " + reportObjSheetCounter + ", Formulas[" + formulaCounter + "] was not specified"];
 	                  }
 
-	                  // Validate that DataType was provided	                       
+	                  // Validate that DataType was provided
 	                  if (typeof reportObj.Sheets[reportObjSheetCounter].Formulas[formulaCounter].DataType == 'undefined') {
 	                       return ["ERROR","The property DataType in Sheet " + reportObjSheetCounter + ", Formulas[" + formulaCounter + "] was not specified"];
-	                  }	                  
-               } // end of for (formulaCounter=0;formulaCounter < re
+	                  }
+
+	                  // Make sure that if LineFormula is specified, Row cannot be specified
+	                  if (typeof reportObj.Sheets[reportObjSheetCounter].Formulas[formulaCounter].LineFormula != 'undefined' && typeof reportObj.Sheets[reportObjSheetCounter].Formulas[formulaCounter].Row != 'undefined') {
+	                       return ["ERROR","The properties Row and LineFormula in Sheet " + reportObjSheetCounter + ", Formulas[" + formulaCounter + "] were both specified. Please specify only one"];
+	                  }
+               } // end of  for (formulaCounter=0;formulaCounter < reportObj.Sheets[reportObjSheetCounter].Formulas.length;formulaCounter++) {
 	        } // end of  if (typeof reportObj.Sheets[reportObjSheetCounter].Formulas != 'undefined') {
 
           // If 1 or more hyperlinks were specified, validate the hyperlink properties
@@ -187,10 +240,29 @@ function createExcelReport(reportObj) {
 
 	                  // Validate that DestinationRow was provided
 	                  if (typeof reportObj.Sheets[reportObjSheetCounter].Hyperlinks[hyperlinkCounter].DestinationRow == 'undefined') {
-	                       return ["ERROR","The property DestinationCRow in Sheet " + reportObjSheetCounter + ", Hyperlinks[" + hyperlinkCounter + "] was not specified"];
+	                       return ["ERROR","The property DestinationRow in Sheet " + reportObjSheetCounter + ", Hyperlinks[" + hyperlinkCounter + "] was not specified"];
 	                  }
                } // end of for (hyperlinkCounter=0;
 	        } // end of if (typeof reportObj.Sheets[reportObjSheetCounter].Hyperlinks != 'undefined') {        
+
+          // Make sure that the user only specifies Style or NamedStyle but not both
+	        if (typeof reportObj.Sheets[reportObjSheetCounter].NamedStyle != 'undefined' && typeof reportObj.Sheets[reportObjSheetCounter].Style != 'undefined')
+	             return ["ERROR","The sheet at index " + reportObjSheetCounter + " has a Style and NamedStyle property. Please specify only one"];
+
+          // If a named style was provided, make sure that the name references a valid named style
+          if (typeof reportObj.Sheets[reportObjSheetCounter].NamedStyle != 'undefined') {
+	             namedStyleFound=false;
+
+	             for (namedStylesCounter=0;namedStylesCounter <  namedStyles.length;namedStylesCounter++) {
+                    if (namedStyles[namedStylesCounter][0].toString().toUpperCase() === reportObj.Sheets[reportObjSheetCounter].NamedStyle.toString().toUpperCase()) {
+                         namedStyleFound=true;
+                         break;
+                    }
+               }
+
+               if (namedStyleFound==false)
+                    return ["ERROR","The NamedStyle property " + reportObj.Sheets[reportObjSheetCounter].NamedStyle + " in sheet " + reportObjSheetCounter + " does not appear to be a valid NamedStyle. Please refer to a valid named style"];
+          }
 	   }
 
 	   // If 1 or more custom celll texts were specified, validate the custom cell text properties
@@ -217,12 +289,32 @@ function createExcelReport(reportObj) {
                          var len=reportObj.CustomCellText[customCellTextCounter].MergeCells[mergeCounter].split(",").length;
 
                          if (len != 4) {
-	                            return ["ERROR","The property MergeCells in CustomText at index " + customCellTextCounter + " with MergeCell index " + mergeCounter + " has an invalid size. You must specify start column,start row,end column,end row"];
+	                            return ["ERROR","The property MergeCells in CustomCellText at index " + customCellTextCounter + " with MergeCell index " + mergeCounter + " has an invalid size. You must specify start column,start row,end column,end row"];
 	                       }
                     }
                }
+
+               // Make sure that the user only specifies Style or NamedStyle but not both
+               if (typeof reportObj.CustomCellText[customCellTextCounter].NamedStyle != 'undefined' && typeof reportObj.CustomCellText[customCellTextCounter].Style != 'undefined')
+	                  return ["ERROR","The CustomCellText at index " + customCellTextCounter + " has a Style and NamedStyle property. Please specify only one"];
+
+               // If a named style was provided, make sure that the name references a valid named style
+	             if (typeof reportObj.CustomCellText[customCellTextCounter].NamedStyle != 'undefined') {
+	             	    namedStyleFound=false;
+
+	             	    for (namedStylesCounter=0;namedStylesCounter <  namedStyles.length;namedStylesCounter++) {
+                         if (namedStyles[namedStylesCounter][0].toString().toUpperCase() === reportObj.Sheets[reportObjSheetCounter].NamedStyle.toString().toUpperCase()) {
+                              namedStyleFound=true;
+                              break;
+                         }
+                    }
+
+                    if (namedStyleFound==false)
+                         return ["ERROR","The NamedStyle property " + reportObj.Sheets[reportObjSheetCounter].NamedStyle + " in sheet " + reportObjSheetCounter + " does not appear to be a valid NamedStyle. Please refer to a valid named style"];
+	             }
           }
 	   }
+	   
 	   // *** END OF VALIDATION ***
 	   
      // Build the file name
@@ -235,7 +327,7 @@ function createExcelReport(reportObj) {
      workbook.setColourRGB(Colour.LIGHT_BLUE,83,162,240);
 
      // *** START OF GENERATING THE EXCEL DOCUMENT ***
-     
+          
      // *** Loop through the report object for each sheet object ***
      for (reportObjSheetCounter=0;reportObj.Sheets[reportObjSheetCounter] != null;reportObjSheetCounter++) {
           // Create the sheet based on the specified name and index
@@ -299,6 +391,13 @@ function createExcelReport(reportObj) {
                     
                if (sheetHeader.Style != null) {
                     styledFormat=createStyleFormat(sheetHeader.Style[0]);
+               } else if (sheetHeader.NamedStyle != null) {
+               	    for (namedStylesCounter=0;namedStylesCounter <  namedStyles.length;namedStylesCounter++) {
+                         if (namedStyles[namedStylesCounter][0].toString().toUpperCase() === sheetHeader.NamedStyle.toString().toUpperCase()) {
+                              styledFormat=namedStyles[namedStylesCounter][1];
+                              break;
+                         }
+                    }
                }
 
                if (sheetHeader.DataType=="INT") { // Alias for INTEGER data type
@@ -357,6 +456,19 @@ function createExcelReport(reportObj) {
           }
 
           rowCounter++;
+
+          if (reportObj.Sheets[reportObjSheetCounter].Style != null) {
+               styledFormat=createStyleFormat(reportObj.Sheets[reportObjSheetCounter].Style[0]);
+          } else if (reportObj.Sheets[reportObjSheetCounter].NamedStyle != null) {
+               for (namedStylesCounter=0;namedStylesCounter <  namedStyles.length;namedStylesCounter++) {
+                    if (namedStyles[namedStylesCounter][0].toString().toUpperCase() === reportObj.Sheets[reportObjSheetCounter].NamedStyle.toString().toUpperCase()) {
+                         styledFormat=namedStyles[namedStylesCounter][1];
+                         break;
+                    }
+               }
+          } else {
+          	  styledFormat=null;
+          }
           
           // Get all columns
           try {
@@ -415,7 +527,8 @@ function createExcelReport(reportObj) {
 
                if (columnFound == false && invalidColumn != null && invalidColumn != "")
                     return ["ERROR","The sql column " + invalidColumn + " was not found in the database. Please check the spelling of the column name"];
-          } else if (reportObj.Sheets[reportObjSheetCounter].TableData != null) { // *** TABLE BASED DATA *** 
+          // *** TABLE BASED DATA *** 
+          } else if (reportObj.Sheets[reportObjSheetCounter].TableData != null) {
                allRows=tables.getTable(reportObj.Sheets[reportObjSheetCounter].TableData);
                rows=allRows.getRows();               
                
@@ -499,15 +612,15 @@ function createExcelReport(reportObj) {
                               
                               
                               if (data[dataCounter][colCounter][1] != null)                                   
-                         	         sheet.addCell(new Packages.jxl.write.Number(currColumnIndex,rowCounter, data[dataCounter][colCounter][1] ,cellFormat));
+                         	         sheet.addCell(new Packages.jxl.write.Number(currColumnIndex,rowCounter, data[dataCounter][colCounter][1] ,(styledFormat != null ? styledFormat : cellFormat)));
                               else
-                                   sheet.addCell(new Label(currColumnIndex,rowCounter, "" ,cellFormat));
+                                   sheet.addCell(new Label(currColumnIndex,rowCounter, "" ,(styledFormat != null ? styledFormat : cellFormat)));
 
                               break;
                          case "CHAR":
                               rowWritten=true;
 
-                              sheet.addCell(new Label(currColumnIndex,rowCounter, data[dataCounter][colCounter][1] ,cellFormat));                         
+                              sheet.addCell(new Label(currColumnIndex,rowCounter, data[dataCounter][colCounter][1] ,(styledFormat != null ? styledFormat : cellFormat)));                         
 
                               break;
                          case "CURRENCY":
@@ -516,9 +629,9 @@ function createExcelReport(reportObj) {
                     	         // If the data is null, don't attempt to write a null value as a number because it will throw an error message
                               // Instead, write empty string if its null
                     	         if (data[dataCounter][colCounter][1] != null)
-                    	              sheet.addCell(new Packages.jxl.write.Number(currColumnIndex,rowCounter, data[dataCounter][colCounter][1],cellCurrencyFormat));
+                    	              sheet.addCell(new Packages.jxl.write.Number(currColumnIndex,rowCounter, data[dataCounter][colCounter][1],(styledFormat != null ? styledFormat : cellCurrencyFormat)));
                     	         else
-                                   sheet.addCell(new Label(currColumnIndex,rowCounter, "" ,cellFormat));
+                                   sheet.addCell(new Label(currColumnIndex,rowCounter, "" ,(styledFormat != null ? styledFormat : cellFormat)));
                                    
                     	         break;
                     	   case "DATE":
@@ -545,7 +658,7 @@ function createExcelReport(reportObj) {
                     	         }
 
                     	         // dateVal shouldn't ever be null
-               	              sheet.addCell(new Label(currColumnIndex,rowCounter,(dateVal != null ? dateVal : ""),cellFormat));                    	         
+               	              sheet.addCell(new Label(currColumnIndex,rowCounter,(dateVal != null ? dateVal : ""),(styledFormat != null ? styledFormat : cellFormat)));                    	         
                     }
 
                     if (rowWritten==true) {
@@ -695,6 +808,15 @@ function createExcelReport(reportObj) {
                     
                     if (reportObj.CustomCellText[customCellTextCounter].Style != null) {
                          styledFormat=createStyleFormat(reportObj.CustomCellText[customCellTextCounter].Style[0]);
+                    } else if (reportObj.CustomCellText[customCellTextCounter].NamedStyle != null) {
+                    	   for (namedStylesCounter=0;namedStylesCounter <  namedStyles.length;namedStylesCounter++) {
+                              if (namedStyles[namedStylesCounter][0].toString().toUpperCase() === reportObj.CustomCellText[customCellTextCounter].NamedStyle.toString().toUpperCase()) {
+                                   styledFormat=namedStyles[namedStylesCounter][1];
+                                   break;
+                              }
+                         }
+                    } else {
+          	             styledFormat=null;
                     }
 
                     // Write the CustomCellText factoring in the DataType property
