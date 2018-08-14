@@ -165,7 +165,7 @@ but not all of them are required.
 		      MergeCells: "3,5", // Optional. Merges columns 3 thru 5 on the same row. You can also specify col,row,col,row to merge across more than 1 row
                   NamedStyle: "Heading", // Used named style definition. Don't use NamedStyle and Style together. Use only one
 		      Style: [{ // Optional style sub object
-                  Alignment: "left", // Optional. defaults to General if not specified 
+                       Alignment: "left", // Optional. defaults to General if not specified 
 			       Color: "WHITE", // Optional. Defaults to black if not specified
                            Size: "14", // Optional. Defaults to 12 if not specified
                            BackgroundColor: "green", // Optional. Defaults to white if not specified
