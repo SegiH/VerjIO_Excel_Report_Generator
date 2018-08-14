@@ -189,7 +189,7 @@ but not all of them are required.
                     Row: 10, // Optional. Will be written after last row of data if not specified               
                     Formula: "SUM(A1:A<CURRENTROW>)", // Use <CURRENTROW> as a placeholder for the current row number
                     DataType: "INTEGER",
-                    FormulaRowOffset: -1, // Optional) offset the value of <CURRENTROW>. So you could use -1 to to refer to CURRENTROW-1
+                    FormulaRowOffset: -1, // Optional) offset the value of <CURRENTROW>. So you could use -1 to to refer to CURRENTROW-1 
                     LineFormula: true, // (Optional flag to indicate that this formula needs to be written for each row)
                },],
                HyperLinks: [{
