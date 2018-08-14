@@ -153,10 +153,10 @@ but not all of them are required.
                  Color: "white",
                  BackgroundColor: "red"
             },
-	    Sheets: [{ 
+            Sheets: [{ 
                  StartRow: 3, // Start on row 3
                  FitWidth: true, // Optional. Will force sheet to fit all columns on the page width-wise
-		 SheetName: "EOL Parts",
+                 SheetName: "EOL Parts",
                  SheetIndex: 0,
                  SheetHeader: [{ // Add heading in Cell D1
                       Value: "EOL Parts Report as of " + getCurrentDate(),
