@@ -82,7 +82,7 @@ General Tips
 
 3. ColumnSize is optional and can be used to specify the column width. If you do not provide ColumnSize, all columns will be set to autosize the width automatically. If you provide an array with null for any values like in the example above, the columns that have null for the width will be set to autosize the width automatically.
 
-4. Valid data types are "BOOLEAN", "CHAR", "CURRENCY", "DATE", "DATETIME", "INTEGER" and "NUMERIC".
+4. Valid data types are "BOOLEAN", "CHAR", "CURRENCY", "DATE", "DATETIME", "INTEGER" (or "INT" as an alias for INTEGER") and "NUMERIC". If you specify that a column data type is CHAR but the value is an INTEGER, it will be written as an INTEGER. IF you want to force the column to be written as CHAR, add a true parameter. Ex. ["SOMECOLUMN","CHAR",true]. If the data type is specified as INT but the data value is a CHAR, it will be written as a CHAR.
 
 5. Valid color values can be found in the object colorObject defined in createStyleFormat(). You can also supply an RGB string ike "83,162,240" as the color value to use a specific RGB value instead of a color name.
 
@@ -92,7 +92,7 @@ General Tips
 
 8. Valid alignment styles can be found in alignmentStylesObject defined in createStyleFormat().
 
-9. When checking the return value of createExcelReport(), if the call to createExcelReport() is made from a client side function, the result array returned by createExcelReport() must be passed down to the client control that called the server side function. Otherwise, the user will not see the result of the report being generated. In the server side function that gets called from the client, the call to createExcelReport() might look like this:
+9. When checking the return value of createExcelReport(), if the call to createExcelReport() is made from a client side function, the result array returned by createExcelReport() must be passed down to the client control that called the server side function. Otherwise, the user will not see the result message. In the server side function that gets called from the client, the call to createExcelReport() might look like this:
        
        // Part of the logic from the server side function generateKPIReport() that gets called from the client side
        var result=createExcelReport(excelReportObj);
@@ -136,7 +136,9 @@ General Tips
 		 event.stopExecution();
             else if (result[0]=="OK")
 	         alert(result[1]);
-   
+12. If you have a table with a formula in one of the columns and want to have a table heder, you can add [null] as a place holder when specifying the column. If you do not do this, the number of column headers and columns will not match and the application will display an error message.
+
+
 JSON Reference
 --------------
 The report object below contains all of the possible properties that you can pass to createExcelReport()
