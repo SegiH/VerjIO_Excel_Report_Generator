@@ -3,7 +3,7 @@ function createExcelReport(reportObj) {
      var blacklistedColumn, blacklistedColumnCounter;
      var blacklistColumnIndexes=[];
      var columnCounter,columnSizeCounter;
-     var columnNames,currColumnName,currColumnValue;
+     var columnFound=false,columnNames,currColumnName,currColumnValue;
      var formulaCounter;
      var rowCounter;
      var today=new Date();
@@ -307,7 +307,8 @@ function createExcelReport(reportObj) {
                
                // Write the heading factoring in the DataType property
                switch (sheetHeader.DataType) {
-                    case "BOOLEAN":                         
+                    case "BOOLEAN":
+                    case "INT":                       
                     case "INTEGER":
                     case "NUMERIC":
                          sheet.addCell(new Packages.jxl.write.Number(sheetHeader.Column,sheetHeader.Row,sheetHeader.Value,(styledFormat != null ? styledFormat : mainHeadingStyle)));
@@ -385,7 +386,7 @@ function createExcelReport(reportObj) {
                     	   // Loop through each column of the current row
                          for (var colName in columnData) { 
                          	    // If the current column is the one we are looking for
-                              if (columns[key][0].toUpperCase() == colName.toUpperCase()) {
+                              if (columns[key][0] != null && columns[key][0].toUpperCase() == colName.toUpperCase()) {
 
                                    // add column name, column value, column type and date format for date type
                               	   lineArr = new Array(columns[key][0],(columnData[columns[key][0]] != null ? columnData[columns[key][0]] : null),columns[key][1],columns[key][2]);
@@ -412,8 +413,8 @@ function createExcelReport(reportObj) {
                     data.push(rowArr);
                });
 
-               if (columnFound == false)
-                    return ["ERROR","The column " + invalidColumn + " was not found in the database. Please check the spelling of the column name"];
+               if (columnFound == false && invalidColumn != null && invalidColumn != "")
+                    return ["ERROR","The sql column " + invalidColumn + " was not found in the database. Please check the spelling of the column name"];
           } else if (reportObj.Sheets[reportObjSheetCounter].TableData != null) { // *** TABLE BASED DATA *** 
                allRows=tables.getTable(reportObj.Sheets[reportObjSheetCounter].TableData);
                rows=allRows.getRows();               
@@ -426,9 +427,12 @@ function createExcelReport(reportObj) {
                     // Loop through each column for the current row
                     for (columnCounter=0;columnCounter<columnHeaders.length;columnCounter++) {
                          try {
+                         	    if (columns[columnCounter][0] == null)
+                         	         continue;
+                         	         
                          	    // Make sure htat the column name is valid
                          	    if (tables.getTable(reportObj.Sheets[reportObjSheetCounter].TableData).getColumn(columns[columnCounter][0]) == null)
-                         	         return ["ERROR","The column " + columns[columnCounter][0] + " was not found in the database. Please check the spelling of the column name"];
+                         	         return ["ERROR","The table column " + columns[columnCounter][0] + " was not found in the database. Please check the spelling of the column name"];
                               
                               currColumnValue=tables.getTable(reportObj.Sheets[reportObjSheetCounter].TableData).getColumn(columns[columnCounter][0]).displayValue;
 
@@ -472,17 +476,21 @@ function createExcelReport(reportObj) {
 
                // Write the data
                for (var colCounter=0;colCounter<columnHeaders.length;colCounter++) {
+               	    if (data[dataCounter][colCounter]==null)
+               	         continue;
+
                     // If the type is CHAR but the value is an INT, change the type to an INT so it will be written as an INT so
                     // that Excel doesn't complaign that the field is a number in a text cell
-                    if (data[dataCounter][colCounter][2] == "CHAR" && data[dataCounter][colCounter][1] != null && isInt(data[dataCounter][colCounter][1]))
+                    if (data[dataCounter][colCounter][2] == "CHAR" && data[dataCounter][colCounter][1] != null && isInt(data[dataCounter][colCounter][1]) && reportObj.Sheets[reportObjSheetCounter].Columns[colCounter][2] != true)
                          data[dataCounter][colCounter][2]="INTEGER";
 
                     // If the type is INT but the value is a CHAR, change the type to an CHAR so it will be written as a CHAR
-                    if (data[dataCounter][colCounter][2] == "INTEGER" && data[dataCounter][colCounter][1] != null && !isInt(data[dataCounter][colCounter][1]))
+                    if ((data[dataCounter][colCounter][2] == "INTEGER" || data[dataCounter][colCounter][2] == "INT") && data[dataCounter][colCounter][1] != null && !isInt(data[dataCounter][colCounter][1]))
                          data[dataCounter][colCounter][2]="CHAR";
                     
                     switch(data[dataCounter][colCounter][2]) { // Type
                          case "BOOLEAN":
+                         case "INT":
                          case "INTEGER":
                          case "NUMERIC":
                               // If the data is null, don't attempt to write a null value as a number because it will throw an error message
@@ -692,6 +700,7 @@ function createExcelReport(reportObj) {
                     // Write the CustomCellText factoring in the DataType property
                     switch (reportObj.CustomCellText[customCellTextCounter].DataType) {
                          case "BOOLEAN":
+                         case "INT":
                          case "INTEGER":
                          case "NUMERIC":
                               destinationSheet.addCell(new Packages.jxl.write.Number(columnNum,rowNum,value,(styledFormat != null ? styledFormat : null)));
@@ -848,8 +857,15 @@ function createStyleFormat(style) {
      } else
           color=Colour.BLACK;
 
-     if (style.BackgroundColor != null && colorObject[style.BackgroundColor.toString().toUpperCase()] != null)
-          BGColor=colorObject[style.BackgroundColor.toString().toUpperCase()];
+     if (style.BackgroundColor != null)
+          if (style.BackgroundColor.toString().indexOf(",") == -1 && colorObject[style.BackgroundColor.toString().toUpperCase()] != null)
+               BGColor=colorObject[style.BackgroundColor.toString().toUpperCase()];
+          else {
+          	   var rgb=style.BackgroundColor.toString().split(",");
+          	   
+          	   workbook.setColourRGB(Colour.UNKNOWN,parseInt(rgb[0]),parseInt(rgb[1]),parseInt(rgb[2]));
+          	   BGColor=Colour.UNKNOWN;
+          }
      else
           BGColor=Colour.WHITE;
 
@@ -861,7 +877,7 @@ function createStyleFormat(style) {
      var alignment=(style.Alignment != null && alignmentStylesObject[style.Alignment.toString().toUpperCase()] != null ? alignmentStylesObject[style.Alignment.toString().toUpperCase()] : null);
      
      if (borders==true) {
-          if (style.BorderStyle == null || (style.BorderStyle != null && borderStylesObject[style.BorderStyle.toString().toUpperCase()] != null)) {
+          if (style.BorderStyle != null && borderStylesObject[style.BorderStyle.toString().toUpperCase()] != null) {
                borderStyle=borderStylesObject[style.BorderStyle.toString().toUpperCase()];
           } else {
                borderStyle=BorderLineStyle.THIN;
