@@ -217,4 +217,4 @@ but not all of them are required.
 
 Known Issues
 ------------
-None
+Using RGB color as background does not always work correctly.
