@@ -9,6 +9,7 @@ Features
 5. Add custom text anywhere that you specify
 6. Add heading text
 7. Add custom styling
+8. Re-useable named style definitions
 
 Installation
 ------------
@@ -138,6 +139,7 @@ General Tips
 	         alert(result[1]);
 12. If you have a table with a formula in one of the columns and want to have a table heder, you can add [null] as a place holder when specifying the column. If you do not do this, the number of column headers and columns will not match and the application will display an error message.
 
+13. 
 
 JSON Reference
 --------------
@@ -146,7 +148,12 @@ but not all of them are required.
 
        var reportObj = {
             FileName: "EOL Report",
-            Sheets: [{ 
+            NamedStyles: [{ // Optional named style
+                 Name: "Heading",
+                 Color: "white",
+                 BackgroundColor: "red"
+            },
+	    Sheets: [{ 
                  StartRow: 3, // Start on row 3
                  FitWidth: true, // Optional. Will force sheet to fit all columns on the page width-wise
 		 SheetName: "EOL Parts",
@@ -156,7 +163,8 @@ but not all of them are required.
                       Column: 3,
                       Row: 0,
 		      MergeCells: "3,5", // Optional. Merges columns 3 thru 5 on the same row. You can also specify col,row,col,row to merge across more than 1 row
-                      Style: [{ // Optional style sub object
+                      NamedStyle: "Heading", // Used named style definition. Don't use NamedStyle and Style together. Use only one
+		      Style: [{ // Optional style sub object
                            Alignment: "left", // Optional. defaults to General if not specified
 			       Color: "WHITE", // Optional. Defaults to black if not specified
                            Size: "14", // Optional. Defaults to 12 if not specified
