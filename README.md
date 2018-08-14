@@ -175,7 +175,7 @@ but not all of them are required.
                        UnderlineStyle: "single", // Optional/ Defauts to single if not specified
                        Borders: true, // Optional. Defaults to false if not specified
                        BorderStyle: "THICK", // Optional. Defaults to THIN if not specified but Borders: true is specified
-               }],
+                    }],
                }], 
                ColumnSize: [20,10,null,15], // (Optional) Use null if you want to auto size         
                ColumnHeaders: "ID, Part Num,Part Description,Mfg Part Num,Ship Date,Status,Close Date",
