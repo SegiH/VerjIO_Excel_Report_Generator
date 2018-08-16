@@ -57,9 +57,8 @@ function createExcelReport(reportObj) {
      }
      
      // *** START OF VALIDATION ***
-	   if (typeof reportObj.FileName == 'undefined') {
-	        return ["ERROR","The property FileName was not specified"]; 	
-	   }
+	   if (typeof reportObj.FileName == 'undefined')
+	        return ["ERROR","The property FileName was not specified"];
 
      // If named styles was provided
      if (typeof reportObj.NamedStyles != 'undefined') {
@@ -68,9 +67,8 @@ function createExcelReport(reportObj) {
           
           for (namedStylesCounter=0;namedStylesCounter <  reportObj.NamedStyles.length;namedStylesCounter++) {
                // Make sure that the name
-               if (reportObj.NamedStyles[namedStylesCounter].Name == null) {
+               if (reportObj.NamedStyles[namedStylesCounter].Name == null)
                     return ["ERROR","The named style at index " + namedStylesCounter + " does not have a name property"]; 	
-               }
 
                for (styleNameCounter=0;styleNameCounter<styleNames.length;styleNameCounter++) {
                     if (reportObj.NamedStyles[namedStylesCounter].Name.toString().toUpperCase()==styleNames[styleNameCounter].toString().toUpperCase())
@@ -82,43 +80,52 @@ function createExcelReport(reportObj) {
      }
      
 	   // Validate that reportObj has a Sheets property
-	   if (typeof reportObj.Sheets == 'undefined') {
-	        return ["ERROR","The property Sheets was not specified"]; 	
-	   }
+	   if (typeof reportObj.Sheets == 'undefined')
+	        return ["ERROR","The property Sheets was not specified"];
 
 	   var sheetArray=[]; // Holds names of all sheets
 	   
 	   // Loop through each Sheet object
 	   for (reportObjSheetCounter=0;reportObj.Sheets[reportObjSheetCounter] != null;reportObjSheetCounter++) {	   	
 	        // Validate that the current sheet has a SheetName property
-	        if (typeof reportObj.Sheets[reportObjSheetCounter].SheetName == 'undefined') {
-	             return ["ERROR","The property SheetName in Sheet " + reportObjSheetCounter + " was not specified"]; 	
-	        }
+	        if (typeof reportObj.Sheets[reportObjSheetCounter].SheetName == 'undefined')
+	             return ["ERROR","The property SheetName in Sheet " + reportObjSheetCounter + " was not specified"];
 
 	        // Make sure that the sheet doesnt exist already
 	        for (var i=0;i < sheetArray.length;i++) {
-	             if (sheetArray[i][0]==reportObj.Sheets[reportObjSheetCounter].SheetName) {
-	                  return ["ERROR","The property SheetName in Sheet " + reportObjSheetCounter + " has the same name as the sheet of sheet " + sheetArray[i][1]]; 	
-	             }
+	             if (sheetArray[i][0]==reportObj.Sheets[reportObjSheetCounter].SheetName)
+	                  return ["ERROR","The property SheetName in Sheet " + reportObjSheetCounter + " has the same name as the sheet of sheet " + sheetArray[i][1]];
 	        }
 
           // Add the sheet name and sheet index to an array
 	        sheetArray.push(new Array(reportObj.Sheets[reportObjSheetCounter].SheetName,reportObjSheetCounter));
 
 	        // Validate that the current sheet has a SheetIndex property
-	        if (typeof reportObj.Sheets[reportObjSheetCounter].SheetIndex == 'undefined') {
+	        if (typeof reportObj.Sheets[reportObjSheetCounter].SheetIndex == 'undefined')
 	             return ["ERROR","The property SheetIndex in Sheet " + reportObjSheetCounter + " was not specified"]; 	
-	        }
 
+          // Validate the AllMargins property
+          if (typeof reportObj.Sheets[reportObjSheetCounter].AllMargins !== 'undefined') {
+               var len=reportObj.Sheets[reportObjSheetCounter].AllMargins.split(",").length;
+
+               if (len != 1 && len != 2 && len != 4)
+	                  return ["ERROR","The property AllMargins in Sheet " + reportObjSheetCounter + " has an invalid size. You can either specify AllMargins:\"1\" to set all 4 margins to 1, AllMargins:\"1,0.25\" to set the top and bottom margins to 1 and the left and right margins to 0.25 or AllMargins:\"1,1,0.25,0,25\" to set all 4 margins at once"];
+          }
+
+          // Validate the orientation if provided
+          if (typeof reportObj.Sheets[reportObjSheetCounter].Orientation !== 'undefined') {
+               if (reportObj.Sheets[reportObjSheetCounter].Orientation.toString().toUpperCase() != "PORTRAIT" && reportObj.Sheets[reportObjSheetCounter].Orientation.toString().toUpperCase() != "LANDSCAPE")
+                    return ["ERROR","The property Orientation in Sheet " + reportObjSheetCounter + " has an invalid value. Valid values are landscape or portrait."];
+          }
+          
 	        // If the sheet has a header, validate the MergeCells property if defined
 	        if (typeof reportObj.Sheets[reportObjSheetCounter].SheetHeader != 'undefined') {
 	             // Validate MergeCells length
 	             if (typeof reportObj.Sheets[reportObjSheetCounter].SheetHeader[0].MergeCells != 'undefined') {
                     var len=reportObj.Sheets[reportObjSheetCounter].SheetHeader[0].MergeCells.split(",").length;
 	                  
-	                  if (len != 2 && len != 4) {
+	                  if (len != 2 && len != 4)
 	                       return ["ERROR","The property SheetHeader in Sheet " + reportObjSheetCounter + " has a MergeCells property with an invalid size. You can either specify MergeCells:\"2,4\" to merge rows 2-4 on the same row or MergeCells:\"2,2,4,4\" to merge from cell 2,2-4,4"];
-	                  }
 	             }
 
 	             // Make sure that the user only specifies Style or NamedStyle but not both
@@ -142,71 +149,63 @@ function createExcelReport(reportObj) {
 	        }
 
 	        // Validate that TableData or SQL query was provided
-	        if (typeof reportObj.Sheets[reportObjSheetCounter].TableData == 'undefined' && typeof reportObj.Sheets[reportObjSheetCounter].SQL == 'undefined') {
-	             return ["ERROR","The property TableData or SQL in Sheet " + reportObjSheetCounter + " was not specified"]; 	
-	        }
+	        if (typeof reportObj.Sheets[reportObjSheetCounter].TableData == 'undefined' && typeof reportObj.Sheets[reportObjSheetCounter].SQL == 'undefined')
+	             return ["ERROR","The property TableData or SQL in Sheet " + reportObjSheetCounter + " was not specified"];
 
 	        // Validate that only TableData or SQL query were provided but not both
-	        if (typeof reportObj.Sheets[reportObjSheetCounter].TableData !== 'undefined' && typeof reportObj.Sheets[reportObjSheetCounter].SQL != 'undefined') {
-	             return ["ERROR","The properties TableData and SQL in Sheet " + reportObjSheetCounter + " were both specified. Please specify only one."]; 	
-	        }	        
+	        if (typeof reportObj.Sheets[reportObjSheetCounter].TableData !== 'undefined' && typeof reportObj.Sheets[reportObjSheetCounter].SQL != 'undefined')
+	             return ["ERROR","The properties TableData and SQL in Sheet " + reportObjSheetCounter + " were both specified. Please specify only one."];
 
+          if (typeof reportObj.Sheets[reportObjSheetCounter].TableData !== 'undefined' && tables.getTable(reportObj.Sheets[reportObjSheetCounter].TableData)==null)
+               return ["ERROR","The table " + reportObj.Sheets[reportObjSheetCounter].TableData + " referenced in sheet " + reportObjSheetCounter + " is not a valid table"]; 	
+          
 	        // Validate that Columns was provided	                       
-	        if (typeof reportObj.Sheets[reportObjSheetCounter].Columns == 'undefined') {
-	             return ["ERROR","The property Columns in Sheet " + reportObjSheetCounter + " was not specified"];	
-	        }
+	        if (typeof reportObj.Sheets[reportObjSheetCounter].Columns == 'undefined')
+	             return ["ERROR","The property Columns in Sheet " + reportObjSheetCounter + " was not specified"];
 
           // Validate that ColumnHeaders was provided	                       
-	        if (typeof reportObj.Sheets[reportObjSheetCounter].ColumnHeaders == 'undefined') {
-	             return ["ERROR","The property ColumnHeaders in Sheet " + reportObjSheetCounter + " was not specified"];	
-	        }
+	        if (typeof reportObj.Sheets[reportObjSheetCounter].ColumnHeaders == 'undefined')
+	             return ["ERROR","The property ColumnHeaders in Sheet " + reportObjSheetCounter + " was not specified"];
 	             
           // Validate that the size of Columns and ColumnHeaders match
-          if (reportObj.Sheets[reportObjSheetCounter].Columns.length != reportObj.Sheets[reportObjSheetCounter].ColumnHeaders.split(",").length) {
+          if (reportObj.Sheets[reportObjSheetCounter].Columns.length != reportObj.Sheets[reportObjSheetCounter].ColumnHeaders.split(",").length)
                return ["ERROR","The properties Columns and ColumnHeaders in Sheet " + reportObjSheetCounter + " are of different lengths. Column length=" + reportObj.Sheets[reportObjSheetCounter].Columns.length + " and ColumnHeaders length=" + reportObj.Sheets[reportObjSheetCounter].ColumnHeaders.split(",").length];
-          }
 
           // Validate merge cells
           if (typeof reportObj.Sheets[reportObjSheetCounter].MergeCells != 'undefined') {
                for (var mergeCounter=0;mergeCounter < reportObj.Sheets[reportObjSheetCounter].MergeCells.length;mergeCounter++) {
                     var len=reportObj.Sheets[reportObjSheetCounter].MergeCells[mergeCounter].split(",").length;
 
-                    if (len != 2 && len != 4) {
+                    if (len != 2 && len != 4)
 	                       return ["ERROR","The property MergeCells in Sheet " + reportObjSheetCounter + " at index " + mergeCounter + " has an invalid size. You can either specify MergeCells:\"2,4\" to merge rows 2-4 on the same row or MergeCells:\"2,2,4,4\" to merge from cell 2,2-4,4"];
-	                  }                    
                }
           }
           
           // If SQL was provided, make sure that all of the necessary properties were provided
           if (typeof reportObj.Sheets[reportObjSheetCounter].SQL != 'undefined') {
                // Validate that DBConnection was provided	                       
-	             if (typeof reportObj.Sheets[reportObjSheetCounter].DBConnection == 'undefined') {
-	                  return ["ERROR","The property DBConnection in Sheet " + reportObjSheetCounter + " was not specified"];	
-	             }              
+	             if (typeof reportObj.Sheets[reportObjSheetCounter].DBConnection == 'undefined')
+	                  return ["ERROR","The property DBConnection in Sheet " + reportObjSheetCounter + " was not specified"];
           }
 
           // If 1 or more formulas were provided, validate the formula related properties
 	        if (typeof reportObj.Sheets[reportObjSheetCounter].Formulas != 'undefined') {
                for (formulaCounter=0;formulaCounter < reportObj.Sheets[reportObjSheetCounter].Formulas.length;formulaCounter++) {
                     // Validate that Column was provided
-	                  if (typeof reportObj.Sheets[reportObjSheetCounter].Formulas[formulaCounter].Column == 'undefined') {
+	                  if (typeof reportObj.Sheets[reportObjSheetCounter].Formulas[formulaCounter].Column == 'undefined')
 	                       return ["ERROR","The property Column in Sheet " + reportObjSheetCounter + ", Formulas[" + formulaCounter + "] was not specified"];
-	                  }
 
 	                  // Validate that Formula was provided
-	                  if (typeof reportObj.Sheets[reportObjSheetCounter].Formulas[formulaCounter].Formula == 'undefined') {
+	                  if (typeof reportObj.Sheets[reportObjSheetCounter].Formulas[formulaCounter].Formula == 'undefined')
 	                       return ["ERROR","The property Formula in Sheet " + reportObjSheetCounter + ", Formulas[" + formulaCounter + "] was not specified"];
-	                  }
 
 	                  // Validate that DataType was provided
-	                  if (typeof reportObj.Sheets[reportObjSheetCounter].Formulas[formulaCounter].DataType == 'undefined') {
+	                  if (typeof reportObj.Sheets[reportObjSheetCounter].Formulas[formulaCounter].DataType == 'undefined')
 	                       return ["ERROR","The property DataType in Sheet " + reportObjSheetCounter + ", Formulas[" + formulaCounter + "] was not specified"];
-	                  }
 
 	                  // Make sure that if LineFormula is specified, Row cannot be specified
-	                  if (typeof reportObj.Sheets[reportObjSheetCounter].Formulas[formulaCounter].LineFormula != 'undefined' && typeof reportObj.Sheets[reportObjSheetCounter].Formulas[formulaCounter].Row != 'undefined') {
+	                  if (typeof reportObj.Sheets[reportObjSheetCounter].Formulas[formulaCounter].LineFormula != 'undefined' && typeof reportObj.Sheets[reportObjSheetCounter].Formulas[formulaCounter].Row != 'undefined')
 	                       return ["ERROR","The properties Row and LineFormula in Sheet " + reportObjSheetCounter + ", Formulas[" + formulaCounter + "] were both specified. Please specify only one"];
-	                  }
                } // end of  for (formulaCounter=0;formulaCounter < reportObj.Sheets[reportObjSheetCounter].Formulas.length;formulaCounter++) {
 	        } // end of  if (typeof reportObj.Sheets[reportObjSheetCounter].Formulas != 'undefined') {
 
@@ -214,34 +213,28 @@ function createExcelReport(reportObj) {
 	        if (typeof reportObj.Sheets[reportObjSheetCounter].Hyperlinks != 'undefined') {
                for (hyperlinkCounter=0;hyperlinkCounter < reportObj.Sheets[reportObjSheetCounter].Hyperlinks.length;hyperlinkCounter++) {
                     // Validate that Column was provided	                       
-	                  if (typeof reportObj.Sheets[reportObjSheetCounter].Hyperlinks[hyperlinkCounter].Column == 'undefined') {
+	                  if (typeof reportObj.Sheets[reportObjSheetCounter].Hyperlinks[hyperlinkCounter].Column == 'undefined')
 	                       return ["ERROR","The property Column in Sheet " + reportObjSheetCounter + ", Hyperlinks[" + hyperlinkCounter + "] was not specified"];
-	                  }
 
 	                  // Validate that Row was provided	                       
-	                  if (typeof reportObj.Sheets[reportObjSheetCounter].Hyperlinks[hyperlinkCounter].Row == 'undefined') {
+	                  if (typeof reportObj.Sheets[reportObjSheetCounter].Hyperlinks[hyperlinkCounter].Row == 'undefined')
 	                       return ["ERROR","The property Row in Sheet " + reportObjSheetCounter + ", Hyperlinks[" + hyperlinkCounter + "] was not specified"];
-	                  }
 
 	                  // Validate that Value was provided	                       
-	                  if (typeof reportObj.Sheets[reportObjSheetCounter].Hyperlinks[hyperlinkCounter].Value == 'undefined') {
+	                  if (typeof reportObj.Sheets[reportObjSheetCounter].Hyperlinks[hyperlinkCounter].Value == 'undefined')
 	                       return ["ERROR","The property Value in Sheet " + reportObjSheetCounter + ", Hyperlinks[" + hyperlinkCounter + "] was not specified"];
-	                  }
 
 	                  // Validate that DestinationSheet was provided	- The destination sheet may not exist yet so don't validate that the sheet exists here                       
-	                  if (typeof reportObj.Sheets[reportObjSheetCounter].Hyperlinks[hyperlinkCounter].DestinationSheet == 'undefined') {
+	                  if (typeof reportObj.Sheets[reportObjSheetCounter].Hyperlinks[hyperlinkCounter].DestinationSheet == 'undefined')
 	                       return ["ERROR","The property DestinationSheet in Sheet " + reportObjSheetCounter + ", Hyperlinks[" + hyperlinkCounter + "] was not specified"];
-	                  }
 
 	                  // Validate that DestinationColumn was provided
-	                  if (typeof reportObj.Sheets[reportObjSheetCounter].Hyperlinks[hyperlinkCounter].DestinationColumn == 'undefined') {
+	                  if (typeof reportObj.Sheets[reportObjSheetCounter].Hyperlinks[hyperlinkCounter].DestinationColumn == 'undefined')
 	                       return ["ERROR","The property DestinationColumn in Sheet " + reportObjSheetCounter + ", Hyperlinks[" + hyperlinkCounter + "] was not specified"];
-	                  }
 
 	                  // Validate that DestinationRow was provided
-	                  if (typeof reportObj.Sheets[reportObjSheetCounter].Hyperlinks[hyperlinkCounter].DestinationRow == 'undefined') {
+	                  if (typeof reportObj.Sheets[reportObjSheetCounter].Hyperlinks[hyperlinkCounter].DestinationRow == 'undefined')
 	                       return ["ERROR","The property DestinationRow in Sheet " + reportObjSheetCounter + ", Hyperlinks[" + hyperlinkCounter + "] was not specified"];
-	                  }
                } // end of for (hyperlinkCounter=0;
 	        } // end of if (typeof reportObj.Sheets[reportObjSheetCounter].Hyperlinks != 'undefined') {        
 
@@ -269,28 +262,24 @@ function createExcelReport(reportObj) {
      if (typeof reportObj.CustomCellText != 'undefined') {
           for (customCellTextCounter=0;customCellTextCounter < reportObj.CustomCellText.length;customCellTextCounter++) {
                // Validate that DestinationSheet was provided	                       
-	             if (typeof reportObj.CustomCellText[customCellTextCounter].DestinationSheet == 'undefined') {
+	             if (typeof reportObj.CustomCellText[customCellTextCounter].DestinationSheet == 'undefined')
 	                  return ["ERROR","The property DestinationSheet in CustomCellText[" + customCellTextCounter + "] was not specified"];
-	             }
 	                  
                // Validate that Column was provided	                       
-	             if (typeof reportObj.CustomCellText[customCellTextCounter].Column == 'undefined') {
+	             if (typeof reportObj.CustomCellText[customCellTextCounter].Column == 'undefined')
 	                  return ["ERROR","The property Column in CustomCellText[" + customCellTextCounter + "] was not specified"];
-	             }
 
 	             // Validate that Value was provided	                       
-	             if (typeof reportObj.CustomCellText[customCellTextCounter].Value == 'undefined') {
+	             if (typeof reportObj.CustomCellText[customCellTextCounter].Value == 'undefined')
 	                  return ["ERROR","The property Value in CustomCellText[" + customCellTextCounter + "] was not specified"];
-	             }
 
 	             // Validate merge cells if specified
                if (typeof reportObj.CustomCellText[customCellTextCounter].MergeCells != 'undefined') {
                     for (var mergeCounter=0;mergeCounter < reportObj.CustomCellText[customCellTextCounter].MergeCells.length;mergeCounter++) {
                          var len=reportObj.CustomCellText[customCellTextCounter].MergeCells[mergeCounter].split(",").length;
 
-                         if (len != 4) {
+                         if (len != 4)
 	                            return ["ERROR","The property MergeCells in CustomCellText at index " + customCellTextCounter + " with MergeCell index " + mergeCounter + " has an invalid size. You must specify start column,start row,end column,end row"];
-	                       }
                     }
                }
 
@@ -351,11 +340,10 @@ function createExcelReport(reportObj) {
                // Loop through each item in ColumnSize array. I loop through ColumnHeaders because its length represents the total # of actual columns and this way you can only provide 1 column width and not specify the rest of the column widths
                for (columnSizeCounter=0;columnSizeCounter<reportObj.Sheets[reportObjSheetCounter].ColumnHeaders.length;columnSizeCounter++) {
                     // If a non-null value was passed use it. Otherwise default to autosize
-                    if (reportObj.Sheets[reportObjSheetCounter].ColumnSize[columnSizeCounter] != null) {
+                    if (reportObj.Sheets[reportObjSheetCounter].ColumnSize[columnSizeCounter] != null)
                          sheet.setColumnView(columnSizeCounter,reportObj.Sheets[reportObjSheetCounter].ColumnSize[columnSizeCounter]);
-                    } else {
+                    else
                     	   sheet.setColumnView(columnSizeCounter,autosize);
-                    }                    
                }
           } else { // When ColumnSize isn't provided, default first 100 columns to autosize
                // Set first 100 columns to autosize
@@ -364,16 +352,89 @@ function createExcelReport(reportObj) {
                }
           }
 
-          if (typeof reportObj.Sheets[reportObjSheetCounter].FitWidth !== 'undefined' && reportObj.Sheets[reportObjSheetCounter].FitWidth == true) {
-               sheet.getSettings().setFitWidth(1);
+          if (typeof reportObj.Sheets[reportObjSheetCounter].TopMargin !== 'undefined' && isInt(reportObj.Sheets[reportObjSheetCounter].TopMargin))
+               sheet.getSettings().setTopMargin(parseInt(reportObj.Sheets[reportObjSheetCounter].TopMargin));
+
+          if (typeof reportObj.Sheets[reportObjSheetCounter].BottomMargin !== 'undefined' && isInt(reportObj.Sheets[reportObjSheetCounter].BottomMargin))
+               sheet.getSettings().setBottomMargin(parseInt(reportObj.Sheets[reportObjSheetCounter].BottomMargin));
+
+          if (typeof reportObj.Sheets[reportObjSheetCounter].LeftMargin !== 'undefined' && isInt(reportObj.Sheets[reportObjSheetCounter].LeftMargin))
+               sheet.getSettings().setLeftMargin(parseInt(reportObj.Sheets[reportObjSheetCounter].LeftMargin));
+
+          if (typeof reportObj.Sheets[reportObjSheetCounter].RightMargin !== 'undefined' && isInt(reportObj.Sheets[reportObjSheetCounter].RightMargin))
+               sheet.getSettings().setRightMargin(parseInt(reportObj.Sheets[reportObjSheetCounter].RightMargin));
+
+          if (typeof reportObj.Sheets[reportObjSheetCounter].AllMargins !== 'undefined') {
+               var len=reportObj.Sheets[reportObjSheetCounter].AllMargins.split(",").length;
+
+               if (len==1) {
+               	    var val=parseInt(reportObj.Sheets[reportObjSheetCounter].AllMargins);
+               	    
+                    sheet.getSettings().setTopMargin(parseInt(val));
+                    sheet.getSettings().setBottomMargin(parseInt(val));
+                    sheet.getSettings().setLeftMargin(parseInt(val));
+                    sheet.getSettings().setRightMargin(parseInt(val));
+               } else if (len==2) {
+               	    var mergeCell=reportObj.Sheets[reportObjSheetCounter].AllMargins.split(",");
+
+               	    sheet.getSettings().setTopMargin(parseInt(mergeCell[0]));
+                    sheet.getSettings().setBottomMargin(parseInt(mergeCell[0]));
+                    sheet.getSettings().setLeftMargin(parseInt(mergeCell[1]));
+                    sheet.getSettings().setRightMargin(parseInt(mergeCell[1]));
+               } else if (len==4) {
+                    var mergeCell=reportObj.Sheets[reportObjSheetCounter].AllMargins.split(",");
+
+                    sheet.getSettings().setTopMargin(parseInt(mergeCell[0]));
+                    sheet.getSettings().setBottomMargin(parseInt(mergeCell[1]));
+                    sheet.getSettings().setLeftMargin(parseInt(mergeCell[2]));
+                    sheet.getSettings().setRightMargin(parseInt(mergeCell[3]));
+               }
           }
-          
+
           rowCounter=0;
 
-          // Optional setting that If provided, indicates which row to start writing the data to
-          if (reportObj.Sheets[reportObjSheetCounter].StartRow != null) {
-               rowCounter+=parseInt(reportObj.Sheets[reportObjSheetCounter].StartRow);	
+          // HeaderMargin
+          if (typeof reportObj.Sheets[reportObjSheetCounter].HeaderMargin !== 'undefined')
+               sheet.getSettings().setHeaderMargin(parseInt(reportObj.Sheets[reportObjSheetCounter].HeaderMargin));
+
+          // FooterMargin
+          if (typeof reportObj.Sheets[reportObjSheetCounter].FooterMargin !== 'undefined')
+               sheet.getSettings().setFooterMargin(parseInt(reportObj.Sheets[reportObjSheetCounter].FooterMargin));
+
+          // FitWidth
+          if (typeof reportObj.Sheets[reportObjSheetCounter].FitWidth !== 'undefined' && reportObj.Sheets[reportObjSheetCounter].FitWidth == true)
+               sheet.getSettings().setFitWidth(1);
+
+          // FitHeight
+          if (typeof reportObj.Sheets[reportObjSheetCounter].FitHeight !== 'undefined' && reportObj.Sheets[reportObjSheetCounter].FitHeight == true)
+               sheet.getSettings().setFitHeight(1);
+
+          // FitToPages
+          if (typeof reportObj.Sheets[reportObjSheetCounter].FitToPages !== 'undefined' && reportObj.Sheets[reportObjSheetCounter].FitToPages == true)
+               sheet.getSettings().setFitToPages(true);
+
+          // Orientation
+          if (typeof reportObj.Sheets[reportObjSheetCounter].Orientation !== 'undefined') {
+               var orientation;
+
+               if (reportObj.Sheets[reportObjSheetCounter].Orientation.toString().toUpperCase() == "PORTRAIT")
+                    orientation=Packages.jxl.format.PageOrientation.PORTRAIT;
+               else if (reportObj.Sheets[reportObjSheetCounter].Orientation.toString().toUpperCase() == "LANDSCAPE")
+                    orientation=Packages.jxl.format.PageOrientation.LANDSCAPE;
+
+               sheet.getSettings().setOrientation(orientation);
           }
+
+          // Password
+          if (typeof reportObj.Sheets[reportObjSheetCounter].Password !== 'undefined') {
+               sheet.getSettings().setPassword(reportObj.Sheets[reportObjSheetCounter].Password);
+               sheet.getSettings().setProtected(true);
+          }
+          
+          
+          // Optional setting that If provided, indicates which row to start writing the data to
+          if (reportObj.Sheets[reportObjSheetCounter].StartRow != null)
+               rowCounter+=parseInt(reportObj.Sheets[reportObjSheetCounter].StartRow);
           
           // *** SHEET HEADING ***
           if (reportObj.Sheets[reportObjSheetCounter].SheetHeader != null) {
@@ -382,6 +443,7 @@ function createExcelReport(reportObj) {
           	   } catch (e) {
                     // Close and delete the workbook
                     workbook.close();
+                    
                     if (FileServices.existsFile(reportObj.FileName)) FileServices.deleteFile(reportObj.FileName);
 
                     return ["ERROR","An error occurred when SheetHeader= " + reportObj.Sheets[reportObjSheetCounter].SheetHeader];
@@ -400,9 +462,8 @@ function createExcelReport(reportObj) {
                     }
                }
 
-               if (sheetHeader.DataType=="INT") { // Alias for INTEGER data type
+               if (sheetHeader.DataType=="INT") // Alias for INTEGER data type
                     sheetHeader.DataType="INTEGER";
-               }
                
                // Write the heading factoring in the DataType property
                switch (sheetHeader.DataType) {
@@ -444,12 +505,12 @@ function createExcelReport(reportObj) {
           
           for (columnCounter=0;columnCounter<columnHeaders.length;columnCounter++) {
                try {
-                    if (columnHeaders[columnCounter].toUpperCase() != "WHERECLAUSE") {
+                    if (columnHeaders[columnCounter].toUpperCase() != "WHERECLAUSE")
                          sheet.addCell(new Label(columnCounter,rowCounter,columnHeaders[columnCounter],headerFormat));
-                    }
                } catch (e) {
                     workbook.close();
-                    if (FileServices.existsFile(reportObj.FileName)) FileServices.deleteFile(reportObj.FileName);
+                    if (FileServices.existsFile(reportObj.FileName))
+                         FileServices.deleteFile(reportObj.FileName);
                     
                     return ["ERROR","An error occurred when columnHeaders= " + columnHeaders + ", length=" + columnHeaders.length + ",columnCounter="+columnCounter+ " and value=" + columnHeaders[columnCounter]];
                }
@@ -517,9 +578,8 @@ function createExcelReport(reportObj) {
                          }
                     }
 
-                    if (columnFound == false) {
+                    if (columnFound == false)
                          return;
-                    }
 
                     // push line array
                     data.push(rowArr);
@@ -653,23 +713,21 @@ function createExcelReport(reportObj) {
                     	                  	default:
                     	                  	    dateVal=new Date(data[dataCounter][colCounter][1]).mmddyyyy();
                     	              }  
-                    	         } else if (data[dataCounter][colCounter][1] != null) {
+                    	         } else if (data[dataCounter][colCounter][1] != null)
                     	              dateVal=new Date(data[dataCounter][colCounter][1]).mmddyyyy();
-                    	         }
 
                     	         // dateVal shouldn't ever be null
                	              sheet.addCell(new Label(currColumnIndex,rowCounter,(dateVal != null ? dateVal : ""),(styledFormat != null ? styledFormat : cellFormat)));                    	         
                     }
 
-                    if (rowWritten==true) {
+                    if (rowWritten==true)
                          currColumnIndex++;
-                    }
                }
 
                // *** Merge cells if MergeCells was specified ***
                if (typeof reportObj.Sheets[reportObjSheetCounter].MergeCells != 'undefined') {
                     for (var mergeCounter=0;mergeCounter < reportObj.Sheets[reportObjSheetCounter].MergeCells.length;mergeCounter++) {
-                         var mergeCell=reportObj.Sheets[reportObjSheetCounter].MergeCells[mergeCounter].split(",");
+                        var mergeCell=reportObj.Sheets[reportObjSheetCounter].MergeCells[mergeCounter].split(",");
 
                         if (mergeCell.length == 2)
                              sheet.mergeCells(parseInt(mergeCell[0]),rowCounter,parseInt(mergeCell[1]),rowCounter);
@@ -689,15 +747,16 @@ function createExcelReport(reportObj) {
                               var columnNum=reportObj.Sheets[reportObjSheetCounter].Formulas[formulaCounter].Column;
                               var rowNum=(typeof reportObj.Sheets[reportObjSheetCounter].Formulas[formulaCounter].Row != 'undefined' ? reportObj.Sheets[reportObjSheetCounter].Formulas[formulaCounter].Row : rowCounter);
 
-                              if (reportObj.Sheets[reportObjSheetCounter].Formulas[formulaCounter].FormulaRowOffset != null) {
+                              if (reportObj.Sheets[reportObjSheetCounter].Formulas[formulaCounter].FormulaRowOffset != null)
                                    rowNum+=parseInt(reportObj.Sheets[reportObjSheetCounter].Formulas[formulaCounter].FormulaRowOffset);
-                              }
                                    
                               var formula=reportObj.Sheets[reportObjSheetCounter].Formulas[formulaCounter].Formula.replaceAll("<CURRENTROW>",(rowCounter+1));
                               var format=(reportObj.Sheets[reportObjSheetCounter].Formulas[formulaCounter].DataType == "CURRENCY" ? cellCurrencyFormat : cellFormat);
                          } catch(e) {
                          	    workbook.close();
-                              if (FileServices.existsFile(reportObj.FileName)) FileServices.deleteFile(reportObj.FileName);
+                         	    
+                              if (FileServices.existsFile(reportObj.FileName))
+                                   FileServices.deleteFile(reportObj.FileName);
                               
                               return ["ERROR","An error occurred when Formulas=" + reportObj.Sheets[reportObjSheetCounter].Formulas];
                          }
@@ -715,22 +774,21 @@ function createExcelReport(reportObj) {
                for (formulaCounter=0;formulaCounter < reportObj.Sheets[reportObjSheetCounter].Formulas.length;formulaCounter++) {
                     try {
                     	   // Only process formulas where LineFormula != true
-                    	   if (reportObj.Sheets[reportObjSheetCounter].Formulas[formulaCounter].LineFormula == true) {
+                    	   if (reportObj.Sheets[reportObjSheetCounter].Formulas[formulaCounter].LineFormula == true)
                               continue;
-                         }
                               
                          var columnNum=reportObj.Sheets[reportObjSheetCounter].Formulas[formulaCounter].Column;
                          var rowNum=(typeof reportObj.Sheets[reportObjSheetCounter].Formulas[formulaCounter].Row != 'undefined' ? reportObj.Sheets[reportObjSheetCounter].Formulas[formulaCounter].Row : rowCounter);
 
-                         if (reportObj.Sheets[reportObjSheetCounter].Formulas[formulaCounter].FormulaRowOffset != null) {
+                         if (reportObj.Sheets[reportObjSheetCounter].Formulas[formulaCounter].FormulaRowOffset != null)
                               rowNum+=parseInt(reportObj.Sheets[reportObjSheetCounter].Formulas[formulaCounter].FormulaRowOffset);
-                         }
                          
                          var formula=reportObj.Sheets[reportObjSheetCounter].Formulas[formulaCounter].Formula.replaceAll("<CURRENTROW>",(rowNum));
                          var format=(reportObj.Sheets[reportObjSheetCounter].Formulas[formulaCounter].DataType == "CURRENCY" ? cellCurrencyFormat : cellFormat);
                     } catch(e) {
                     	   workbook.close();
-                         if (FileServices.existsFile(reportObj.FileName)) FileServices.deleteFile(reportObj.FileName);
+                         if (FileServices.existsFile(reportObj.FileName))
+                              FileServices.deleteFile(reportObj.FileName);
                               
                          return ["ERROR","An error occurred when Formulas=" + reportObj.Sheets[reportObjSheetCounter].Formulas];
                     }
@@ -739,7 +797,8 @@ function createExcelReport(reportObj) {
                          sheet.addCell(new Formula(columnNum,(rowNum),formula,format));
                     } catch(e) {
                     	   workbook.close();
-                         if (FileServices.existsFile(reportObj.FileName)) FileServices.deleteFile(reportObj.FileName);
+                         if (FileServices.existsFile(reportObj.FileName))
+                              FileServices.deleteFile(reportObj.FileName);
                          
                          return ["ERROR","An error occurred writing the formula with the error " + e + " when columnNum="+columnNum+", rownum="+(rowNum-1)+", formula="+formula+", format=" + reportObj.Sheets[reportObjSheetCounter].Formulas[formulaCounter].DataType];
                     }
@@ -764,7 +823,8 @@ function createExcelReport(reportObj) {
                          var destinationRow=reportObj.Sheets[reportObjSheetCounter].Hyperlinks[hyperlinkCounter].DestinationRow;
                     } catch(e) {
                     	   workbook.close();
-                         if (FileServices.existsFile(reportObj.FileName)) FileServices.deleteFile(reportObj.FileName);
+                         if (FileServices.existsFile(reportObj.FileName))
+                              FileServices.deleteFile(reportObj.FileName);
                          
                          return ["ERROR","An error occurred when Hyperlinks=" + reportObj.Sheets[reportObjSheetCounter].Hyperlinks];
                     }
@@ -772,7 +832,10 @@ function createExcelReport(reportObj) {
                     // Validate that DestinationSheet is a valid sheet. We can't do this in the validation because the sheet won't exist use in the section that does the validation
                     if (workbook.getSheet(reportObj.Sheets[reportObjSheetCounter].Hyperlinks[hyperlinkCounter].DestinationSheet) == null) {	                            	
 	                       workbook.close();
-	                       FileServices.deleteFile(reportObj.FileName);
+
+	                       if (FileServices.existsFile(reportObj.FileName))
+	                            FileServices.deleteFile(reportObj.FileName);
+	                            
 	                       return ["ERROR","The property DestinationSheet in Sheet " + reportObjSheetCounter + ", Hyperlinks[" + formulaCounter + "] refers to a sheet that does not exist"];
                     }
                          
@@ -793,12 +856,12 @@ function createExcelReport(reportObj) {
                          var value=reportObj.CustomCellText[customCellTextCounter].Value;
                          var destinationSheet=workbook.getSheet(reportObj.CustomCellText[customCellTextCounter].DestinationSheet);
 
-                         if (destinationSheet==null) {
+                         if (destinationSheet==null)
                               return ["ERROR","DestinationSheet is null for CustomCellText["+customCellTextCounter+"] when DestinationSheetValue="+reportObj.CustomCellText[customCellTextCounter].DestinationSheet];
-                         }
                     } catch(e) {
                     	   workbook.close();
-                         if (FileServices.existsFile(reportObj.FileName)) FileServices.deleteFile(reportObj.FileName);
+                         if (FileServices.existsFile(reportObj.FileName))
+                              FileServices.deleteFile(reportObj.FileName);
                               
                          return ["ERROR","An error occurred when CustomCellText=" + reportObj.CustomCellText];
                     }
@@ -815,9 +878,8 @@ function createExcelReport(reportObj) {
                                    break;
                               }
                          }
-                    } else {
+                    } else
           	             styledFormat=null;
-                    }
 
                     // Write the CustomCellText factoring in the DataType property
                     switch (reportObj.CustomCellText[customCellTextCounter].DataType) {
@@ -862,13 +924,15 @@ function createExcelReport(reportObj) {
           workbook.write();
           workbook.close();
      } catch(e) {
-          if (FileServices.existsFile(reportObj.FileName)) FileServices.deleteFile(reportObj.FileName);
+          if (FileServices.existsFile(reportObj.FileName))
+               FileServices.deleteFile(reportObj.FileName);
+
           return ["ERROR","An error saving the workbook with the error " + e];
      }
      
-     if (rowWritten==true) {
+     if (rowWritten==true)
           return ["OK",reportObj.FileName];
-     } else {
+     else {
      	    FileServices.deleteFile(reportObj.FileName);
           return ["OK-NODATA",""];	
      }
@@ -999,11 +1063,10 @@ function createStyleFormat(style) {
      var alignment=(style.Alignment != null && alignmentStylesObject[style.Alignment.toString().toUpperCase()] != null ? alignmentStylesObject[style.Alignment.toString().toUpperCase()] : null);
      
      if (borders==true) {
-          if (style.BorderStyle != null && borderStylesObject[style.BorderStyle.toString().toUpperCase()] != null) {
+          if (style.BorderStyle != null && borderStylesObject[style.BorderStyle.toString().toUpperCase()] != null)
                borderStyle=borderStylesObject[style.BorderStyle.toString().toUpperCase()];
-          } else {
+          else
                borderStyle=BorderLineStyle.THIN;
-          }
      }
 
      var formatFont=new WritableFont(WritableFont.TIMES,size,(bold==true ? WritableFont.BOLD : WritableFont.NO_BOLD),italic);
@@ -1022,13 +1085,11 @@ function createStyleFormat(style) {
           
      format.setBackground(BGColor);
      
-     if (borders == true) {
+     if (borders == true)
           format.setBorder(Border.ALL,borderStyle);
-     }
 
-     if (alignment != null) {
+     if (alignment != null)
           format.setAlignment(alignment);
-     }
 
      return format;
 }
