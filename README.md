@@ -140,7 +140,7 @@ General Tips
 	         alert(result[1]);
 12. If you have a table with a formula in one of the columns and want to have a table heder, you can add [null] as a place holder when specifying the column. If you do not do this, the number of column headers and columns will not match and the application will display an error message.
 
-13. 
+13. When using a TableData source, the column names are case sensitive and must be provided in the same case that they appear in the table resource.
 
 JSON Reference
 --------------
