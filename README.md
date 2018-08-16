@@ -10,6 +10,7 @@ Features
 6. Add heading text
 7. Add custom styling
 8. Re-useable named style definitions
+9. Password protect a sheet
 
 Installation
 ------------
@@ -154,10 +155,23 @@ but not all of them are required.
                  BackgroundColor: "red"
             },
             Sheets: [{ 
-                 StartRow: 3, // Start on row 3
-                 FitWidth: true, // Optional. Will force sheet to fit all columns on the page width-wise
+                 StartRow: 3, // Optional: Start on row 3
                  SheetName: "EOL Parts",
                  SheetIndex: 0,
+                 TopMargin: 1, // Optional top margin
+                 BottomMargin: 1, // Optional bottom margin
+                 LeftMargin: 1, // Optional left margin
+                 RightMargin: 1, // Optional right margin
+                 AllMargins: "1", // Optional. Providing 1 value applies the margin to all 4 sides
+                 AllMargins: "1,0.5", // Optional. Providing 2 values applies the first value to the top & bottom and the second value to the left and right margins
+                 AllMargins: "1,0.5,1.5,2", // Optional. Providing 4 values applies the 1st value to the top, 2nd value to the bottom , 3rd value to the left and 4th value to the right margin
+                 HeaderMargin: 1, // Optional header margin
+                 FooterMargin: 1, // Optional footer margin
+                 FitWidth: true, // Optional. Will force sheet to fit all columns on the page width-wise
+                 FitHeight: true, // Optional. Will force sheet to fit all columns on the page height-wise
+                 FitToPages: true, // Optional. Will force sheet to fit all of the content into 1 page
+                 Orientation: "landscape", // Optional. Valid values are "landscape" or "portrait"
+                 Password: "somepassword": // Optional. Will protect the sheet from being edited unless the user enters this password
                  SheetHeader: [{ // Add heading in Cell D1
                       Value: "EOL Parts Report as of " + getCurrentDate(),
                       Column: 3,
