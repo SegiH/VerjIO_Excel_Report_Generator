@@ -14,17 +14,24 @@ Features
 
 Installation
 ------------
-1. Download the latest version of JExcel API from https://sourceforge.net/projects/jexcelapi/files/jexcelapi/ , extract the zip file and locate jxl.jar or use the provided jxl.jar.
-2. Copy jxl.jar to VerjIO\UfsServer\tomcat\webapps\ufs\WEB-INF\lib
+1. Download the latest version of Apache POI from https://poi.apache.org/, extract the zip file and locate the following JAR files: poi-3.17.jar,poi-excelant-3.17.jar, poi-ooxml-3.17.jar and poi-ooxml-schemas-3.17.jar.
+2. Download the latest version of commons-collections from https://commons.apache.org/proper/commons-collections/ ,extract the zip and locate commons-collections which is currently at version 4.2.
+2. Copy all 5 jar files to VerjIO\UfsServer\tomcat\webapps\ufs\WEB-INF\lib. You wil have 2 different versions of commons-collections. This is ok.
 3. Restart Verj IO
 4. Create shared JavaScript script
 5. Add the following imports at the top of the script:
 
         importPackage(java.io);
 	
-        importPackage(Packages.jxl.*);
+        importPackage(Packages.org.apache.poi);
 	
-        importPackage(Packages.jxl.write);
+        importPackage(Packages.org.apache.poi.hssf.usermodel);
+	
+        importPackage(Packages.org.apache.poi.xssf.usermodel);
+
+        importPackage(Packages.org.apache.poi.ss.usermodel);
+
+        importPackage(Packages.org.apache.poi.hssf.util);
 	
 6. Paste the contents of createExcelReport.js into the script replacing the previous version if it is there.
 
@@ -64,7 +71,7 @@ Example:
      
      print ("The file name is " + result[1]);
 
-In the example above, the generated Excel file will be named "Sales Report as of 08-01-2018-09-20-10.xls". The date will automatically be added to the file name to make sure that each report always has a unique name.
+In the example above, the generated Excel file will be named "Sales Report as of 08-01-2018-09-20-10.xlsx". The date will automatically be added to the file name to make sure that each report always has a unique name.
 
 The first sheet will be named Sales Report and will have a table with the 6 columns headings specified in ColumnHeaders. The Columns property specify the database column names and their type. This sheet uses an SQL statement as the data source.
 
@@ -84,7 +91,7 @@ General Tips
 
 3. ColumnSize is optional and can be used to specify the column width. If you do not provide ColumnSize, all columns will be set to autosize the width automatically. If you provide an array with null for any values like in the example above, the columns that have null for the width will be set to autosize the width automatically.
 
-4. Valid data types are "BOOLEAN", "CHAR", "CURRENCY", "DATE", "DATETIME", "INTEGER" (or "INT" as an alias for INTEGER") and "NUMERIC". If you specify that a column data type is CHAR but the value is an INTEGER, it will be written as an INTEGER. IF you want to force the column to be written as CHAR, add a true parameter. Ex. ["SOMECOLUMN","CHAR",true]. If the data type is specified as INT but the data value is a CHAR, it will be written as a CHAR.
+4. Valid data types are "BOOLEAN", "CHAR", "CURRENCY", "DATE", "DATETIME", "INTEGER" (or "INT" as an alias for INTEGER") and "NUMERIC". If you specify that a column data type is CHAR but the value is an INTEGER, it will be written as an INTEGER. IF you want to force the column to always be written as CHAR, add a true parameter. Ex. ["SOMECOLUMN","CHAR",true]. If the data type is specified as INT but the data value is a CHAR, it will be written as a CHAR.
 
 5. Valid color values can be found in the object colorObject defined in createStyleFormat(). You can also supply an RGB string ike "83,162,240" as the color value to use a specific RGB value instead of a color name.
 
@@ -152,7 +159,8 @@ but not all of them are required.
             NamedStyles: [{ // Optional named style
                  Name: "Heading",
                  Color: "white",
-                 BackgroundColor: "red"
+                 BackgroundColor: "red",
+		 Strikeout: true // puts horizontal line through the text
             },
             Sheets: [{ 
                  StartRow: 3, // Optional: Start on row 3
@@ -176,7 +184,7 @@ but not all of them are required.
                       Value: "EOL Parts Report as of " + getCurrentDate(),
                       Column: 3,
                       Row: 0,
-		      MergeCells: "3,5", // Optional. Merges columns 3 thru 5 on the same row. You can also specify col,row,col,row to merge across more than 1 row
+		      MergeCells: "3,5", // Optional. Merges columns 3 thru 5 on the same row. You can also specify start row,end row,start column,end column to merge across more than 1 row
                   NamedStyle: "Heading", // Used named style definition. Don't use NamedStyle and Style together. Use only one
 		      Style: [{ // Optional style sub object
                        Alignment: "left", // Optional. defaults to General if not specified 
@@ -239,4 +247,4 @@ but not all of them are required.
 
 Known Issues
 ------------
-Using RGB color as background does not always work correctly.
+Using RGB color does not work correctly.
