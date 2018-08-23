@@ -119,7 +119,7 @@ General Tips
 
        var result=$eb.executeFunction("generateKPIReport",reportYear,false,true); // Call from client to server side function that calls createExcelReport()
       
-       if (result[0]=="ERROR" || result[1]=="OK")
+       if (result[0]=="ERROR" || result[0]=="OK")
             alert(result[1]);
        else if (result[0]=="OK-NODATA")
             alert("There is no data available for the report");
