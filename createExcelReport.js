@@ -1,3 +1,321 @@
+// Returns color 
+function getColor(color) {
+     if (color==null)
+           color="black";
+
+     /*if (color.indexOf("#") != -1) {
+          var w=HSSFWorkbook();
+          palette=w.getCustomPalette();  
+
+          var a= new Packages.java.lang.Byte("162");
+          
+          //palette.setColorAtIndex(Packages.java.lang.Short(HSSFColor.AUTOMATIC.index).shortValue(),Packages.java.lang.String("82").getBytes(),Packages.java.lang.String("162").getBytes(),Packages.java.lang.String("240").getBytes());
+          palette.setColorAtIndex(HSSFColor.AUTOMATIC.index,(82/255),(162/255),(240/255));
+
+          return HSSFColor.AUTOMATIC.index;
+          //var a=Packages.java.awt.Color.decode(color);
+          //var b=new XSSFColor(a);
+
+          //alert("Returning index "  + b.getIndex() + " when the value is " + color);
+          //return b.getIndex();
+          
+     }*/
+     
+     // RGB color doesnt work!!!
+     if (color.indexOf(",") != -1 && 1==2) {
+          var colorArr=color.split(",");
+
+          //var w=HSSFWorkbook();
+          //palette=w.getCustomPalette();  
+
+          var a1=Packages.java.lang.Integer("1");
+          var a2=Packages.java.lang.Integer("1");
+          var a3=Packages.java.lang.Integer("1");
+          //alert(a1.byteValue());
+          
+          //var custColor =  palette.findSimilarColor(a1,a2,a3);
+          
+          //alert(getCurrentTime() + " it is " + custColor.getHexString());
+          //
+          var a=Packages.java.awt.Color(a1,a2,a3);
+          var custColor=XSSFColor(a,null);
+          
+          return custColor.getIndex();     
+     }
+     
+     switch(color.toString().toUpperCase()) {
+ 		      case "AQUA":
+    			      return HSSFColor.HSSFColorPredefined.AQUA.index;
+    			      break;
+ 		      case "AUTOMATIC":
+    			      return HSSFColor.HSSFColorPredefined.AUTOMATIC.index;
+    			      break;
+ 		      case "BLACK":
+    			      return HSSFColor.HSSFColorPredefined.BLACK.index;
+    			      break;
+ 		      case "BLUE":
+    			      return HSSFColor.HSSFColorPredefined.BLUE.index;
+    			      break;
+ 		      case "BLUE_GREY":
+    			      return HSSFColor.HSSFColorPredefined.BLUE_GREY.index;
+    			      break;
+ 		      case "BRIGHT_GREEN":
+    			      return HSSFColor.HSSFColorPredefined.BRIGHT_GREEN.index;
+    			      break;
+ 		      case "BROWN":
+    			      return HSSFColor.HSSFColorPredefined.BROWN.index;
+    			      break;
+ 		      case "CORAL":
+    			      return HSSFColor.HSSFColorPredefined.CORAL.index;
+    			      break;
+ 		      case "CORNFLOWER_BLUE":
+    			      return HSSFColor.HSSFColorPredefined.CORNFLOWER_BLUE.index;
+    			      break;
+ 		      case "DARK_BLUE":
+    			      return HSSFColor.HSSFColorPredefined.DARK_BLUE.index;
+    			      break;
+ 		      case "DARK_GREEN":
+    			      return HSSFColor.HSSFColorPredefined.DARK_GREEN.index;
+    			      break;
+ 		      case "DARK_RED":
+    			      return HSSFColor.HSSFColorPredefined.DARK_RED.index;
+    			      break;
+ 		      case "DARK_TEAL":
+    			      return HSSFColor.HSSFColorPredefined.DARK_TEAL.index;
+    			      break;
+ 		      case "DARK_YELLOW":
+    			      return HSSFColor.HSSFColorPredefined.DARK_YELLOW.index;
+    			      break;
+ 		      case "GOLD":
+    			      return HSSFColor.HSSFColorPredefined.GOLD.index;
+    			      break;
+ 		      case "GREEN":
+    			      return HSSFColor.HSSFColorPredefined.GREEN.index;
+    			      break;
+ 		      case "GREY_25_PERCENT":
+    			      return HSSFColor.HSSFColorPredefined.GREY_25_PERCENT.index;
+    			      break;
+ 		      case "GREY_40_PERCENT":
+    			      return HSSFColor.HSSFColorPredefined.GREY_40_PERCENT.index;
+    			      break;
+ 		      case "GREY_50_PERCENT":
+    			      return HSSFColor.HSSFColorPredefined.GREY_50_PERCENT.index;
+    			      break;
+ 		      case "GREY_80_PERCENT":
+    			      return HSSFColor.HSSFColorPredefined.GREY_80_PERCENT.index;
+    			      break;
+ 		      case "INDIGO":
+    			      return HSSFColor.HSSFColorPredefined.INDIGO.index;
+    			      break;
+ 		      case "LAVENDER":
+    			      return HSSFColor.HSSFColorPredefined.LAVENDER.index;
+    			      break;
+ 		      case "LEMON_CHIFFON":
+    			      return HSSFColor.HSSFColorPredefined.LEMON_CHIFFON.index;
+    			      break;
+ 		      case "LIGHT_BLUE":
+    			      return HSSFColor.HSSFColorPredefined.LIGHT_BLUE.index;
+    			      break;
+ 		      case "LIGHT_CORNFLOWER_BLUE":
+    			      return HSSFColor.HSSFColorPredefined.LIGHT_CORNFLOWER_BLUE.index;
+    			      break;
+ 		      case "LIGHT_GREEN":
+    			      return HSSFColor.HSSFColorPredefined.LIGHT_GREEN.index;
+    			      break;
+ 		      case "LIGHT_ORANGE":
+    			      return HSSFColor.HSSFColorPredefined.LIGHT_ORANGE.index;
+    			      break;
+ 		      case "LIGHT_TURQUOISE":
+    			      return HSSFColor.HSSFColorPredefined.LIGHT_TURQUOISE.index;
+    			      break;
+ 		      case "LIGHT_YELLOW":
+    			      return HSSFColor.HSSFColorPredefined.LIGHT_YELLOW.index;
+    			      break;
+ 		      case "LIME":
+    			      return HSSFColor.HSSFColorPredefined.LIME.index;
+    			      break;
+ 		      case "MAROON":
+    			      return HSSFColor.HSSFColorPredefined.MAROON.index;
+    			      break;
+ 		      case "OLIVE_GREEN":
+    			      return HSSFColor.HSSFColorPredefined.OLIVE_GREEN.index;
+    			      break;
+ 		      case "ORANGE":
+    			      return HSSFColor.HSSFColorPredefined.ORANGE.index;
+    			      break;
+ 		      case "ORCHID":
+    			      return HSSFColor.HSSFColorPredefined.ORCHID.index;
+    			      break;
+ 		      case "PALE_BLUE":
+    			      return HSSFColor.HSSFColorPredefined.PALE_BLUE.index;
+    			      break;
+ 		      case "PINK":
+    			      return HSSFColor.HSSFColorPredefined.PINK.index;
+    			      break;
+ 		      case "PLUM":
+    			      return HSSFColor.HSSFColorPredefined.PLUM.index;
+    			      break;
+ 		      case "RED":
+    			      return HSSFColor.HSSFColorPredefined.RED.index;
+    			      break;
+ 		      case "ROSE":
+    			      return HSSFColor.HSSFColorPredefined.ROSE.index;
+    			      break;
+ 		      case "ROYAL_BLUE":
+    			      return HSSFColor.HSSFColorPredefined.ROYAL_BLUE.index;
+    			      break;
+ 		      case "SEA_GREEN":
+    			      return HSSFColor.HSSFColorPredefined.SEA_GREEN.index;
+    			      break;
+ 		      case "SKY_BLUE":
+    			      return HSSFColor.HSSFColorPredefined.SKY_BLUE.index;
+    			      break;
+ 		      case "TAN":
+    			      return HSSFColor.HSSFColorPredefined.TAN.index;
+    			      break;
+ 		      case "TEAL":
+    			      return HSSFColor.HSSFColorPredefined.TEAL.index;
+    			      break;
+ 		      case "TURQUOISE":
+    			      return HSSFColor.HSSFColorPredefined.TURQUOISE.index;
+    			      break;
+ 		      case "VIOLET":
+    			      return HSSFColor.HSSFColorPredefined.VIOLET.index;
+    			      break;
+ 		      case "WHITE":
+    			      return HSSFColor.HSSFColorPredefined.WHITE.index;
+    			      break;
+ 		      case "YELLOW":
+    			      return HSSFColor.HSSFColorPredefined.YELLOW.index;
+ 		default:
+ 		           return HSSFColor.HSSFColorPredefined.BLACK.index;
+      } 		     
+}
+
+function createStyleFormat(wb,styleDefinition,debug) {	
+     var alignmentStylesObject = {
+          "CENTER": HorizontalAlignment.CENTER,
+          "FILL": HorizontalAlignment.FILL,
+          "GENERAL": HorizontalAlignment.GENERAL,
+          "JUSTIFY": HorizontalAlignment.JUSTIFY,
+          "LEFT": HorizontalAlignment.LEFT,
+          "RIGHT": HorizontalAlignment.RIGHT,
+     }
+     
+     var borderStylesObject = {
+          "DASH_DOT" : BorderStyle.DASH_DOT,
+          "DASH_DOT_DOT" : BorderStyle.DASH_DOT_DOT,
+          "DASHED" : BorderStyle.DASHED,
+          "DOTTED" : BorderStyle.DOTTED,
+          "DOUBLE" : BorderStyle.DOUBLE,
+          "HAIR" : BorderStyle.HAIR,
+          "MEDIUM" : BorderStyle.MEDIUM,
+          "MEDIUM_DASH_DOT" : BorderStyle.MEDIUM_DASH_DOT,
+          "MEDIUM_DASH_DOT_DOT" : BorderStyle.MEDIUM_DASH_DOT_DOT,
+          "MEDIUM_DASHED" : BorderStyle.MEDIUM_DASHED,
+          "NONE" : BorderStyle.NONE,
+          "SLANTED_DASH_DOT" : BorderStyle.SLANTED_DASH_DOT,
+          "THICK" : BorderStyle.THICK,
+          "THIN" : BorderStyle.THIN,
+     }
+     
+     var underlineStylesObject = {
+          "DOUBLE" : Packages.org.apache.poi.ss.usermodel.U_DOUBLE,
+          "DOUBLE_ACCOUNTING" : Packages.org.apache.poi.ss.usermodel.U_DOUBLE_ACCOUNTING,
+          "NO_UNDERLINE" : Packages.org.apache.poi.ss.usermodel.U_NONE,
+          "SINGLE" : Packages.org.apache.poi.ss.usermodel.U_SINGLE,
+          "SINGLE_ACCOUNTING" : Packages.org.apache.poi.ss.usermodel.U_SINGLE_ACCOUNTING,
+     }
+     
+     var style=wb.createCellStyle();
+
+     // Set the background color
+     if (styleDefinition.BackgroundColor != null) {
+          style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+          style.setFillForegroundColor(getColor(styleDefinition.BackgroundColor));
+     }
+
+     var font=wb.createFont();
+
+     // Set the foreground color
+     if (styleDefinition.Color != null) {
+          font.setColor(getColor(styleDefinition.Color));
+     } else {
+     	    font.setColor(getColor("BLACK"));
+     }
+
+     // Set the font size
+     if (styleDefinition.Size != null) {
+          font.setFontHeightInPoints(styleDefinition.Size);
+     } else {
+          font.setFontHeightInPoints(12);
+     }
+
+     // Set bold style
+     if (styleDefinition.Bold == true) {
+          font.setBold(true);
+     } else {
+     	    font.setBold(false);
+     }
+
+     // Set italic
+     if (styleDefinition.Italic == true) {
+          font.setItalic(true);
+     } else {
+          font.setItalic(false);
+     }
+
+     // Set underline
+     if (styleDefinition.Underline == true) {
+          if (styleDefinition.UnderlineStyle != null && underlineStylesObject[styleDefinition.UnderlineStyle.toString().toUpperCase()] != null)
+               font.setUnderline(underlineStylesObject[styleDefinition.UnderlineStyle.toString().toUpperCase()]);
+           else
+               font.setUnderline(underlineStylesObject["SINGLE"]);
+     }
+
+     // Set strikeout
+     if (styleDefinition.Strikeout == true)
+          font.setStrikeout(true);
+      else
+          font.setStrikeout(false);
+
+     // Set borders
+     if (styleDefinition.Borders == true) {
+          if (styleDefinition.BorderStyle != null && borderStylesObject[styleDefinition.Borders.toString().toUpperCase()] != null) {
+               style.setBorderTop(borderStylesObject[styleDefinition.Borders.toString().toUpperCase()]);
+               style.setBorderBottom(borderStylesObject[styleDefinition.Borders.toString().toUpperCase()]);
+               style.setBorderLeft(borderStylesObject[styleDefinition.Borders.toString().toUpperCase()]);
+               style.setBorderRight(borderStylesObject[styleDefinition.Borders.toString().toUpperCase()]);
+          } else {
+               style.setBorderTop(borderStylesObject["THIN"]);
+               style.setBorderBottom(borderStylesObject["THIN"]);
+               style.setBorderLeft(borderStylesObject["THIN"]);
+               style.setBorderRight(borderStylesObject["THIN"]);
+          }
+     }
+
+     // Set alignment          
+     if (styleDefinition.Alignment != null && alignmentStylesObject[styleDefinition.Alignment.toString().toUpperCase()] != null)
+          style.setAlignment(alignmentStylesObject[styleDefinition.Alignment.toString().toUpperCase()]);
+     else
+          style.setAlignment(alignmentStylesObject["LEFT"]);
+
+     if (styleDefinition.DataFormat != null) {
+          //ch = wb.getCreationHelper();
+          df=wb.createDataFormat();
+          
+          switch (styleDefinition.DataFormat.toString().toUpperCase()) {
+               case "CURRENCY":10
+                    style.setDataFormat(df.getFormat("##,###,##0.00"));
+                    break;
+          }
+     }
+     
+     style.setFont(font);
+     
+     return style;
+}
+
 function createExcelReport(reportObj) {	
      var allRows,rows;
      var blacklistedColumn, blacklistedColumnCounter;
@@ -6,56 +324,43 @@ function createExcelReport(reportObj) {
      var columnCounter,columnSizeCounter;
      var columnFound=false,columnNames,currColumnName,currColumnValue;
      var formulaCounter;
-     var rowCounter;
+     var header, footer;
+     var rowCounter=0;
      var today=new Date();
-     var todayStr=((today.getMonth()+1) < 10 ? "0" + (today.getMonth() + 1) : (today.getMonth()+1)) + "-" + (today.getDate() < 10 ? "0" + today.getDate() : today.getDate()) + "-" + today.getFullYear() + " " + today.getHours() + "-" + (today.getMinutes() < 10 ? "0" : "") + today.getMinutes() + "-" + today.getSeconds();
-     var header = new HeaderFooter();
-     var footer = new HeaderFooter();
-     var reportObjSheetCounter;
-     var sheet;
-     var stmt,rs,con;
-     var rowWritten=false;
+     var todayStr=((today.getMonth()+1) < 10 ? "0" + (today.getMonth() + 1) : (today.getMonth()+1)) + "-" + (today.getDate() < 10 ? "0" + today.getDate() : today.getDate()) + "-" + today.getFullYear() + " " + today.getHours() + "-" + (today.getMinutes() < 10 ? "0" : "") + today.getMinutes() + "-" + today.getSeconds();     
      
-     // *** START OF STYLE DEFINITIONS ***     
-     var mainHeadingFont=new WritableFont(WritableFont.TIMES,24, WritableFont.BOLD,false);
-     var mainHeadingStyle=new WritableCellFormat(mainHeadingFont);
+     var reportObjSheetCounter;
+     var rowWritten=false;
+     var sheet, workbook;
 
-     var BOMHeadingFont=new WritableFont(WritableFont.TIMES,20, WritableFont.BOLD,false);
-     var BOMHeadingFormat=new WritableCellFormat(BOMHeadingFont);
+     // Needs to be declared here because it is used in createStyleFormat()
+     workbook=XSSFWorkbook();
+     
+     // *** START OF STYLE DEFINITIONS ***
+     var mainHeadingstyle=createStyleFormat(workbook,{Size:24,Bold: true,Color: "White"});
 
-     // Set the border and background color for the headerFormat style
-     var headerFont=new WritableFont(WritableFont.TIMES,10, WritableFont.BOLD,false);
-     headerFont.setColour(Colour.WHITE);
+     // RGB shade doesnt work right
+     //var headerFormat=createStyleFormat(workbook,{Size:10,Bold: true,Color: "White", Borders: true, BackgroundColor: "83,162,240" });
+     var headerFormat=createStyleFormat(workbook,{Size:12, Bold: true,Color: "White", Borders: true, BackgroundColor: "PALE_BLUE"},true);
+     
+     var cellFormat=createStyleFormat(workbook,{Size:12,Borders: true});
 
-     var headerFormat=new WritableCellFormat(headerFont);
-     headerFormat.setBorder(Border.ALL,BorderLineStyle.THIN);
-     headerFormat.setBackground(Colour.LIGHT_BLUE);
+     var cellFormatNoBorder=createStyleFormat(workbook,{Size:16, Bold: true});
 
-     // Create the cell style: Single line borders on all sides
-     var cellFormat=new WritableCellFormat();
-     cellFormat.setBorder(Border.ALL,BorderLineStyle.THIN);
-
-     var alignLeftFormat=new WritableCellFormat();
-     alignLeftFormat.setAlignment(Alignment.LEFT);
-     alignLeftFormat.setBorder(Border.ALL,BorderLineStyle.THIN);
-
-     var cellCurrency=new NumberFormat(NumberFormat.CURRENCY_DOLLAR + "##,###,##0.00", NumberFormat.COMPLEX_FORMAT);
-     var cellCurrencyFormat=new WritableCellFormat(cellCurrency);
-     cellCurrencyFormat.setBorder(Border.ALL,BorderLineStyle.THIN);
-
-     var autosize=new CellView()
-     autosize.setAutosize(true);     
+     var alignLeftFormat=createStyleFormat(workbook,{Size:12,Borders: true, Alignment: "left"});
+     
+     var cellCurrencyFormat=createStyleFormat(workbook,{DataFormat: "currency",Borders: true});
      // *** END OF STYLE DEFINITIONS ***
 
      // Add all named styles to an array. Used with the validation
      if (typeof reportObj.NamedStyles != 'undefined') {
           for (namedStylesCounter=0;namedStylesCounter <  reportObj.NamedStyles.length;namedStylesCounter++) {
-               styledObj=createStyleFormat(reportObj.NamedStyles[namedStylesCounter]);
+               styledObj=createStyleFormat(workbook,reportObj.NamedStyles[namedStylesCounter]);
 
                namedStyles.push([reportObj.NamedStyles[namedStylesCounter].Name,styledObj]);
           }
      }
-     
+
      // *** START OF VALIDATION ***
 	   if (typeof reportObj.FileName == 'undefined')
 	        return ["ERROR","The property FileName was not specified"];
@@ -86,7 +391,7 @@ function createExcelReport(reportObj) {
 	   var sheetArray=[]; // Holds names of all sheets
 	   
 	   // Loop through each Sheet object
-	   for (reportObjSheetCounter=0;reportObj.Sheets[reportObjSheetCounter] != null;reportObjSheetCounter++) {	   	
+	   for (reportObjSheetCounter=0;reportObj.Sheets[reportObjSheetCounter] != null;reportObjSheetCounter++) {
 	        // Validate that the current sheet has a SheetName property
 	        if (typeof reportObj.Sheets[reportObjSheetCounter].SheetName == 'undefined')
 	             return ["ERROR","The property SheetName in Sheet " + reportObjSheetCounter + " was not specified"];
@@ -117,7 +422,7 @@ function createExcelReport(reportObj) {
                if (reportObj.Sheets[reportObjSheetCounter].Orientation.toString().toUpperCase() != "PORTRAIT" && reportObj.Sheets[reportObjSheetCounter].Orientation.toString().toUpperCase() != "LANDSCAPE")
                     return ["ERROR","The property Orientation in Sheet " + reportObjSheetCounter + " has an invalid value. Valid values are landscape or portrait."];
           }
-          
+
 	        // If the sheet has a header, validate the MergeCells property if defined
 	        if (typeof reportObj.Sheets[reportObjSheetCounter].SheetHeader != 'undefined') {
 	             // Validate MergeCells length
@@ -147,7 +452,7 @@ function createExcelReport(reportObj) {
                          return ["ERROR","The NamedStyle property " + reportObj.Sheets[reportObjSheetCounter].SheetHeader[0].NamedStyle + " in sheet " + reportObjSheetCounter + " does not appear to be a valid NamedStyle. Please refer to a valid named style"];
                }
 	        }
-
+          
 	        // Validate that TableData or SQL query was provided
 	        if (typeof reportObj.Sheets[reportObjSheetCounter].TableData == 'undefined' && typeof reportObj.Sheets[reportObjSheetCounter].SQL == 'undefined')
 	             return ["ERROR","The property TableData or SQL in Sheet " + reportObjSheetCounter + " was not specified"];
@@ -166,7 +471,10 @@ function createExcelReport(reportObj) {
           // Validate that ColumnHeaders was provided	                       
 	        if (typeof reportObj.Sheets[reportObjSheetCounter].ColumnHeaders == 'undefined')
 	             return ["ERROR","The property ColumnHeaders in Sheet " + reportObjSheetCounter + " was not specified"];
-	             
+
+          var len1=reportObj.Sheets[reportObjSheetCounter].Columns.length;
+          var len2=reportObj.Sheets[reportObjSheetCounter].ColumnHeaders.split(",").length;
+
           // Validate that the size of Columns and ColumnHeaders match
           if (reportObj.Sheets[reportObjSheetCounter].Columns.length != reportObj.Sheets[reportObjSheetCounter].ColumnHeaders.split(",").length)
                return ["ERROR","The properties Columns and ColumnHeaders in Sheet " + reportObjSheetCounter + " are of different lengths. Column length=" + reportObj.Sheets[reportObjSheetCounter].Columns.length + " and ColumnHeaders length=" + reportObj.Sheets[reportObjSheetCounter].ColumnHeaders.split(",").length];
@@ -305,138 +613,116 @@ function createExcelReport(reportObj) {
 	   }
 	   
 	   // *** END OF VALIDATION ***
-	   
+
      // Build the file name
-	   reportObj.FileName=reportObj.FileName + " as of " + todayStr + ".xls";
-
-	   // Create formatted date string for the file name
-     workbook=Workbook.createWorkbook(new File(reportObj.FileName)); 
-
-     // Override the default light blue with our own RGB colors
-     workbook.setColourRGB(Colour.LIGHT_BLUE,83,162,240);
+     reportObj.FileName=reportObj.FileName + " as of " + todayStr + ".xlsx";
 
      // *** START OF GENERATING THE EXCEL DOCUMENT ***
-          
+
      // *** Loop through the report object for each sheet object ***
      for (reportObjSheetCounter=0;reportObj.Sheets[reportObjSheetCounter] != null;reportObjSheetCounter++) {
+     	    rowCounter=0;
+     	    
           // Create the sheet based on the specified name and index
-          sheet=workbook.createSheet(reportObj.Sheets[reportObjSheetCounter].SheetName, reportObj.Sheets[reportObjSheetCounter].SheetIndex);
+          sheet = workbook.createSheet(reportObj.Sheets[reportObjSheetCounter].SheetName);
+
+          // *** START OF SETTING THE HEADER AND FOOTER ***
+          header = sheet.getHeader();
+          footer = sheet.getFooter();
+
 
           // Set header / footer
-          header.getLeft().appendWorkbookName(); // Add the workbook name to the top right of the header
-          header.getRight().appendWorkSheetName(); // Add the sheet name to the top right of the header
-          sheet.getSettings().setHeader(header);
+          header.setLeft("&F"); // Add the workbook name to the top right of the header
+          header.setRight("&A"); // Add the sheet name to the top right of the header
+          
+          // Add the page numbers to the footer to Page <current page #> / <Total # of pages>
+          footer.setCenter("Page &P / &N");
+          // *** END OF SETTING THE HEADER AND FOOTER ***
 
-          // Add the page numbers to the footer
-          footer.getCentre().append("Page ");
-          footer.getCentre().appendPageNumber();
-          footer.getCentre().append("/");
-          footer.getCentre().appendTotalPages();
-          sheet.getSettings().setFooter(footer);
-     
-          // *** SET THE COLUMN WIDTHS ***
-          // Use the provided ColumnSize property if it was provided
-          if (typeof reportObj.Sheets[reportObjSheetCounter].ColumnSize !== 'undefined') {
-               // Loop through each item in ColumnSize array. I loop through ColumnHeaders because its length represents the total # of actual columns and this way you can only provide 1 column width and not specify the rest of the column widths
-               for (columnSizeCounter=0;columnSizeCounter<reportObj.Sheets[reportObjSheetCounter].ColumnHeaders.length;columnSizeCounter++) {
-                    // If a non-null value was passed use it. Otherwise default to autosize
-                    if (reportObj.Sheets[reportObjSheetCounter].ColumnSize[columnSizeCounter] != null)
-                         sheet.setColumnView(columnSizeCounter,reportObj.Sheets[reportObjSheetCounter].ColumnSize[columnSizeCounter]);
-                    else
-                    	   sheet.setColumnView(columnSizeCounter,autosize);
-               }
-          } else { // When ColumnSize isn't provided, default first 100 columns to autosize
-               // Set first 100 columns to autosize
-               for (var i=0;i<100;i++) {
-                    sheet.setColumnView(i,autosize);
-               }
-          }
-
+         // *** START OF SETTING THE MARGINS ***
           if (typeof reportObj.Sheets[reportObjSheetCounter].TopMargin !== 'undefined' && isInt(reportObj.Sheets[reportObjSheetCounter].TopMargin))
-               sheet.getSettings().setTopMargin(parseInt(reportObj.Sheets[reportObjSheetCounter].TopMargin));
+               sheet.setMargin(sheet.TopMargin,parseInt(reportObj.Sheets[reportObjSheetCounter].TopMargin));
 
           if (typeof reportObj.Sheets[reportObjSheetCounter].BottomMargin !== 'undefined' && isInt(reportObj.Sheets[reportObjSheetCounter].BottomMargin))
-               sheet.getSettings().setBottomMargin(parseInt(reportObj.Sheets[reportObjSheetCounter].BottomMargin));
+               sheet.setMargin(sheet.BottomMargin,parseInt(reportObj.Sheets[reportObjSheetCounter].BottomMargin));
 
           if (typeof reportObj.Sheets[reportObjSheetCounter].LeftMargin !== 'undefined' && isInt(reportObj.Sheets[reportObjSheetCounter].LeftMargin))
-               sheet.getSettings().setLeftMargin(parseInt(reportObj.Sheets[reportObjSheetCounter].LeftMargin));
+               sheet.setMargin(sheet.LeftMargin,parseInt(reportObj.Sheets[reportObjSheetCounter].LeftMargin));
 
           if (typeof reportObj.Sheets[reportObjSheetCounter].RightMargin !== 'undefined' && isInt(reportObj.Sheets[reportObjSheetCounter].RightMargin))
-               sheet.getSettings().setRightMargin(parseInt(reportObj.Sheets[reportObjSheetCounter].RightMargin));
+               sheet.setMargin(sheet.RightMargin,parseInt(reportObj.Sheets[reportObjSheetCounter].RightMargin));
 
           if (typeof reportObj.Sheets[reportObjSheetCounter].AllMargins !== 'undefined') {
                var len=reportObj.Sheets[reportObjSheetCounter].AllMargins.split(",").length;
 
                if (len==1) {
                	    var val=parseInt(reportObj.Sheets[reportObjSheetCounter].AllMargins);
-               	    
-                    sheet.getSettings().setTopMargin(parseInt(val));
-                    sheet.getSettings().setBottomMargin(parseInt(val));
-                    sheet.getSettings().setLeftMargin(parseInt(val));
-                    sheet.getSettings().setRightMargin(parseInt(val));
+
+               	    sheet.setMargin(sheet.TopMargin,parseInt(val));
+               	    sheet.setMargin(sheet.BottomMargin,parseInt(val));
+               	    sheet.setMargin(sheet.LeftMargin,parseInt(val));
+               	    sheet.setMargin(sheet.RightMargin,parseInt(val));
                } else if (len==2) {
                	    var mergeCell=reportObj.Sheets[reportObjSheetCounter].AllMargins.split(",");
 
-               	    sheet.getSettings().setTopMargin(parseInt(mergeCell[0]));
-                    sheet.getSettings().setBottomMargin(parseInt(mergeCell[0]));
-                    sheet.getSettings().setLeftMargin(parseInt(mergeCell[1]));
-                    sheet.getSettings().setRightMargin(parseInt(mergeCell[1]));
+                    sheet.setMargin(sheet.TopMargin,parseInt(mergeCell[0]));
+               	    sheet.setMargin(sheet.BottomMargin,parseInt(mergeCell[0]));
+               	    sheet.setMargin(sheet.LeftMargin,parseInt(mergeCell[1]));
+               	    sheet.setMargin(sheet.RightMargin,parseInt(mergeCell[1]));
                } else if (len==4) {
                     var mergeCell=reportObj.Sheets[reportObjSheetCounter].AllMargins.split(",");
 
-                    sheet.getSettings().setTopMargin(parseInt(mergeCell[0]));
-                    sheet.getSettings().setBottomMargin(parseInt(mergeCell[1]));
-                    sheet.getSettings().setLeftMargin(parseInt(mergeCell[2]));
-                    sheet.getSettings().setRightMargin(parseInt(mergeCell[3]));
+                    sheet.setMargin(sheet.TopMargin,parseInt(mergeCell[0]));
+               	    sheet.setMargin(sheet.BottomMargin,parseInt(mergeCell[1]));
+               	    sheet.setMargin(sheet.LeftMargin,parseInt(mergeCell[2]));
+               	    sheet.setMargin(sheet.RightMargin,parseInt(mergeCell[3]));
                }
           }
 
-          rowCounter=0;
-
           // HeaderMargin
           if (typeof reportObj.Sheets[reportObjSheetCounter].HeaderMargin !== 'undefined')
-               sheet.getSettings().setHeaderMargin(parseInt(reportObj.Sheets[reportObjSheetCounter].HeaderMargin));
+               sheet.setMargin(sheet.HeaderMargin,parseInt(reportObj.Sheets[reportObjSheetCounter].HeaderMargin));
 
           // FooterMargin
           if (typeof reportObj.Sheets[reportObjSheetCounter].FooterMargin !== 'undefined')
-               sheet.getSettings().setFooterMargin(parseInt(reportObj.Sheets[reportObjSheetCounter].FooterMargin));
+               sheet.setMargin(sheet.FooterMargin,parseInt(reportObj.Sheets[reportObjSheetCounter].HeaderMargin));
+          // *** END OF SETTING THE MARGINS ***         
 
+          // *** START OF MISC SHEET OPTIONS ***
           // FitWidth
           if (typeof reportObj.Sheets[reportObjSheetCounter].FitWidth !== 'undefined' && reportObj.Sheets[reportObjSheetCounter].FitWidth == true)
-               sheet.getSettings().setFitWidth(1);
+               sheet.getPrintSetup().setFitWidth(1);
 
           // FitHeight
           if (typeof reportObj.Sheets[reportObjSheetCounter].FitHeight !== 'undefined' && reportObj.Sheets[reportObjSheetCounter].FitHeight == true)
-               sheet.getSettings().setFitHeight(1);
+               sheet.getPrintSetup().setFitHeight(1);
 
           // FitToPages
           if (typeof reportObj.Sheets[reportObjSheetCounter].FitToPages !== 'undefined' && reportObj.Sheets[reportObjSheetCounter].FitToPages == true)
-               sheet.getSettings().setFitToPages(true);
+               sheet.setFitToPage(true);
 
           // Orientation
           if (typeof reportObj.Sheets[reportObjSheetCounter].Orientation !== 'undefined') {
-               var orientation;
-
                if (reportObj.Sheets[reportObjSheetCounter].Orientation.toString().toUpperCase() == "PORTRAIT")
-                    orientation=Packages.jxl.format.PageOrientation.PORTRAIT;
+                    sheet.getPrintSetup().setLandscape(false);
                else if (reportObj.Sheets[reportObjSheetCounter].Orientation.toString().toUpperCase() == "LANDSCAPE")
-                    orientation=Packages.jxl.format.PageOrientation.LANDSCAPE;
-
-               sheet.getSettings().setOrientation(orientation);
+                    sheet.getPrintSetup().setLandscape(true);
           }
 
           // Password
           if (typeof reportObj.Sheets[reportObjSheetCounter].Password !== 'undefined') {
-               sheet.getSettings().setPassword(reportObj.Sheets[reportObjSheetCounter].Password);
-               sheet.getSettings().setProtected(true);
-          }
-          
+               sheet.protectSheet(reportObj.Sheets[reportObjSheetCounter].Password);
+               //sheet.getSettings().setPassword(reportObj.Sheets[reportObjSheetCounter].Password);
+               //sheet.getSettings().setProtected(true);
+          }    
           
           // Optional setting that If provided, indicates which row to start writing the data to
           if (reportObj.Sheets[reportObjSheetCounter].StartRow != null)
                rowCounter+=parseInt(reportObj.Sheets[reportObjSheetCounter].StartRow);
           
-          // *** SHEET HEADING ***
+          // *** END OF MISC SHEET OPTIONS ***
+
+          // *** START OF SHEET HEADING ***
           if (reportObj.Sheets[reportObjSheetCounter].SheetHeader != null) {
           	   try {
           	        var sheetHeader=reportObj.Sheets[reportObjSheetCounter].SheetHeader[0];
@@ -452,7 +738,7 @@ function createExcelReport(reportObj) {
                var styledFormat=null;
                     
                if (sheetHeader.Style != null) {
-                    styledFormat=createStyleFormat(sheetHeader.Style[0]);
+                    styledFormat=createStyleFormat(workbook,sheetHeader.Style[0]);
                } else if (sheetHeader.NamedStyle != null) {
                	    for (namedStylesCounter=0;namedStylesCounter <  namedStyles.length;namedStylesCounter++) {
                          if (namedStyles[namedStylesCounter][0].toString().toUpperCase() === sheetHeader.NamedStyle.toString().toUpperCase()) {
@@ -464,49 +750,63 @@ function createExcelReport(reportObj) {
 
                if (sheetHeader.DataType=="INT") // Alias for INTEGER data type
                     sheetHeader.DataType="INTEGER";
-               
+
+               var row = sheet.createRow(sheetHeader.Row);
+               var cell = row.createCell(sheetHeader.Column);
+
+               // In order to prevent errors, always default the type to CHAR if not specified.
+                if (sheetHeader.DataType==null) sheetHeader.DataType="CHAR";
+                    
                // Write the heading factoring in the DataType property
-               switch (sheetHeader.DataType) {
+               switch (sheetHeader.DataType.toUpperCase()) {
                     case "BOOLEAN":
-                    case "INT":                       
+                    case "INT":
                     case "INTEGER":
                     case "NUMERIC":
-                         sheet.addCell(new Packages.jxl.write.Number(sheetHeader.Column,sheetHeader.Row,sheetHeader.Value,(styledFormat != null ? styledFormat : mainHeadingStyle)));
+                        cell.setCellValue(sheetHeader.Value);
+                        cell.setCellStyle((styledFormat != null ? styledFormat : mainHeadingStyle));
+                        cell.setCellType(org.apache.poi.ss.usermodel.Cell.CELL_TYPE_NUMERIC);
                          break
                     case "DATE":
               	    case "DATETIME":
                          dateVal=new Date(sheetHeader.Value).mmddyyyy();
-
-                         sheet.addCell(new Label(sheetHeader.Column,sheetHeader.Row,dateVal,(styledFormat != null ? styledFormat : mainHeadingStyle)));
+                         cell.setCellValue(dateVal);
+                         cell.setCellStyle((styledFormat != null ? styledFormat : mainHeadingStyle));
                          break;
                     case "CHAR":
                     default:
+                         cell.setCellValue(sheetHeader.Value);
+                         
                          if (styledFormat != null)
-                              sheet.addCell(new Label(sheetHeader.Column,sheetHeader.Row,sheetHeader.Value,styledFormat));
-                         else 
-                              sheet.addCell(new Label(sheetHeader.Column,sheetHeader.Row,sheetHeader.Value));
-              }
+                              cell.setCellStyle(styledFormat);
+               }
 
               // Merge cells if specifed
               if (sheetHeader.MergeCells != null) {
                    var mergeCell=sheetHeader.MergeCells.split(",");
 
                    if (mergeCell.length == 2)
-                        sheet.mergeCells(parseInt(mergeCell[0]),sheetHeader.Row,parseInt(mergeCell[1]),sheetHeader.Row);
+                        sheet.addMergedRegion(new org.apache.poi.ss.util.CellRangeAddress(sheetHeader.Row,sheetHeader.Row,parseInt(mergeCell[0]),parseInt(mergeCell[1])));
                    else
-                        sheet.mergeCells(parseInt(mergeCell[0]),parseInt(mergeCell[1]),parseInt(mergeCell[2]),parseInt(mergeCell[3]));
+                        sheet.addMergedRegion(new org.apache.poi.ss.util.CellRangeAddress(parseInt(mergeCell[0]),parseInt(mergeCell[1]),parseInt(mergeCell[2]),parseInt(mergeCell[3])));
               }
               
               rowCounter++;
           }
+          // *** END OF SHEET HEADING ***
 
-          // *** TABLE COLUMN HEADERS ***
+          // *** START OF TABLE COLUMN HEADERS ***
           var columnHeaders=reportObj.Sheets[reportObjSheetCounter].ColumnHeaders.split(",")
+
+          row = sheet.createRow(rowCounter);
           
           for (columnCounter=0;columnCounter<columnHeaders.length;columnCounter++) {
-               try {
-                    if (columnHeaders[columnCounter].toUpperCase() != "WHERECLAUSE")
-                         sheet.addCell(new Label(columnCounter,rowCounter,columnHeaders[columnCounter],headerFormat));
+               try {                    
+                    if (columnHeaders[columnCounter].toUpperCase() != "WHERECLAUSE") {
+                         row.createCell(columnCounter).setCellValue(columnHeaders[columnCounter]);
+
+                         row.getCell(columnCounter).setCellStyle(headerFormat);
+                    }
                } catch (e) {
                     workbook.close();
                     if (FileServices.existsFile(reportObj.FileName))
@@ -517,9 +817,12 @@ function createExcelReport(reportObj) {
           }
 
           rowCounter++;
+          // *** END OF TABLE COLUMN HEADERS ***
 
+          // *** START OF GET STYLE FOR CURRENT SHEET ***
+          // Get the styled format if provided
           if (reportObj.Sheets[reportObjSheetCounter].Style != null) {
-               styledFormat=createStyleFormat(reportObj.Sheets[reportObjSheetCounter].Style[0]);
+               styledFormat=createStyleFormat(workbook,eportObj.Sheets[reportObjSheetCounter].Style[0]);
           } else if (reportObj.Sheets[reportObjSheetCounter].NamedStyle != null) {
                for (namedStylesCounter=0;namedStylesCounter <  namedStyles.length;namedStylesCounter++) {
                     if (namedStyles[namedStylesCounter][0].toString().toUpperCase() === reportObj.Sheets[reportObjSheetCounter].NamedStyle.toString().toUpperCase()) {
@@ -530,6 +833,9 @@ function createExcelReport(reportObj) {
           } else {
           	  styledFormat=null;
           }
+          // *** END OF GET STYLE FOR CURRENT SHEET ***
+
+          // *** START OF GET ALL DATA ***
           
           // Get all columns
           try {
@@ -608,7 +914,7 @@ function createExcelReport(reportObj) {
                          	         return ["ERROR","The table column " + columns[columnCounter][0] + " was not found in the database. Please check the spelling of the column name"];
                               
                               currColumnValue=tables.getTable(reportObj.Sheets[reportObjSheetCounter].TableData).getColumn(columns[columnCounter][0]).displayValue;
-
+                              
                               if (currColumnValue != null)
                                    currColumnValue=currColumnValue.replaceAll("<BR>","");
                          } catch(e) {
@@ -632,55 +938,76 @@ function createExcelReport(reportObj) {
                     data.push(rowArr);
                }
           }
-
+          // *** END OF GET ALL DATA ***
+          
           // Output the data
-          /*for (var dataCounter=0;dataCounter<data.length;dataCounter++) {
-                 for (var colCounter=0;colCounter<columnHeaders.length;colCounter++) {
-                      alert("[" + colCounter + "]=" + data[dataCounter][colCounter]);
-                 }
-          }*/
+          //for (var dataCounter=0;dataCounter<data.length;dataCounter++) {
+          //       for (var colCounter=0;colCounter<columnHeaders.length;colCounter++) {
+          //            alert("[" + colCounter + "]=" + data[dataCounter][colCounter]);
+          //       }
+          //}
 
           currColumnIndex=0;
-
+          
+          rowWritten=false;
+          
           // *** START OF LOOP THAT GOES THROUGH DATA ARRAY AND WRITES THE DATA ***
+          row = sheet.getRow(rowCounter);
+
+          if (row==null) row = sheet.createRow(rowCounter);
+
           for (var dataCounter=0;dataCounter<data.length;dataCounter++) {
           	   if (currColumnIndex=columnHeaders.length)
-          	        currColumnIndex=0;
-
+          	        currColumnIndex=0;  
+               
                // Write the data
                for (var colCounter=0;colCounter<columnHeaders.length;colCounter++) {
                	    if (data[dataCounter][colCounter]==null)
                	         continue;
-
+               
                     // If the type is CHAR but the value is an INT, change the type to an INT so it will be written as an INT so
                     // that Excel doesn't complaign that the field is a number in a text cell
                     if (data[dataCounter][colCounter][2] == "CHAR" && data[dataCounter][colCounter][1] != null && isInt(data[dataCounter][colCounter][1]) && reportObj.Sheets[reportObjSheetCounter].Columns[colCounter][2] != true)
                          data[dataCounter][colCounter][2]="INTEGER";
 
-                    // If the type is INT but the value is a CHAR, change the type to an CHAR so it will be written as a CHAR
-                    if ((data[dataCounter][colCounter][2] == "INTEGER" || data[dataCounter][colCounter][2] == "INT") && data[dataCounter][colCounter][1] != null && !isInt(data[dataCounter][colCounter][1]))
+                    // If the type is INT but the value is a CHAR, change the type to an CHAR so it will be written as a CHAR. Ignore percentage values because we want to still write them as a number
+                    if ((data[dataCounter][colCounter][2] == "INTEGER" || data[dataCounter][colCounter][2] == "INT") && data[dataCounter][colCounter][1] != null && !isInt(data[dataCounter][colCounter][1]) && data[dataCounter][colCounter][1].indexOf("%") == -1)
                          data[dataCounter][colCounter][2]="CHAR";
+                   
+                   cell = row.createCell(currColumnIndex);
+                    //alert("column=" + data[dataCounter][colCounter][0]  + " value=" + data[dataCounter][colCounter][1] + " and type=" + data[dataCounter][colCounter][2] );
+
+                    // In order to prevent errors, always default the type to CHAR if not specified.
+                    if (data[dataCounter][colCounter][2]==null) data[dataCounter][colCounter][2]="CHAR";
                     
-                    switch(data[dataCounter][colCounter][2]) { // Type
+                    switch(data[dataCounter][colCounter][2].toUpperCase()) { // Type
                          case "BOOLEAN":
                          case "INT":
                          case "INTEGER":
                          case "NUMERIC":
                               // If the data is null, don't attempt to write a null value as a number because it will throw an error message
                               // Instead, write empty string if its null
-                              rowWritten=true;
+                              rowWritten=true;                              
                               
-                              
-                              if (data[dataCounter][colCounter][1] != null)                                   
-                         	         sheet.addCell(new Packages.jxl.write.Number(currColumnIndex,rowCounter, data[dataCounter][colCounter][1] ,(styledFormat != null ? styledFormat : cellFormat)));
-                              else
-                                   sheet.addCell(new Label(currColumnIndex,rowCounter, "" ,(styledFormat != null ? styledFormat : cellFormat)));
+                              if (data[dataCounter][colCounter][1] != null) {                            
+                                   cell.setCellValue(parseInt(data[dataCounter][colCounter][1]));
+                                   cell.setCellStyle((styledFormat != null ? styledFormat : cellFormat));
+                              } else {
+                                   cell.setCellStyle((styledFormat != null ? styledFormat : cellFormat));
+                              }
 
+                              cell.setCellType(org.apache.poi.ss.usermodel.Cell.CELL_TYPE_NUMERIC);
+                              
                               break;
                          case "CHAR":
                               rowWritten=true;
-
-                              sheet.addCell(new Label(currColumnIndex,rowCounter, data[dataCounter][colCounter][1] ,(styledFormat != null ? styledFormat : cellFormat)));                         
+                               if (data[dataCounter][colCounter][1] != null) {                            
+                                   cell.setCellValue(data[dataCounter][colCounter][1]);
+                                   cell.setCellStyle((styledFormat != null ? styledFormat : cellFormat));
+                              } else {
+                              	   cell.setCellValue("");
+                                   cell.setCellStyle((styledFormat != null ? styledFormat : cellFormat));
+                              }
 
                               break;
                          case "CURRENCY":
@@ -688,17 +1015,20 @@ function createExcelReport(reportObj) {
 
                     	         // If the data is null, don't attempt to write a null value as a number because it will throw an error message
                               // Instead, write empty string if its null
-                    	         if (data[dataCounter][colCounter][1] != null)
-                    	              sheet.addCell(new Packages.jxl.write.Number(currColumnIndex,rowCounter, data[dataCounter][colCounter][1],(styledFormat != null ? styledFormat : cellCurrencyFormat)));
-                    	         else
-                                   sheet.addCell(new Label(currColumnIndex,rowCounter, "" ,(styledFormat != null ? styledFormat : cellFormat)));
-                                   
+                    	         if (data[dataCounter][colCounter][1] != null) {
+                    	              cell.setCellValue(parseFloat(data[dataCounter][colCounter][1]));
+                                    cell.setCellStyle((styledFormat != null ? styledFormat : cellCurrencyFormat));
+                    	         } else
+                                   cell.setCellStyle((styledFormat != null ? styledFormat : cellFormat));
+
+                               cell.setCellType(org.apache.poi.ss.usermodel.Cell.CELL_TYPE_NUMERIC);
+                               
                     	         break;
                     	   case "DATE":
                     	   case "DATETIME":
                     	         rowWritten=true;
 
-                    	         var dateVal=null;
+                    	         var dateVal="";
 
                               // If index 1 (value) isn't null and [3] (date format) isn't null
                     	         if (data[dataCounter][colCounter][1] != null && data[dataCounter][colCounter][3] != null) {
@@ -717,12 +1047,13 @@ function createExcelReport(reportObj) {
                     	              dateVal=new Date(data[dataCounter][colCounter][1]).mmddyyyy();
 
                     	         // dateVal shouldn't ever be null
-               	              sheet.addCell(new Label(currColumnIndex,rowCounter,(dateVal != null ? dateVal : ""),(styledFormat != null ? styledFormat : cellFormat)));                    	         
-                    }
+                    	         cell.setCellValue(dateVal);
+                    	         cell.setCellStyle((styledFormat != null ? styledFormat : cellFormat));
+                    } // end of switch
 
                     if (rowWritten==true)
                          currColumnIndex++;
-               }
+               } // end of for (var colCounter=0;colCounter<columnHeaders.length;colCounter++) {
 
                // *** Merge cells if MergeCells was specified ***
                if (typeof reportObj.Sheets[reportObjSheetCounter].MergeCells != 'undefined') {
@@ -730,9 +1061,9 @@ function createExcelReport(reportObj) {
                         var mergeCell=reportObj.Sheets[reportObjSheetCounter].MergeCells[mergeCounter].split(",");
 
                         if (mergeCell.length == 2)
-                             sheet.mergeCells(parseInt(mergeCell[0]),rowCounter,parseInt(mergeCell[1]),rowCounter);
+                             sheet.addMergedRegion(new org.apache.poi.ss.util.CellRangeAddress(rowCounter,rowCounter,parseInt(mergeCell[0]),parseInt(mergeCell[1])));
                         else
-                             sheet.mergeCells(parseInt(mergeCell[0]),parseInt(mergeCell[1]),parseInt(mergeCell[2]),parseInt(mergeCell[3]));  
+                             sheet.addMergedRegion(new org.apache.poi.ss.util.CellRangeAddress(parseInt(mergeCell[0]),parseInt(mergeCell[1]),parseInt(mergeCell[2]),parseInt(mergeCell[3])));
                     }
                }
                
@@ -761,13 +1092,39 @@ function createExcelReport(reportObj) {
                               return ["ERROR","An error occurred when Formulas=" + reportObj.Sheets[reportObjSheetCounter].Formulas];
                          }
 
-                         sheet.addCell(new Formula(columnNum,rowNum,formula,format));
+                         row=sheet.getRow(rowNum);
+
+                         if (rowNum==null) row=createRow(rowNum);
+                         
+                         cell = row.getCell(columnNum);
+
+                         if (cell==null) cell=row.createCell(columnNum);
+
+                         cell.setCellFormula(formula);
+                         
+                    	   cell.setCellStyle(format);
                     }
                }
                                    
                rowCounter++;
-          }
+
+               row = sheet.getRow(rowCounter);
+
+               if (row==null) row=sheet.createRow(rowCounter);
+               
+          } // end of for (var dataCounter=0;dataCounter<data.length;dataCounter++) {
+          
           // *** END OF LOOP THAT GOES THROUGH DATA ARRAY AND WRITES THE DATA ***
+
+          if (rowWritten==false) {
+               row = sheet.createRow(1);
+          	   cell = row.createCell(0);
+
+          	   cell.setCellValue("No data found");
+          	   cell.setCellStyle(cellFormatNoBorder);
+          } else {
+          	anyRowWritten=true; // rowWritten is referenced for the current sheet. anyRowWritten is used to determine if any data was written on any sheet
+          }
           
           // **** Formulas *** After writing the current sheet, write any non-line formulas if specified
           if (typeof reportObj.Sheets[reportObjSheetCounter].Formulas != 'undefined') {
@@ -794,7 +1151,18 @@ function createExcelReport(reportObj) {
                     }
 
                     try {
-                         sheet.addCell(new Formula(columnNum,(rowNum),formula,format));
+                         //sheet.addCell(new Formula(columnNum,(rowNum),formula,format));
+                         row=sheet.getRow(rowNum);
+
+                         if (rowNum==null) row=createRow(rowNum);
+                         
+                         cell = row.getCell(columnNum);
+
+                         if (cell==null) cell=row.createCell(columnNum);
+
+                         cell.setCellFormula(formula);
+                         
+                    	   cell.setCellStyle(format);
                     } catch(e) {
                     	   workbook.close();
                          if (FileServices.existsFile(reportObj.FileName))
@@ -806,40 +1174,58 @@ function createExcelReport(reportObj) {
           }
 
           // **** Hyperlinks *** After writing the current sheet, write hyperlinks if specified
-          if (typeof reportObj.Sheets[reportObjSheetCounter].Hyperlinks != 'undefined') {
-               for (hyperlinkCounter=0;hyperlinkCounter < reportObj.Sheets[reportObjSheetCounter].Hyperlinks.length;hyperlinkCounter++) {
+          if (typeof reportObj.Sheets[reportObjSheetCounter].HyperLinks != 'undefined') {
+               for (hyperlinkCounter=0;hyperlinkCounter < reportObj.Sheets[reportObjSheetCounter].HyperLinks.length;hyperlinkCounter++) {
                     try {
-                         var columnNum=reportObj.Sheets[reportObjSheetCounter].Hyperlinks[hyperlinkCounter].Column;
-                         var rowNum=(typeof reportObj.Sheets[reportObjSheetCounter].Hyperlinks[hyperlinkCounter].Row != 'undefined' ? reportObj.Sheets[reportObjSheetCounter].Hyperlinks[hyperlinkCounter].Row : rowCounter);                         
-                         var value=reportObj.Sheets[reportObjSheetCounter].Hyperlinks[hyperlinkCounter].Value;
+                         var columnNum=reportObj.Sheets[reportObjSheetCounter].HyperLinks[hyperlinkCounter].Column;
+                         var rowNum=(typeof reportObj.Sheets[reportObjSheetCounter].HyperLinks[hyperlinkCounter].Row != 'undefined' ? reportObj.Sheets[reportObjSheetCounter].HyperLinks[hyperlinkCounter].Row : rowCounter);                         
+                         var value=reportObj.Sheets[reportObjSheetCounter].HyperLinks[hyperlinkCounter].Value;
 
-                         var destinationSheet=workbook.getSheet(reportObj.Sheets[reportObjSheetCounter].Hyperlinks[hyperlinkCounter].DestinationSheet);
+                         var destinationSheet=workbook.getSheet(reportObj.Sheets[reportObjSheetCounter].HyperLinks[hyperlinkCounter].DestinationSheet);
 
                          if (destinationSheet==null)
                               destinationSheet=sheet;
                          
-                         var destinationColumn=reportObj.Sheets[reportObjSheetCounter].Hyperlinks[hyperlinkCounter].DestinationColumn;
+                         var destinationColumn=reportObj.Sheets[reportObjSheetCounter].HyperLinks[hyperlinkCounter].DestinationColumn;
 
-                         var destinationRow=reportObj.Sheets[reportObjSheetCounter].Hyperlinks[hyperlinkCounter].DestinationRow;
+                         var destinationRow=reportObj.Sheets[reportObjSheetCounter].HyperLinks[hyperlinkCounter].DestinationRow;
                     } catch(e) {
                     	   workbook.close();
                          if (FileServices.existsFile(reportObj.FileName))
                               FileServices.deleteFile(reportObj.FileName);
                          
-                         return ["ERROR","An error occurred when Hyperlinks=" + reportObj.Sheets[reportObjSheetCounter].Hyperlinks];
+                         return ["ERROR","An error occurred when Hyperlinks=" + reportObj.Sheets[reportObjSheetCounter].HyperLinks];
                     }
                     
                     // Validate that DestinationSheet is a valid sheet. We can't do this in the validation because the sheet won't exist use in the section that does the validation
-                    if (workbook.getSheet(reportObj.Sheets[reportObjSheetCounter].Hyperlinks[hyperlinkCounter].DestinationSheet) == null) {	                            	
+                    if (workbook.getSheet(reportObj.Sheets[reportObjSheetCounter].HyperLinks[hyperlinkCounter].DestinationSheet) == null) {	                            	
 	                       workbook.close();
 
 	                       if (FileServices.existsFile(reportObj.FileName))
 	                            FileServices.deleteFile(reportObj.FileName);
 	                            
-	                       return ["ERROR","The property DestinationSheet in Sheet " + reportObjSheetCounter + ", Hyperlinks[" + formulaCounter + "] refers to a sheet that does not exist"];
+	                       return ["ERROR","The property DestinationSheet in Sheet " + reportObjSheetCounter + ", Hyperlinks[" + hyperlinkCounter + "] refers to a sheet that does not exist"];
                     }
+
+                    if (rowNum==null) row=createRow(rowNum);
                          
-                    sheet.addHyperlink(new WritableHyperlink(columnNum,rowNum,value,destinationSheet,destinationColumn,destinationRow));
+                    cell = row.getCell(columnNum);
+
+                    if (cell==null) cell=row.createCell(columnNum);
+
+                    cell.setCellValue(value);
+
+                    createHelper = workbook.getCreationHelper();
+                    link = createHelper.createHyperlink(org.apache.poi.common.usermodel.HyperlinkType.URL);
+                    link.setAddress(value);
+                    cell.setHyperlink(link);
+
+                    hlinkfont = workbook.createFont();
+                    hlinkfont.setUnderline(XSSFFont.U_SINGLE);
+                    hlinkfont.setColor(HSSFColor.BLUE.index);
+                    hlinkstyle = workbook.createCellStyle();
+                    hlinkstyle.setFont(hlinkfont);
+                    cell.setCellStyle(hlinkstyle);
                }
           }
 
@@ -870,7 +1256,7 @@ function createExcelReport(reportObj) {
                     var styledFormat=null;
                     
                     if (reportObj.CustomCellText[customCellTextCounter].Style != null) {
-                         styledFormat=createStyleFormat(reportObj.CustomCellText[customCellTextCounter].Style[0]);
+                         styledFormat=createStyleFormat(workbook,reportObj.CustomCellText[customCellTextCounter].Style[0]);
                     } else if (reportObj.CustomCellText[customCellTextCounter].NamedStyle != null) {
                     	   for (namedStylesCounter=0;namedStylesCounter <  namedStyles.length;namedStylesCounter++) {
                               if (namedStyles[namedStylesCounter][0].toString().toUpperCase() === reportObj.CustomCellText[customCellTextCounter].NamedStyle.toString().toUpperCase()) {
@@ -881,215 +1267,87 @@ function createExcelReport(reportObj) {
                     } else
           	             styledFormat=null;
 
+                    row = sheet.getRow(rowNum);
+
+                    if (row==null) row = sheet.createRow(rowNum);
+                    cell = row.createCell(columnNum);
+
+                    // In order to prevent errors, always default the type to CHAR if not specified.
+                    if (reportObj.CustomCellText[customCellTextCounter].DataType==null) reportObj.CustomCellText[customCellTextCounter].DataType="CHAR";
+                    
                     // Write the CustomCellText factoring in the DataType property
-                    switch (reportObj.CustomCellText[customCellTextCounter].DataType) {
+                    switch (reportObj.CustomCellText[customCellTextCounter].DataType.toUpperCase()) {
                          case "BOOLEAN":
+                         case "CURRENCY":
                          case "INT":
                          case "INTEGER":
                          case "NUMERIC":
-                              destinationSheet.addCell(new Packages.jxl.write.Number(columnNum,rowNum,value,(styledFormat != null ? styledFormat : null)));
+                              if (value.indexOf("$") != -1)                              	   
+                                   value=value.toString().replace("$","");
+
+                              cell.setCellValue(parseFloat(value));
+
+                              cell.setCellType(org.apache.poi.ss.usermodel.Cell.CELL_TYPE_NUMERIC);
+
+                              if (styledFormat != null) cell.setCellStyle(styledFormat);
                               break;
                          case "DATE":
                     	   case "DATETIME":
                               dateVal=new Date(value).mmddyyyy();
 
-                    	        destinationSheet.addCell(new Label(columnNum,rowNum,dateVal,(styledFormat != null ? styledFormat : null)));
+                              cell.setCellValue(dateVal);
+                    	        if (styledFormat != null) cell.setCellStyle(styledFormat);
+                    	         
+                    	        //destinationSheet.addCell(new Label(columnNum,rowNum,dateVal,(styledFormat != null ? styledFormat : null)));
                     	        break;
                          case "CHAR":
-                         default:
-                              if (styledFormat != null)
-                                   destinationSheet.addCell(new Label(columnNum,rowNum,value,styledFormat));
-                              else 
-                                   destinationSheet.addCell(new Label(columnNum,rowNum,value));
+                         default: 
+                              if (value==null) value="";
+                              
+                              cell.setCellValue(value);
+                              if (styledFormat != null) cell.setCellStyle(styledFormat);
                     }
 
                     if (typeof reportObj.CustomCellText[customCellTextCounter].MergeCells != 'undefined') {
                          for (var mergeCounter=0;mergeCounter < reportObj.CustomCellText[customCellTextCounter].MergeCells.length;mergeCounter++) {
                               var mergeCell=reportObj.CustomCellText[customCellTextCounter].MergeCells[mergeCounter].split(",");
 
-                              sheet.mergeCells(parseInt(mergeCell[0]),parseInt(mergeCell[1]),parseInt(mergeCell[2]),parseInt(mergeCell[3]));
+                              sheet.addMergedRegion(new org.apache.poi.ss.util.CellRangeAddress(parseInt(mergeCell[0]),parseInt(mergeCell[1]),parseInt(mergeCell[2]),parseInt(mergeCell[3])));
                          }
-                    }
+                    } // end of if
+               } // end of for (customCellTextCounter=0;customCellTextCounter < reportObj.CustomCellText.length;customCellTextCounter++) { 
+          }   // end of if (typeof reportObj.CustomCellText != 'undefined') {
+
+          // *** START OF SETTING THE COLUMN WIDTHS ***
+          
+          // Use the provided ColumnSize property if it was provided to autosize all of the columns in the current sheet
+          if (typeof reportObj.Sheets[reportObjSheetCounter].ColumnSize !== 'undefined') {
+               // Loop through each item in ColumnSize array. I loop through ColumnHeaders because its length represents the total # of actual columns and this way you can only provide 1 column width and not specify the rest of the column widths
+               for (columnSizeCounter=0;columnSizeCounter<reportObj.Sheets[reportObjSheetCounter].ColumnHeaders.length;columnSizeCounter++) {
+                    if (!isInt(columnSizeCounter))
+                         alert("columnSizeCounter="+columnSizeCounter);
+                         
+                    // If a non-null value was passed use it. Otherwise default to autosize
+                    if (reportObj.Sheets[reportObjSheetCounter].ColumnSize[columnSizeCounter] != null)
+                         sheet.setColumnWidth(columnSizeCounter,(reportObj.Sheets[reportObjSheetCounter].ColumnSize[columnSizeCounter]*256) );
+                    else
+                         sheet.autoSizeColumn(columnSizeCounter);
+               }
+          } else { // When ColumnSize isn't provided, default first 100 columns to autosize
+               // Autosize all of the columns
+               for (columnSizeCounter=0;columnSizeCounter<reportObj.Sheets[reportObjSheetCounter].Columns.length;columnSizeCounter++) {
+                    sheet.autoSizeColumn(columnSizeCounter);
                }
           }
-
-          // Delete any blacklisted rows
-          for (var i=0;i<blacklistColumnIndexes.length;i++) {
-               sheet.removeColumn(blacklistColumnIndexes[i]);
-          }
+          // *** END OF OF SETTING THE COLUMN WIDTHS ***
      }
-     // *** END OF GENERATING THE EXCEL DOCUMENT ***
-
-     try {
-          workbook.write();
-          workbook.close();
-     } catch(e) {
-          if (FileServices.existsFile(reportObj.FileName))
-               FileServices.deleteFile(reportObj.FileName);
-
-          return ["ERROR","An error saving the workbook with the error " + e];
-     }
+	   
+     var fos = new FileOutputStream(reportObj.FileName);
      
-     if (rowWritten==true)
-          return ["OK",reportObj.FileName];
-     else {
-     	    FileServices.deleteFile(reportObj.FileName);
-          return ["OK-NODATA",""];	
-     }
-}
-
-// Build Jexcel format style based on the style properties specified in the style object
-function createStyleFormat(style) {
-     var color=null,BGColor=null;
-
-     // Since the JExcel API doesn't provide a way to translate a string color into a Colour object, I use an object instead
-     var colorObject = {
-          "AQUA" : Colour.AQUA,
-          "BLACK": Colour.PALETTE_BLACK,
-          "BLUE": Colour.BLUE,
-          "BLUE_GREY" : Colour.BLUE_GREY,
-          "BRIGHT_GREEN" : Colour.BRIGHT_GREEN,
-          "BROWN" : Colour.BROWN,
-          "CORAL" : Colour.CORAL,
-          "DARK_BLUE" : Colour.DARK_BLUE,
-          "DARK_GREEN" : Colour.DARK_GREEN,
-          "DARK_PURPLE" : Colour.DARK_PURPLE,
-          "DARK_RED" : Colour.DARK_RED,
-          "DARK_TEAL" : Colour.DARK_TEAL,
-          "DARK_YELLOW" : Colour.DARK_YELLOW,
-          "GOLD" : Colour.GOLD,
-          "GRAY_25" : Colour.GRAY_25,
-          "GRAY_50" : Colour.GRAY_50,
-          "GRAY_80" : Colour.GRAY_80,
-          "GREEN" : Colour.GREEN,
-          "GRAY_25_PERCENT" : Colour.GREY_25_PERCENT,
-          "GRAY_40_PERCENT" : Colour.GREY_40_PERCENT,
-          "GRAY_50_PERCENT" : Colour.GREY_50_PERCENT,
-          "GRAY_80_PERCENT" : Colour.GREY_80_PERCENT,
-          "ICE_BLUE" : Colour.ICE_BLUE,
-          "INDIGO" : Colour.INDIGO,
-          "IVORY" : Colour.IVORY,
-          "LAVENDER" : Colour.LAVENDER,
-          "LIGHT_BLUE" : Colour.LIGHT_BLUE,
-          "LIGHT_GREEN" : Colour.LIGHT_GREEN,
-          "LIGHT_ORANGE" : Colour.LIGHT_ORANGE,
-          "LIGHT_TURQUOISE" : Colour.LIGHT_TURQUOISE,
-          "LIME" : Colour.LIME,
-          "OCEAN_BLUE" : Colour.OCEAN_BLUE,
-          "OLIVE_GREEN" : Colour.OLIVE_GREEN,          
-          "ORANGE" : Colour.ORANGE,
-          "PALE_BLUE" : Colour.PALE_BLUE,
-          "PALETTE_BLACK" : Colour.PALETTE_BLACK,
-          "PERIWINKLE" : Colour.PERIWINKLE,
-          "PINK" : Colour.PINK,
-          "PLUM" : Colour.PLUM,
-          "RED" : Colour.RED,
-          "ROSE" : Colour.ROSE,
-          "SEA_GREEN" : Colour.SEA_GREEN,
-          "SKY_BLUE" : Colour.SKY_BLUE,
-          "TAN" : Colour.TAN,
-          "TEAL": Colour.TEAL,
-          "TURQUOISE" : Colour.TURQUOISE,
-          "UNKNOWN" : Colour.UNKNOWN, // This color is used when the user wants to use an RGB color
-          "VERY_LIGHT_YELLOW" : Colour.VERY_LIGHT_YELLOW,
-          "VIOLET" : Colour.VIOLET,
-          "WHITE" : Colour.WHITE,
-          "YELLOW" : Colour.YELLOW
-     }
-
-     var borderStylesObject = {
-          "DASH_DOT" : BorderLineStyle.DASH_DOT,
-          "DASH_DOT_DOT" : BorderLineStyle.DASH_DOT_DOT,
-          "DASHED" : BorderLineStyle.DASHED,
-          "DOTTED" : BorderLineStyle.DOTTED,
-          "DOUBLE" : BorderLineStyle.DOUBLE,
-          "HAIR" : BorderLineStyle.HAIR,
-          "MEDIUM" : BorderLineStyle.MEDIUM,
-          "MEDIUM_DASH_DOT" : BorderLineStyle.MEDIUM_DASH_DOT,
-          "MEDIUM_DASH_DOT_DOT" : BorderLineStyle.MEDIUM_DASH_DOT_DOT,
-          "MEDIUM_DASHED" : BorderLineStyle.MEDIUM_DASHED,
-          "NONE" : BorderLineStyle.NONE,
-          "SLANTED_DASH_DOT" : BorderLineStyle.SLANTED_DASH_DOT,
-          "THICK" : BorderLineStyle.THICK,
-          "THIN" : BorderLineStyle.THIN,
-     }
-
-     var underlineStylesObject = {
-          "DOUBLE" : Packages.jxl.format.UnderlineStyle.DOUBLE,
-          "DOUBLE_ACCOUNTING" : Packages.jxl.format.UnderlineStyle.DOUBLE_ACCOUNTING,
-          "NO_UNDERLINE" : Packages.jxl.format.UnderlineStyle.NO_UNDERLINE,
-          "SINGLE" : Packages.jxl.format.UnderlineStyle.SINGLE,
-          "SINGLE_ACCOUNTING" : Packages.jxl.format.UnderlineStyle.SINGLE_ACCOUNTING,
-     }
-
-     var alignmentStylesObject = {
-          "CENTER": Alignment.CENTRE,
-          "FILL": Alignment.FILL,
-          "GENERAL": Alignment.GENERAL,
-          "JUSTIFY": Alignment.JUSTIFY,
-          "LEFT": Alignment.LEFT,
-          "RIGHT": Alignment.RIGHT,
-     }
-
-     if (style.Color != null) {
-          if (style.Color.toString().indexOf(",") == -1 && colorObject[style.Color.toString().toUpperCase()] != null)
-               color=colorObject[style.Color.toString().toUpperCase()];
-          else {
-          	   var rgb=style.Color.toString().split(",");
-          	   
-          	   workbook.setColourRGB(Colour.UNKNOWN,parseInt(rgb[0]),parseInt(rgb[1]),parseInt(rgb[2]));
-          	   color=Colour.UNKNOWN;
-          }
-     } else
-          color=Colour.BLACK;
-
-     if (style.BackgroundColor != null)
-          if (style.BackgroundColor.toString().indexOf(",") == -1 && colorObject[style.BackgroundColor.toString().toUpperCase()] != null)
-               BGColor=colorObject[style.BackgroundColor.toString().toUpperCase()];
-          else {
-          	   var rgb=style.BackgroundColor.toString().split(",");
-          	   
-          	   workbook.setColourRGB(Colour.UNKNOWN,parseInt(rgb[0]),parseInt(rgb[1]),parseInt(rgb[2]));
-          	   BGColor=Colour.UNKNOWN;
-          }
-     else
-          BGColor=Colour.WHITE;
-
-     var size=(style.Size != null ? style.Size : 12);     
-     var bold=(style.Bold == true ? true : false);
-     var italic=(style.Italic == true ? true : false);
-     var underline=(style.Underline == true ? true : false);
-     var borders=(style.Borders == true ? true : false);
-     var alignment=(style.Alignment != null && alignmentStylesObject[style.Alignment.toString().toUpperCase()] != null ? alignmentStylesObject[style.Alignment.toString().toUpperCase()] : null);
+     workbook.write(fos);
      
-     if (borders==true) {
-          if (style.BorderStyle != null && borderStylesObject[style.BorderStyle.toString().toUpperCase()] != null)
-               borderStyle=borderStylesObject[style.BorderStyle.toString().toUpperCase()];
-          else
-               borderStyle=BorderLineStyle.THIN;
-     }
+     fos.close();
+     workbook.close();
 
-     var formatFont=new WritableFont(WritableFont.TIMES,size,(bold==true ? WritableFont.BOLD : WritableFont.NO_BOLD),italic);
-
-     // Set the underline if specified
-     if (underline == true) {
-     	    if (style.UnderlineStyle != null && underlineStylesObject[style.UnderlineStyle] != null)
-     	         formatFont.setUnderlineStyle(underlineStylesObject[style.UnderlineStyle]);
-          else     	    
-               formatFont.setUnderlineStyle(Packages.jxl.format.UnderlineStyle.SINGLE);
-     }
-
-     formatFont.setColour(color);
-
-     var format=new WritableCellFormat(formatFont);
-          
-     format.setBackground(BGColor);
-     
-     if (borders == true)
-          format.setBorder(Border.ALL,borderStyle);
-
-     if (alignment != null)
-          format.setAlignment(alignment);
-
-     return format;
+     return ["OK",reportObj.FileName];
 }
