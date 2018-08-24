@@ -247,4 +247,4 @@ but not all of them are required.
 
 Known Issues
 ------------
-Using RGB color does not work correctly.
+This report generator will not work for Verj IO tables that are part of a table repeater.
