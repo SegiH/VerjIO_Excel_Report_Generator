@@ -3,44 +3,11 @@ function getColor(color) {
      if (color==null)
            color="black";
 
-     /*if (color.indexOf("#") != -1) {
-          var w=HSSFWorkbook();
-          palette=w.getCustomPalette();  
-
-          var a= new Packages.java.lang.Byte("162");
-          
-          //palette.setColorAtIndex(Packages.java.lang.Short(HSSFColor.AUTOMATIC.index).shortValue(),Packages.java.lang.String("82").getBytes(),Packages.java.lang.String("162").getBytes(),Packages.java.lang.String("240").getBytes());
-          palette.setColorAtIndex(HSSFColor.AUTOMATIC.index,(82/255),(162/255),(240/255));
-
-          return HSSFColor.AUTOMATIC.index;
-          //var a=Packages.java.awt.Color.decode(color);
-          //var b=new XSSFColor(a);
-
-          //alert("Returning index "  + b.getIndex() + " when the value is " + color);
-          //return b.getIndex();
-          
-     }*/
-     
      // RGB color doesnt work!!!
-     if (color.indexOf(",") != -1 && 1==2) {
-          var colorArr=color.split(",");
-
-          //var w=HSSFWorkbook();
-          //palette=w.getCustomPalette();  
-
-          var a1=Packages.java.lang.Integer("1");
-          var a2=Packages.java.lang.Integer("1");
-          var a3=Packages.java.lang.Integer("1");
-          //alert(a1.byteValue());
-          
-          //var custColor =  palette.findSimilarColor(a1,a2,a3);
-          
-          //alert(getCurrentTime() + " it is " + custColor.getHexString());
-          //
-          var a=Packages.java.awt.Color(a1,a2,a3);
-          var custColor=XSSFColor(a,null);
-          
-          return custColor.getIndex();     
+     if (color.indexOf(",") != -1) {
+     	    var colorArr=color.split(",");
+     	    
+          return new XSSFColor(new java.awt.Color(parseFloat(colorArr[0]/255),parseFloat(colorArr[1]/255),parseFloat(colorArr[2]/255)))  
      }
      
      switch(color.toString().toUpperCase()) {
@@ -238,40 +205,35 @@ function createStyleFormat(wb,styleDefinition,debug) {
      var font=wb.createFont();
 
      // Set the foreground color
-     if (styleDefinition.Color != null) {
+     if (styleDefinition.Color != null)
           font.setColor(getColor(styleDefinition.Color));
-     } else {
+     else
      	    font.setColor(getColor("BLACK"));
-     }
 
      // Set the font size
-     if (styleDefinition.Size != null) {
+     if (styleDefinition.Size != null)
           font.setFontHeightInPoints(styleDefinition.Size);
-     } else {
+     else
           font.setFontHeightInPoints(12);
-     }
 
      // Set bold style
-     if (styleDefinition.Bold == true) {
+     if (styleDefinition.Bold == true)
           font.setBold(true);
-     } else {
+     else
      	    font.setBold(false);
-     }
 
      // Set italic
-     if (styleDefinition.Italic == true) {
+     if (styleDefinition.Italic == true)
           font.setItalic(true);
-     } else {
+     else
           font.setItalic(false);
-     }
 
      // Set underline
-     if (styleDefinition.Underline == true) {
+     if (styleDefinition.Underline == true)
           if (styleDefinition.UnderlineStyle != null && underlineStylesObject[styleDefinition.UnderlineStyle.toString().toUpperCase()] != null)
                font.setUnderline(underlineStylesObject[styleDefinition.UnderlineStyle.toString().toUpperCase()]);
            else
-               font.setUnderline(underlineStylesObject["SINGLE"]);
-     }
+               font.setUnderline(underlineStylesObject["SINGLE"]);    
 
      // Set strikeout
      if (styleDefinition.Strikeout == true)
@@ -301,7 +263,6 @@ function createStyleFormat(wb,styleDefinition,debug) {
           style.setAlignment(alignmentStylesObject["LEFT"]);
 
      if (styleDefinition.DataFormat != null) {
-          //ch = wb.getCreationHelper();
           df=wb.createDataFormat();
           
           switch (styleDefinition.DataFormat.toString().toUpperCase()) {
