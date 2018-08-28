@@ -301,8 +301,7 @@ function createExcelReport(reportObj) {
      var mainHeadingstyle=createStyleFormat(workbook,{Size:24,Bold: true,Color: "White"});
 
      // RGB shade doesnt work right
-     //var headerFormat=createStyleFormat(workbook,{Size:10,Bold: true,Color: "White", Borders: true, BackgroundColor: "83,162,240" });
-     var headerFormat=createStyleFormat(workbook,{Size:12, Bold: true,Color: "White", Borders: true, BackgroundColor: "PALE_BLUE"},true);
+     var headerFormat=createStyleFormat(workbook,{Size:12, Bold: true,Color: "White", Borders: true, BackgroundColor: "83,162,240"},true);
      
      var cellFormat=createStyleFormat(workbook,{Size:12,Borders: true});
 
@@ -525,6 +524,28 @@ function createExcelReport(reportObj) {
                if (namedStyleFound==false)
                     return ["ERROR","The NamedStyle property " + reportObj.Sheets[reportObjSheetCounter].NamedStyle + " in sheet " + reportObjSheetCounter + " does not appear to be a valid NamedStyle. Please refer to a valid named style"];
           }
+
+
+          // If conditional formatting is provided, validate its properties
+          if (typeof reportObj.Sheets[reportObjSheetCounter].ConditionalFormatting != 'undefined') {
+               for (cfCounter=0;cfCounter < reportObj.Sheets[reportObjSheetCounter].ConditionalFormatting;cfCounter++) {
+                    // Formula must be provided
+                    if (typeof reportObj.Sheets[reportObjSheetCounter].ConditionalFormatting[cfCounter].Formula == 'undefined')
+                         return ["ERROR","The conditional formatting at index " + cfCounter + " in sheet " + reportObjSheetCounter + " does not have a Formula property"];
+
+                    if (typeof reportObj.Sheets[reportObjSheetCounter].ConditionalFormatting[cfCounter].Style == 'undefined')
+                         return ["ERROR","The conditional formatting at index " + cfCounter + " in sheet " + reportObjSheetCounter + " does not have a Style property"];
+
+                    if (typeof reportObj.Sheets[reportObjSheetCounter].ConditionalFormatting[cfCounter].StartRow == 'undefined')
+                         return ["ERROR","The conditional formatting at index " + cfCounter + " in sheet " + reportObjSheetCounter + " does not have a StartRow property"];
+
+                    if (typeof reportObj.Sheets[reportObjSheetCounter].ConditionalFormatting[cfCounter].StartColumn == 'undefined')
+                         return ["ERROR","The conditional formatting at index " + cfCounter + " in sheet " + reportObjSheetCounter + " does not have a StartColumn property"];
+
+                    if (typeof reportObj.Sheets[reportObjSheetCounter].ConditionalFormatting[cfCounter].EndColumn == 'undefined')
+                         return ["ERROR","The conditional formatting at index " + cfCounter + " in sheet " + reportObjSheetCounter + " does not have a EndColumn property"];
+               }
+          }
 	   }
 
 	   // If 1 or more custom celll texts were specified, validate the custom cell text properties
@@ -677,10 +698,6 @@ function createExcelReport(reportObj) {
                //sheet.getSettings().setProtected(true);
           }    
           
-          // Optional setting that If provided, indicates which row to start writing the data to
-          if (reportObj.Sheets[reportObjSheetCounter].StartRow != null)
-               rowCounter+=parseInt(reportObj.Sheets[reportObjSheetCounter].StartRow);
-          
           // *** END OF MISC SHEET OPTIONS ***
 
           // *** START OF SHEET HEADING ***
@@ -752,9 +769,13 @@ function createExcelReport(reportObj) {
                         sheet.addMergedRegion(new org.apache.poi.ss.util.CellRangeAddress(parseInt(mergeCell[0]),parseInt(mergeCell[1]),parseInt(mergeCell[2]),parseInt(mergeCell[3])));
               }
               
-              rowCounter++;
+              //rowCounter++;
           }
           // *** END OF SHEET HEADING ***
+
+          // Optional setting that If provided, indicates which row to start writing the data to
+          if (reportObj.Sheets[reportObjSheetCounter].StartRow != null)
+               rowCounter=parseInt(reportObj.Sheets[reportObjSheetCounter].StartRow)-1;
 
           // *** START OF TABLE COLUMN HEADERS ***
           var columnHeaders=reportObj.Sheets[reportObjSheetCounter].ColumnHeaders.split(",")
@@ -839,13 +860,13 @@ function createExcelReport(reportObj) {
                               }
                          }
 
-                         if (columnFound == false) {
+                         if (columnFound == false && columns[key][0] != null) {
                          	    invalidColumn=columns[key][0];
                               break;
                          }
                     }
 
-                    if (columnFound == false)
+                    if (columnFound == false && columns[key][0] != null)
                          return;
 
                     // push line array
@@ -1015,7 +1036,7 @@ function createExcelReport(reportObj) {
                     if (rowWritten==true)
                          currColumnIndex++;
                } // end of for (var colCounter=0;colCounter<columnHeaders.length;colCounter++) {
-
+               
                // *** Merge cells if MergeCells was specified ***
                if (typeof reportObj.Sheets[reportObjSheetCounter].MergeCells != 'undefined') {
                     for (var mergeCounter=0;mergeCounter < reportObj.Sheets[reportObjSheetCounter].MergeCells.length;mergeCounter++) {
@@ -1075,8 +1096,8 @@ function createExcelReport(reportObj) {
                
           } // end of for (var dataCounter=0;dataCounter<data.length;dataCounter++) {
           
-          // *** END OF LOOP THAT GOES THROUGH DATA ARRAY AND WRITES THE DATA ***
-
+          // *** END OF LOOP THAT GOES THROUGH DATA ARRAY AND WRITES THE DATA ***          
+               
           if (rowWritten==false) {
                row = sheet.createRow(1);
           	   cell = row.createCell(0);
@@ -1301,6 +1322,76 @@ function createExcelReport(reportObj) {
                }
           }
           // *** END OF OF SETTING THE COLUMN WIDTHS ***
+
+          // Conditional formatting
+          if (typeof reportObj.Sheets[reportObjSheetCounter].ConditionalFormatting != 'undefined') {
+               var underlineStylesObject = {
+                    "DOUBLE" : HSSFFont.U_DOUBLE,
+                    "DOUBLE_ACCOUNTING" : HSSFFont.U_DOUBLE_ACCOUNTING,
+                    "NO_UNDERLINE" : HSSFFont.U_NONE,
+                    "SINGLE" : HSSFFont.U_SINGLE,
+                    "SINGLE_ACCOUNTING" : HSSFFont.U_SINGLE_ACCOUNTING,
+               }
+               
+               for (cfCounter=0;cfCounter < reportObj.Sheets[reportObjSheetCounter].ConditionalFormatting.length;cfCounter++) {                    
+                    sheetCF = sheet.getSheetConditionalFormatting();
+
+                    var formula=reportObj.Sheets[reportObjSheetCounter].ConditionalFormatting[cfCounter].Formula.replaceAll("<CURRENTROW>",(rowCounter+1));
+
+                    rule = sheetCF.createConditionalFormattingRule(formula);
+
+                    fill = rule.createPatternFormatting();
+
+                    fontFmt = rule.createFontFormatting();
+
+                    if (reportObj.Sheets[reportObjSheetCounter].ConditionalFormatting[cfCounter].Style[0].Bold != null && reportObj.Sheets[reportObjSheetCounter].ConditionalFormatting[cfCounter].Style[0].Bold == true)
+                         cfBold=true
+                    else
+                    	   cfBold=false;
+
+                    if (reportObj.Sheets[reportObjSheetCounter].ConditionalFormatting[cfCounter].Style[0].Italic != null && reportObj.Sheets[reportObjSheetCounter].ConditionalFormatting[cfCounter].Style[0].Italic == true)
+                         cfItalic=true
+                    else
+                    	   cfItalic=false;
+
+                    fontFmt.setFontStyle(cfItalic,cfBold);
+
+                    if (reportObj.Sheets[reportObjSheetCounter].ConditionalFormatting[cfCounter].Style[0].Color != null)
+                         fontFmt.setFontColorIndex(getColor(reportObj.Sheets[reportObjSheetCounter].ConditionalFormatting[cfCounter].Style[0].Color));
+                    else
+                         fontFmt.setFontColorIndex(getColor("BLACK"));
+
+                    if (reportObj.Sheets[reportObjSheetCounter].ConditionalFormatting[cfCounter].Style[0].Size != null)
+                         fontFmt.setFontHeight(reportObj.Sheets[reportObjSheetCounter].ConditionalFormatting[cfCounter].Style[0].Size*20); // hight is in 1/20th of a point
+                    else
+                         fontFmt.setFontHeight(12*20); // height is in 1/20th of a point
+
+                    if (reportObj.Sheets[reportObjSheetCounter].ConditionalFormatting[cfCounter].Style[0].Underline == true) {
+                         if (reportObj.Sheets[reportObjSheetCounter].ConditionalFormatting[cfCounter].Style[0].UnderlineStyle != null && underlineStylesObject[reportObj.Sheets[reportObjSheetCounter].ConditionalFormatting[cfCounter].Style[0].UnderlineStyle] != null)
+                              fontFmt.setUnderlineType(underlineStylesObject[reportObj.Sheets[reportObjSheetCounter].ConditionalFormatting[cfCounter].Style[0].UnderlineStyle]);
+                         else
+                    	        fontFmt.setUnderlineType(underlineStylesObject["SINGLE"]);
+                    }
+
+                    if (reportObj.Sheets[reportObjSheetCounter].ConditionalFormatting[cfCounter].Style[0].BackgroundColor != null) {
+                         fill.setFillBackgroundColor(getColor(reportObj.Sheets[reportObjSheetCounter].ConditionalFormatting[cfCounter].Style[0].BackgroundColor));
+                         fill.setFillPattern(PatternFormatting.SOLID_FOREGROUND);
+                    }
+                    //else
+                     //    fill.setFillBackgroundColor(getColor(reportObj.Sheets[reportObjSheetCounter].ConditionalFormatting[cfCounter].Style[0].BackgroundColor));
+
+                    var endRow=(reportObj.Sheets[reportObjSheetCounter].ConditionalFormatting[cfCounter].EndRow != null ? reportObj.Sheets[reportObjSheetCounter].ConditionalFormatting[cfCounter].EndRow : rowCounter-1);
+                    
+                    region = new org.apache.poi.ss.util.CellRangeAddress(reportObj.Sheets[reportObjSheetCounter].ConditionalFormatting[cfCounter].StartRow,endRow,reportObj.Sheets[reportObjSheetCounter].ConditionalFormatting[cfCounter].StartColumn,reportObj.Sheets[reportObjSheetCounter].ConditionalFormatting[cfCounter].EndColumn);
+
+                    regions = new Array();
+
+                    regions.push(region);
+                    
+                    sheetCF.addConditionalFormatting(regions, rule);
+               }
+
+          }
      }
 	   
      var fos = new FileOutputStream(reportObj.FileName);
