@@ -1,16 +1,16 @@
-VerjIO_Excel_Report_Generator is a Verj IO function that recieves a JSON object as a parameter and will generate an Excel report based on the provided JSON "recipe" to build the report. A sample JSON object is provided below. The report is saved as an XLS that should be  backwards compatible with Excel 2010 and newer.
+VerjIO_Excel_Report_Generator is a Verj IO function that recieves a JSON object as a parameter and will generate an Excel report based on the provided JSON "recipe" to build the report. A sample JSON object is provided below. The report is saved as an XLSX format Excel document.
 
 Features
 --------
 1. Create multiple sheets with a table in each sheet using an SQL statement or a table resource as the data source for each sheet
 2. Add formulas to each sheet including the option to specify that a formula should be written for each row of a table
-3. Specify cells to merge
+3. Merge cells
 4. Add hyperlinks in each sheet
 5. Add custom text anywhere that you specify
-6. Add heading text
-7. Add custom styling
-8. Re-useable named style definitions
-9. Password protect a sheet
+6. Add custom styling
+7. Re-useable named style definitions
+8. Password protect a sheet
+9. Specify conditional formatting rules.
 
 Installation
 ------------
@@ -145,9 +145,11 @@ General Tips
 		 event.stopExecution();
             else if (result[0]=="OK")
 	         alert(result[1]);
-12. If you have a table with a formula in one of the columns and want to have a table heder, you can add [null] as a place holder when specifying the column. If you do not do this, the number of column headers and columns will not match and the application will display an error message.
+12. If you have a table with a formula in one of the columns and want to have a table header, you can add [null] as a place holder when specifying the column. If you do not do this, the number of column headers and columns will not match and the application will display an error message.
 
 13. When using a TableData source, the column names are case sensitive and must be provided in the same case that they appear in the table resource.
+
+14. If you are using custom formatting, make sure to use a formula that evaluates to a boolean true or false value. Use $ in front of the column letter to allow the formula to be evaluated correctly for each row of a table.
 
 JSON Reference
 --------------
@@ -202,7 +204,32 @@ but not all of them are required.
                ColumnSize: [20,10,null,15], // (Optional) Use null if you want to auto size         
                ColumnHeaders: "ID, Part Num,Part Description,Mfg Part Num,Ship Date,Status,Close Date",
                Columns: [["EOLID","INTEGER"],["PartNum","CHAR"],["PartDescription","CHAR"],["MfgPartNum","CHAR"],["LastShipDate","DATE"],["Status","CHAR"],["CloseDate","DATE"]],
-               MergeCells: ["1,2","3,1,4,1"], // Optional. Merges columns 1 & 2 on the last row after data has been writtem. The second merge merges columns 3 & 4 on row 1. 
+               ConditionalFormatting: [{ // Optional
+                    Formula: "$H4=\"\"", // The formula must evaluate to true or false
+                    StartRow: 3, // Starting row.
+		    EndingRow: 20, // Optional. If not specified, will default to the last row of the table
+                    StartColumn: 0, // Starting column to apply the formatting to
+                    EndColumn: 8, // Ending column to apply the formatting to
+                    Style:[{ // You must specify at least one of the style formats below when using ocnditional formatting
+                         Bold: true,
+			 Italic: false,
+			 Color: "red",
+			 Size: 12,
+			 Underline: true,
+			 UnderlineStyle: "thick"
+			 BackgroundColor: "yellow",
+			 
+                    }],
+               },{
+                    Formula: "$I4 < 0",
+                    StartRow: 3,
+                    StartColumn: 0,
+                    EndColumn: 8,
+                    Style:[{
+                         BackgroundColor: "red",
+                    }],
+               },],
+	       MergeCells: ["1,2","3,1,4,1"], // Optional. Merges columns 1 & 2 on the last row after data has been writtem. The second merge merges columns 3 & 4 on row 1. 
                SQL: "SELECT * FROM EOL", // SQL based data
                DBConnection: "PRODUCTION", // (Mandatory if SQL statement is provided
           
