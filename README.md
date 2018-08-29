@@ -11,6 +11,7 @@ Features
 7. Re-useable named style definitions
 8. Password protect a sheet
 9. Specify conditional formatting rules.
+10. Insert an image into a sheet.
 
 Installation
 ------------
@@ -156,51 +157,55 @@ General Tips
 JSON Reference
 --------------
 The report object below contains all of the possible properties that you can pass to createExcelReport()
-but not all of them are required.
+but not all of them are required.All of the optional properties have a comment indicated that they are optional.
 
-       var reportObj = {
-            FileName: "EOL Report",
-            NamedStyles: [{ // Optional named style
-                 Name: "Heading",
-                 Color: "white",
-                 BackgroundColor: "red",
-		 Strikeout: true // puts horizontal line through the text
-            },],
-            Sheets: [{ 
-                 StartRow: 3, // Optional: Start on row 3
-                 SheetName: "EOL Parts",
-                 SheetIndex: 0,
-                 TopMargin: 1, // Optional top margin
-                 BottomMargin: 1, // Optional bottom margin
-                 LeftMargin: 1, // Optional left margin
-                 RightMargin: 1, // Optional right margin
-                 AllMargins: "1", // Optional. Providing 1 value applies the margin to all 4 sides
-                 AllMargins: "1,0.5", // Optional. Providing 2 values applies the first value to the top & bottom and the second value to the left and right margins
-                 AllMargins: "1,0.5,1.5,2", // Optional. Providing 4 values applies the 1st value to the top, 2nd value to the bottom , 3rd value to the left and 4th value to the right margin
-                 HeaderMargin: 1, // Optional header margin
-                 FooterMargin: 1, // Optional footer margin
-                 FitWidth: true, // Optional. Will force sheet to fit all columns on the page width-wise
-                 FitHeight: true, // Optional. Will force sheet to fit all columns on the page height-wise
-                 FitToPages: true, // Optional. Will force sheet to fit all of the content into 1 page
-                 Orientation: "landscape", // Optional. Valid values are "landscape" or "portrait"
-                 Password: "somepassword": // Optional. Will protect the sheet from being edited unless the user enters this password
-                 SheetHeader: [{ // Add heading in Cell D1
-                      Value: "EOL Parts Report as of " + getCurrentDate(),
-                      Column: 3,
-                      Row: 0,
-		      MergeCells: "3,5", // Optional. Merges columns 3 thru 5 on the same row. You can also specify start row,end row,start column,end column to merge across more than 1 row
-                  NamedStyle: "Heading", // Used named style definition. Don't use NamedStyle and Style together. Use only one
-		      Style: [{ // Optional style sub object
-                       Alignment: "left", // Optional. defaults to General if not specified 
-                       Color: "WHITE", // Optional. Defaults to black if not specified
-                       Size: "14", // Optional. Defaults to 12 if not specified
-                       BackgroundColor: "green", // Optional. Defaults to white if not specified
-                       Bold: true, // Optional. Defaults to false if not specified
-                       Italic: true, // Optional. Defaults to false if not specified
-                       Underline: true, // Optional. Defaults to false if not specified
-                       UnderlineStyle: "single", // Optional/ Defauts to single if not specified
-                       Borders: true, // Optional. Defaults to false if not specified
-                       BorderStyle: "THICK", // Optional. Defaults to THIN if not specified but Borders: true is specified
+     var reportObj = {
+          FileName: "EOL Report",
+          NamedStyles: [{ // Optional named style. All of the style options are listed below
+          Name: "Heading",
+               Alignment: "left", // Optional. defaults to General if not specified
+               BackgroundColor: "green", // Optional. Defaults to white if not specified
+               Bold: true, // Optional. Defaults to false if not specified
+               Borders: true, // Optional. Defaults to false if not specified
+               BorderStyle: "THICK", // Optional. Defaults to THIN if not specified but Borders: true is specified
+               Color: "WHITE", // Optional. Defaults to black if not specified
+               Italic: true, // Optional. Defaults to false if not specified
+               Rotation: 90 ,// Optional. Specify in degrees. Valid values are from 0 to 180 degrees
+               Size: "14", // Optional. Defaults to 12 if not specified
+               Strikeout: true // puts horizontal line through the text
+               Underline: true, // Optional. Defaults to false if not specified
+               UnderlineStyle: "single", // Optional/ Defauts to single if not specified
+               VerticalAlignment: "top" // Optional. Valid
+               Wrap: true, // Optional. Forces text to wrap around to the next line
+          },],
+          Sheets: [{ 
+               StartRow: 3, // Optional: Start on row 3
+               SheetName: "EOL Parts",
+               SheetIndex: 0,
+               TopMargin: 1, // Optional top margin
+               BottomMargin: 1, // Optional bottom margin
+               LeftMargin: 1, // Optional left margin
+               RightMargin: 1, // Optional right margin
+               AllMargins: "1", // Optional. Providing 1 value applies the margin to all 4 sides
+               AllMargins: "1,0.5", // Optional. Providing 2 values applies the first value to the top & bottom and the second value to the left and right margins
+               AllMargins: "1,0.5,1.5,2", // Optional. Providing 4 values applies the 1st value to the top, 2nd value to the bottom , 3rd value to the left and 4th value to the right margin
+               HeaderMargin: 1, // Optional header margin
+               FooterMargin: 1, // Optional footer margin
+               FitWidth: true, // Optional. Will force sheet to fit all columns on the page width-wise
+               FitHeight: true, // Optional. Will force sheet to fit all columns on the page height-wise
+               FitToPages: true, // Optional. Will force sheet to fit all of the content into 1 page
+               Orientation: "landscape", // Optional. Valid values are "landscape" or "portrait"
+               Password: "somepassword": // Optional. Will protect the sheet from being edited unless the user enters this password
+               SheetHeader: [{ // Add heading in Cell D1
+                    Value: "EOL Parts Report as of " + getCurrentDate(),
+                    Column: 3,
+                    Row: 0,
+                    MergeCells: "3,5", // Optional. Merges columns 3 thru 5 on the same row. You can also specify start row,end row,start column,end column to merge across more than 1 row
+                    NamedStyle: "Heading", // Used named style definition. Don't use NamedStyle and Style together. Use only one
+                    Style: [{ // Optional style sub object
+                         Alignment: "left", // Optional. defaults to General if not specified 
+                         BackgroundColor: "green", // Optional. Defaults to white if not specified
+                         Bold: true, // Optional. Defaults to false if not specified		       
                     }],
                }], 
                ColumnSize: [20,10,null,15], // (Optional) Use null if you want to auto size         
@@ -209,18 +214,17 @@ but not all of them are required.
                ConditionalFormatting: [{ // Optional
                     Formula: "$H4=\"\"", // The formula must evaluate to true or false
                     StartRow: 3, // Starting row.
-		    EndingRow: 20, // Optional. If not specified, will default to the last row of the table
+                    EndingRow: 20, // Optional. If not specified, will default to the last row of the table
                     StartColumn: 0, // Starting column to apply the formatting to
                     EndColumn: 8, // Ending column to apply the formatting to
                     Style:[{ // You must specify at least one of the style formats below when using ocnditional formatting
                          Bold: true,
-			 Italic: false,
-			 Color: "red",
-			 Size: 12,
-			 Underline: true,
-			 UnderlineStyle: "thick"
-			 BackgroundColor: "yellow",
-			 
+                         Italic: false,
+                         Color: "red",
+                         Size: 12,
+                         Underline: true,
+                         UnderlineStyle: "thick"
+                         BackgroundColor: "yellow",			 
                     }],
                },{
                     Formula: "$I4 < 0",
@@ -231,10 +235,9 @@ but not all of them are required.
                          BackgroundColor: "red",
                     }],
                },],
-	       MergeCells: ["1,2","3,1,4,1"], // Optional. Merges columns 1 & 2 on the last row after data has been writtem. The second merge merges columns 3 & 4 on row 1. 
+               MergeCells: ["1,2","3,1,4,1"], // Optional. Merges columns 1 & 2 on the last row after data has been writtem. The second merge merges columns 3 & 4 on row 1. 
                SQL: "SELECT * FROM EOL", // SQL based data
-               DBConnection: "PRODUCTION", // (Mandatory if SQL statement is provided
-          
+               DBConnection: "PRODUCTION", // (Mandatory if SQL statement is provided          
                Formulas: [{
                     Column: 0, // Column A since columns start with 0
                     Row: 10, // Optional. Will be written after last row of data if not specified               
@@ -251,28 +254,39 @@ but not all of them are required.
                     DestinationColumn: 2, // Column C since columns start with 0
                     DestinationRow: 2, // Row 3 since rows start with 0
                },],
-            ],
-            CustomCellText: [{
-                 DestinationSheet: "sheet1", // (Optional)
-                 Column: 0, // Column A since columns start with 0
-                 Row: 10, // Optional. Will be written after last row of data if not specified,
-                 Value: "Some Text",
-                 DataType: "CHAR", // Optional. Defaults to CHAR if not specified
-                 MergeCells: ["0,10,3,10"], // Optional. If specified, you must specify start_column,start_row ,end_column,end_row
-		 Style: [{ // Optional style sub object
-		          Alignment: "center", // Optional. defaults to General if not specified
-                      Color: "white", // Optional. Defaults to black if not specified
-                      Size: "14", // Optional. Defaults to 12 if not specified
-                      BackgroundColor: "green", // Optional. Defaults to white if not specified
-                      Bold: true, // Optional. Defaults to false if not specified
-                      Italic: true, // Optional. Defaults to false if not specified
-                      Underline: true, // Optional. Defaults to false if not specified
-                      UnderlineStyle: "single", // Optional/ Defauts to single if not specified
-                      Borders: true, // Optional. Defaults to false if not specified
-                      BorderStyle: "THICK", // Optional. Defaults to THIN if not specified but Borders: true is specified
-                 }],
-                 },],
-            };
+               Image: [{
+                    FileName: "Logo.png", // Valid image formats are DIB,EMF,JPEG/JPG,PICT,PNG OR WMF
+                    AnchorType: "DONT_MOVE_AND_RESIZE", // Optional anchor options. DONT_MOVE_AND_RESIZE is the default. Valid options are DONT_MOVE_AND_RESIZE, DONT_MOVE_DO_RESIZE, MOVE_AND_RESIZE or MOVE_DONT_RESIZE
+                    StartRow: 0, // Starting row to write the image at
+                    EndRow: 3, // Optional. Defaults to StartRow if not provided
+                    StartColumn: 1, // Starting column to write the image at
+                    EndColumn: 1, // Optional. Defaults to StartColumn if not provided
+                    ScaleX: 2.92, // Optional. Scales the width of the image based on an integer. 1 is 100%, 2 is 200% and so on
+                    ScaleY: 1.38, // Optional. Scales the height of the image based on an integer. 1 is 100%, 2 is 200% and so on
+		    Scale: Scales both the width and height of the image based on an integer. 1 is 100%, 2 is 200% and so on
+               },],
+          ],
+          CustomCellText: [{
+               DestinationSheet: "sheet1", // (Optional)
+               Column: 0, // Column A since columns start with 0
+               Row: 10, // Optional. Will be written after last row of data if not specified,
+               Value: "Some Text",
+               DataType: "CHAR", // Optional. Defaults to CHAR if not specified
+               MergeCells: ["0,10,3,10"], // Optional. If specified, you must specify start_column,start_row ,end_column,end_row
+               Style: [{ // Optional style sub object
+                    Alignment: "center", // Optional. defaults to General if not specified
+                    Color: "white", // Optional. Defaults to black if not specified
+                    Size: "14", // Optional. Defaults to 12 if not specified
+                    BackgroundColor: "green", // Optional. Defaults to white if not specified
+                    Bold: true, // Optional. Defaults to false if not specified
+                    Italic: true, // Optional. Defaults to false if not specified
+                    Underline: true, // Optional. Defaults to false if not specified
+                    UnderlineStyle: "single", // Optional/ Defauts to single if not specified
+                    Borders: true, // Optional. Defaults to false if not specified
+                    BorderStyle: "THICK", // Optional. Defaults to THIN if not specified but Borders: true is specified
+               }],
+          },],
+     };
 
 Known Issues
 ------------
