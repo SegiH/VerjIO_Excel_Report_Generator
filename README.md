@@ -165,7 +165,7 @@ but not all of them are required.
                  Color: "white",
                  BackgroundColor: "red",
 		 Strikeout: true // puts horizontal line through the text
-            },
+            },],
             Sheets: [{ 
                  StartRow: 3, // Optional: Start on row 3
                  SheetName: "EOL Parts",
