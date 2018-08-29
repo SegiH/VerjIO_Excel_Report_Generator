@@ -54,7 +54,6 @@ Example:
           },{ 
                SheetName: "Shipment Report", 
                SheetIndex: 1,
-               ColumnSize: [20,10,12,null,20,15], 
                ColumnHeaders: "Shipment Num,Shipment Date,Shipment Qty",
                Columns: [["ShipNum","INTEGER"],["ShipDate","DATE"],["ShipQty","INTEGER"]],
                TableData: "ShipmentS",
@@ -73,15 +72,18 @@ Example:
 
 In the example above, the generated Excel file will be named "Sales Report as of 08-01-2018-09-20-10.xlsx". The date will automatically be added to the file name to make sure that each report always has a unique name.
 
-The first sheet will be named Sales Report and will have a table with the 6 columns headings specified in ColumnHeaders. The Columns property specify the database column names and their type. This sheet uses an SQL statement as the data source.
+The first sheet will be named Sales Report and will have a table with the 6 columns headings specified in ColumnHeaders. ColumnSize is used to set the size of each column (null values in ColumnSize will autosize that column). The Columns property specify the database column names and their type. This sheet uses an SQL statement as the data source.
 
-The second sheet will be named Shipment Report and have a table with the 3 columns specified. This sheet uses a table resource as the data source.
+The second sheet will be named Shipment Report and have a table with the 3 columns specified. ColumnSize is not provided so all columns will be set to auto size automatically. This sheet uses a table resource as the data source.
 
-createExcelReport() returns an array with 2 indexes
+createExcelReport() will return a 2 dimensional array with the results
 
-result[0] is the status which can be "OK", "OK-NODATA" or "ERROR"
+The results will be either:
 
-result[1] is the filename if result[0] is OK, the error message if result[0] returns ERROR or empty if result[0] returned OK-NODATA which means that there wasn't any data to write to the report.
+["OK",Somefilename.xlsx"] // Report was successfully created
+["OK-NODATA",""] // There was no data returned from the SQL query or table resource
+["ERROR","Error Message"] // An error occurred during the creation of the report
+
 
 General Tips
 ------------
@@ -91,9 +93,9 @@ General Tips
 
 3. ColumnSize is optional and can be used to specify the column width. If you do not provide ColumnSize, all columns will be set to autosize the width automatically. If you provide an array with null for any values like in the example above, the columns that have null for the width will be set to autosize the width automatically.
 
-4. Valid data types are "BOOLEAN", "CHAR", "CURRENCY", "DATE", "DATETIME", "INTEGER" (or "INT" as an alias for INTEGER") and "NUMERIC". If you specify that a column data type is CHAR but the value is an INTEGER, it will be written as an INTEGER. IF you want to force the column to always be written as CHAR, add a true parameter. Ex. ["SOMECOLUMN","CHAR",true]. If the data type is specified as INT but the data value is a CHAR, it will be written as a CHAR.
+4. Valid data types are "BOOLEAN", "CHAR", "CURRENCY", "DATE", "DATETIME", "INTEGER" (or "INT" as an alias for INTEGER") and "NUMERIC". If you specify that a column data type is CHAR but the value is an INTEGER, it will be written as an INTEGER. IF you want to force the column to always be written as CHAR, add a true parameter after the CHAR data type. Ex. ["SOMECOLUMN","CHAR",true]. If the data type is specified as INT but the data value is a CHAR, it will be written as a CHAR.
 
-5. Valid color values can be found in the object colorObject defined in createStyleFormat(). You can also supply an RGB string ike "83,162,240" as the color value to use a specific RGB value instead of a color name.
+5. Valid color values can be found in the object colorObject defined in getColor(). You can also supply an RGB string ike "83,162,240" as the color value to use a specific RGB value instead of a predefined color.
 
 6. Valid border styles can be found in the object borderStylesObject defined in createStyleFormat(). 
 
@@ -124,7 +126,7 @@ General Tips
        else if (result[0]=="OK-NODATA")
             alert("There is no data available for the report");
 
-10. If the call to createExcelReport() in a script that is run in a before form event, you should print the result if an error occurrs.
+10. If the call to createExcelReport() in a script that is run in a before form event, you should print the result if an error occurs.
        
             var result=createExcelReport(excelReportObj);	
 	    
@@ -145,9 +147,9 @@ General Tips
 		 event.stopExecution();
             else if (result[0]=="OK")
 	         alert(result[1]);
-12. If you have a table with a formula in one of the columns and want to have a table header, you can add [null] as a place holder when specifying the column. If you do not do this, the number of column headers and columns will not match and the application will display an error message.
+12. If you have a table with a formula for each row of the table, you  can use a line formula to specify that a formula is to be written for each row. When doing this, you will have a column header such as Total. In order to make sure that the number of columns and column headers match, put [null] as a place holder in the Columns property in place of an actual column name.
 
-13. When using a TableData source, the column names are case sensitive and must be provided in the same case that they appear in the table resource.
+13. When using a TableData source, the column names are case sensitive and must be provided in the same case that they appear in the table resource or they will be located.
 
 14. If you are using custom formatting, make sure to use a formula that evaluates to a boolean true or false value. Use $ in front of the column letter to allow the formula to be evaluated correctly for each row of a table.
 
