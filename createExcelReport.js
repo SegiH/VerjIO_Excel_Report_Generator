@@ -1,15 +1,17 @@
 // Returns color 
 function getColor(color) {
+     // If color is not specified, it will default to black
      if (color==null)
            color="black";
 
-     // RGB color doesnt work!!!
+     // RGB color
      if (color.indexOf(",") != -1) {
      	    var colorArr=color.split(",");
      	    
           return new XSSFColor(new java.awt.Color(parseFloat(colorArr[0]/255),parseFloat(colorArr[1]/255),parseFloat(colorArr[2]/255)))  
      }
-     
+
+     // Predefined color
      switch(color.toString().toUpperCase()) {
  		      case "AQUA":
     			      return HSSFColor.HSSFColorPredefined.AQUA.index;
@@ -159,7 +161,8 @@ function getColor(color) {
       } 		     
 }
 
-function createStyleFormat(wb,styleDefinition,debug) {	
+// Creates style from specified object
+function createStyleFormat(wb,styleDefinition) {	
      var alignmentStylesObject = {
           "CENTER": HorizontalAlignment.CENTER,
           "FILL": HorizontalAlignment.FILL,
@@ -193,6 +196,14 @@ function createStyleFormat(wb,styleDefinition,debug) {
           "SINGLE" : Packages.org.apache.poi.ss.usermodel.U_SINGLE,
           "SINGLE_ACCOUNTING" : Packages.org.apache.poi.ss.usermodel.U_SINGLE_ACCOUNTING,
      }
+
+     var verticalAlignmentStylesObject = {
+          "BOTTOM": Packages.org.apache.poi.ss.usermodel.BOTTOM,
+          "CENTER": Packages.org.apache.poi.ss.usermodel.CENTER,
+          "DISTRIBUTED": Packages.org.apache.poi.ss.usermodel.DISTRIBUTED,
+          "JUSTIFY": Packages.org.apache.poi.ss.usermodel.JUSTIFY,
+          "TOP": Packages.org.apache.poi.ss.usermodel.TOP,
+     }
      
      var style=wb.createCellStyle();
 
@@ -202,6 +213,7 @@ function createStyleFormat(wb,styleDefinition,debug) {
           style.setFillForegroundColor(getColor(styleDefinition.BackgroundColor));
      }
 
+     // A font object is needed for font specific styles
      var font=wb.createFont();
 
      // Set the foreground color
@@ -262,14 +274,30 @@ function createStyleFormat(wb,styleDefinition,debug) {
      else
           style.setAlignment(alignmentStylesObject["LEFT"]);
 
+     // Set specific data format - Currently, only CURRENCY data type is supported
      if (styleDefinition.DataFormat != null) {
           df=wb.createDataFormat();
           
           switch (styleDefinition.DataFormat.toString().toUpperCase()) {
-               case "CURRENCY":10
+               case "CURRENCY":
                     style.setDataFormat(df.getFormat("##,###,##0.00"));
                     break;
           }
+     }
+
+     // Set wrap style
+     if (styleDefinition.Wrap == true) {
+          style.setWrapText(true);
+     }
+
+     // Set vertical orientation
+     if (styleDefinition.VerticalAlignment != null && verticalAlignmentStylesObject[styleDefinition.VerticalAlignment.toString().toUpperCase()] != null) {
+          style.setVerticalAlignment(verticalAlignmentStylesObject[styleDefinition.VerticalAlignment.toString().toUpperCase()]);
+     }
+
+     // Set Rotation style 
+     if (styleDefinition.Rotation != null && isInt(styleDefinition.Rotation) ) {
+          style.setRotation(styleDefinition.Rotation);
      }
      
      style.setFont(font);
@@ -294,6 +322,14 @@ function createExcelReport(reportObj) {
      var rowWritten=false;
      var sheet, workbook;
 
+     // anchor types when placing an image in the sheet
+     var anchorTypesObject = {
+          "DONT_MOVE_AND_RESIZE" : Packages.org.apache.poi.ss.usermodel.ClientAnchor.AnchorType.DONT_MOVE_AND_RESIZE,
+          "DONT_MOVE_DO_RESIZE" : Packages.org.apache.poi.ss.usermodel.ClientAnchor.AnchorType.DONT_MOVE_DO_RESIZE,
+          "MOVE_AND_RESIZE" : Packages.org.apache.poi.ss.usermodel.ClientAnchor.AnchorType.MOVE_AND_RESIZE,
+          "MOVE_DONT_RESIZE" : Packages.org.apache.poi.ss.usermodel.ClientAnchor.AnchorType.MOVE_DONT_RESIZE,          
+     };
+     
      // Needs to be declared here because it is used in createStyleFormat()
      workbook=XSSFWorkbook();
      
@@ -525,10 +561,9 @@ function createExcelReport(reportObj) {
                     return ["ERROR","The NamedStyle property " + reportObj.Sheets[reportObjSheetCounter].NamedStyle + " in sheet " + reportObjSheetCounter + " does not appear to be a valid NamedStyle. Please refer to a valid named style"];
           }
 
-
           // If conditional formatting is provided, validate its properties
           if (typeof reportObj.Sheets[reportObjSheetCounter].ConditionalFormatting != 'undefined') {
-               for (cfCounter=0;cfCounter < reportObj.Sheets[reportObjSheetCounter].ConditionalFormatting;cfCounter++) {
+               for (cfCounter=0;cfCounter < reportObj.Sheets[reportObjSheetCounter].ConditionalFormatting.length;cfCounter++) {
                     // Formula must be provided
                     if (typeof reportObj.Sheets[reportObjSheetCounter].ConditionalFormatting[cfCounter].Formula == 'undefined')
                          return ["ERROR","The conditional formatting at index " + cfCounter + " in sheet " + reportObjSheetCounter + " does not have a Formula property"];
@@ -544,6 +579,37 @@ function createExcelReport(reportObj) {
 
                     if (typeof reportObj.Sheets[reportObjSheetCounter].ConditionalFormatting[cfCounter].EndColumn == 'undefined')
                          return ["ERROR","The conditional formatting at index " + cfCounter + " in sheet " + reportObjSheetCounter + " does not have a EndColumn property"];
+               }
+          }
+
+          // If image property is provided, validate its properties
+          if (typeof reportObj.Sheets[reportObjSheetCounter].Image != 'undefined') {
+               for (imgCounter=0;imgCounter < reportObj.Sheets[reportObjSheetCounter].Image.length;imgCounter++) {
+                    // Validate that file name was provided
+                    if (typeof reportObj.Sheets[reportObjSheetCounter].Image[imgCounter].FileName == 'undefined')
+                         return ["ERROR","The Image at index " + imgCounter + " in sheet " + reportObjSheetCounter + " does not have a FileName property"];
+
+                    // Validate that the file is a valid file
+                    if (FileServices.isFile(reportObj.Sheets[reportObjSheetCounter].Image[imgCounter].FileName)==false)
+                         return ["ERROR","The Image at index " + imgCounter + " in sheet " + reportObjSheetCounter + " refers to a file that does not exist"];
+                    
+                    var ext=reportObj.Sheets[reportObjSheetCounter].Image[imgCounter].FileName.substring(reportObj.Sheets[reportObjSheetCounter].Image[imgCounter].FileName.lastIndexOf(".")+1).toUpperCase();
+                         
+                    if (ext != "DIB" && ext != "EMF" && ext != "JPEG" && ext != "JPG" && ext != "PICT" && ext != "PNG" && ext != "WHF" )
+                         return ["ERROR","The Image at index " + imgCounter + " in sheet " + reportObjSheetCounter + " refers to a file with an unknown format. Valid image formats are DIB,EMF,JPEG/JPG,PICT,PNG OR WMF."];
+                         
+                    //if (typeof reportObj.Sheets[reportObjSheetCounter].Image[imgCounter].AnchorType == 'undefined')
+                         //return ["ERROR","The Image at index " + imgCounter + " in sheet " + reportObjSheetCounter + " does not have an AnchorType property"];
+
+                    
+                    if (anchorTypesObject[reportObj.Sheets[reportObjSheetCounter].Image[imgCounter].AnchorType.toString().toUpperCase()] == null)
+                         return ["ERROR","The Image at index " + imgCounter + " in sheet " + reportObjSheetCounter + " does not have a valid value for the AnchorType property. Valid values are: DONT_MOVE_AND_RESIZE, DONT_MOVE_DO_RESIZE, MOVE_AND_RESIZE or MOVE_DONT_RESIZE"];
+
+                    if (typeof reportObj.Sheets[reportObjSheetCounter].Image[imgCounter].StartRow == 'undefined')
+                         return ["ERROR","The Image at index " + imgCounter + " in sheet " + reportObjSheetCounter + " does not have a StartRow property"];
+
+                    if (typeof reportObj.Sheets[reportObjSheetCounter].Image[imgCounter].StartColumn == 'undefined')
+                         return ["ERROR","The Image at index " + imgCounter + " in sheet " + reportObjSheetCounter + " does not have a StartColumn property"];
                }
           }
 	   }
@@ -601,7 +667,7 @@ function createExcelReport(reportObj) {
 
      // *** START OF GENERATING THE EXCEL DOCUMENT ***
 
-     // *** Loop through the report object for each sheet object ***
+     // *** Start of Loop through the report object for each sheet object ***
      for (reportObjSheetCounter=0;reportObj.Sheets[reportObjSheetCounter] != null;reportObjSheetCounter++) {
      	    rowCounter=0;
      	    
@@ -684,19 +750,15 @@ function createExcelReport(reportObj) {
                sheet.setFitToPage(true);
 
           // Orientation
-          if (typeof reportObj.Sheets[reportObjSheetCounter].Orientation !== 'undefined') {
+          if (typeof reportObj.Sheets[reportObjSheetCounter].Orientation !== 'undefined')
                if (reportObj.Sheets[reportObjSheetCounter].Orientation.toString().toUpperCase() == "PORTRAIT")
                     sheet.getPrintSetup().setLandscape(false);
                else if (reportObj.Sheets[reportObjSheetCounter].Orientation.toString().toUpperCase() == "LANDSCAPE")
                     sheet.getPrintSetup().setLandscape(true);
-          }
 
           // Password
-          if (typeof reportObj.Sheets[reportObjSheetCounter].Password !== 'undefined') {
+          if (typeof reportObj.Sheets[reportObjSheetCounter].Password !== 'undefined')
                sheet.protectSheet(reportObj.Sheets[reportObjSheetCounter].Password);
-               //sheet.getSettings().setPassword(reportObj.Sheets[reportObjSheetCounter].Password);
-               //sheet.getSettings().setProtected(true);
-          }    
           
           // *** END OF MISC SHEET OPTIONS ***
 
@@ -815,6 +877,7 @@ function createExcelReport(reportObj) {
           } else {
           	  styledFormat=null;
           }
+
           // *** END OF GET STYLE FOR CURRENT SHEET ***
 
           // *** START OF GET ALL DATA ***
@@ -946,7 +1009,7 @@ function createExcelReport(reportObj) {
                for (var colCounter=0;colCounter<columnHeaders.length;colCounter++) {
                	    if (data[dataCounter][colCounter]==null)
                	         continue;
-               
+
                     // If the type is CHAR but the value is an INT, change the type to an INT so it will be written as an INT so
                     // that Excel doesn't complaign that the field is a number in a text cell
                     if (data[dataCounter][colCounter][2] == "CHAR" && data[dataCounter][colCounter][1] != null && isInt(data[dataCounter][colCounter][1]) && reportObj.Sheets[reportObjSheetCounter].Columns[colCounter][2] != true)
@@ -961,8 +1024,9 @@ function createExcelReport(reportObj) {
 
                     // In order to prevent errors, always default the type to CHAR if not specified.
                     if (data[dataCounter][colCounter][2]==null) data[dataCounter][colCounter][2]="CHAR";
-                    
-                    switch(data[dataCounter][colCounter][2].toUpperCase()) { // Type
+
+                    // Type
+                    switch(data[dataCounter][colCounter][2].toUpperCase()) {
                          case "BOOLEAN":
                          case "INT":
                          case "INTEGER":
@@ -1097,7 +1161,8 @@ function createExcelReport(reportObj) {
           } // end of for (var dataCounter=0;dataCounter<data.length;dataCounter++) {
           
           // *** END OF LOOP THAT GOES THROUGH DATA ARRAY AND WRITES THE DATA ***          
-               
+
+          // Check to see if any data was written to the current sheet
           if (rowWritten==false) {
                row = sheet.createRow(1);
           	   cell = row.createCell(0);
@@ -1323,7 +1388,7 @@ function createExcelReport(reportObj) {
           }
           // *** END OF OF SETTING THE COLUMN WIDTHS ***
 
-          // Conditional formatting
+          // *** START OF CONDITIONAL FORMATTING ***
           if (typeof reportObj.Sheets[reportObjSheetCounter].ConditionalFormatting != 'undefined') {
                var underlineStylesObject = {
                     "DOUBLE" : HSSFFont.U_DOUBLE,
@@ -1332,7 +1397,8 @@ function createExcelReport(reportObj) {
                     "SINGLE" : HSSFFont.U_SINGLE,
                     "SINGLE_ACCOUNTING" : HSSFFont.U_SINGLE_ACCOUNTING,
                }
-               
+
+               // Loop through all conditional formatting rules
                for (cfCounter=0;cfCounter < reportObj.Sheets[reportObjSheetCounter].ConditionalFormatting.length;cfCounter++) {                    
                     sheetCF = sheet.getSheetConditionalFormatting();
 
@@ -1344,6 +1410,7 @@ function createExcelReport(reportObj) {
 
                     fontFmt = rule.createFontFormatting();
 
+                    // Conditional formatting format style
                     if (reportObj.Sheets[reportObjSheetCounter].ConditionalFormatting[cfCounter].Style[0].Bold != null && reportObj.Sheets[reportObjSheetCounter].ConditionalFormatting[cfCounter].Style[0].Bold == true)
                          cfBold=true
                     else
@@ -1377,8 +1444,6 @@ function createExcelReport(reportObj) {
                          fill.setFillBackgroundColor(getColor(reportObj.Sheets[reportObjSheetCounter].ConditionalFormatting[cfCounter].Style[0].BackgroundColor));
                          fill.setFillPattern(PatternFormatting.SOLID_FOREGROUND);
                     }
-                    //else
-                     //    fill.setFillBackgroundColor(getColor(reportObj.Sheets[reportObjSheetCounter].ConditionalFormatting[cfCounter].Style[0].BackgroundColor));
 
                     var endRow=(reportObj.Sheets[reportObjSheetCounter].ConditionalFormatting[cfCounter].EndRow != null ? reportObj.Sheets[reportObjSheetCounter].ConditionalFormatting[cfCounter].EndRow : rowCounter-1);
                     
@@ -1389,10 +1454,73 @@ function createExcelReport(reportObj) {
                     regions.push(region);
                     
                     sheetCF.addConditionalFormatting(regions, rule);
-               }
+               } // end of for (cfCounter=0;cfCounter
+          } // *** END OF CONDITIONAL FORMATTING ***
 
+          // *** START OF WRITING AN IMAGE ***
+          if (typeof reportObj.Sheets[reportObjSheetCounter].Image != 'undefined') {
+               for (imgCounter=0;imgCounter < reportObj.Sheets[reportObjSheetCounter].Image.length;imgCounter++) {
+                    stream = new FileInputStream(reportObj.Sheets[reportObjSheetCounter].Image[imgCounter].FileName);
+
+                    helper = workbook.getCreationHelper();
+
+                    drawing = sheet.createDrawingPatriarch();
+
+                    anchor = helper.createClientAnchor();
+
+                    if (reportObj.Sheets[reportObjSheetCounter].Image[imgCounter].AnchorType != null)
+                         anchor.setAnchorType(anchorTypesObject[reportObj.Sheets[reportObjSheetCounter].Image[imgCounter].AnchorType.toString().toUpperCase()]);
+                    else
+                         anchor.setAnchorType(anchorTypesObject["DONT_MOVE_AND_RESIZE"]);
+                         
+                    var ext=reportObj.Sheets[reportObjSheetCounter].Image[imgCounter].FileName.substring(reportObj.Sheets[reportObjSheetCounter].Image[imgCounter].FileName.lastIndexOf(".")+1).toUpperCase();
+
+                    var type;
+                    
+                    switch (ext) {
+                         case "DIB":
+                              type=Packages.org.apache.poi.ss.usermodel.Workbook.PICTURE_TYPE_DIB;
+                              break;
+                         case "EMF":
+                              type=Packages.org.apache.poi.ss.usermodel.Workbook.PICTURE_TYPE_EMF;
+                              break;
+                         case "JPEG":
+                         case "JPG":
+                               type=Packages.org.apache.poi.ss.usermodel.Workbook.PICTURE_TYPE_JPEG;
+                               break;
+                         case "PICT":
+                               type=Packages.org.apache.poi.ss.usermodel.Workbook.PICTURE_TYPE_PICT;
+                               break;
+                         case "PNG":
+                               type=Packages.org.apache.poi.ss.usermodel.Workbook.PICTURE_TYPE_PNG;
+                               break;
+                         case "WMF":
+                               type=Packages.org.apache.poi.ss.usermodel.Workbook.PICTURE_TYPE_WMF;
+                               break
+                    }
+                    
+                    pictureIndex = workbook.addPicture(Packages.org.apache.commons.io.IOUtils.toByteArray(stream), type);
+
+                    endCol=(reportObj.Sheets[reportObjSheetCounter].Image[imgCounter].EndColumn != null ? reportObj.Sheets[reportObjSheetCounter].Image[imgCounter].EndColumn : reportObj.Sheets[reportObjSheetCounter].Image[imgCounter].StartColumn);
+                    endRow=(reportObj.Sheets[reportObjSheetCounter].Image[imgCounter].EndRow != null ? reportObj.Sheets[reportObjSheetCounter].Image[imgCounter].EndRow : reportObj.Sheets[reportObjSheetCounter].Image[imgCounter].StartRow);
+
+                    anchor.setCol1(reportObj.Sheets[reportObjSheetCounter].Image[imgCounter].StartColumn);
+                    anchor.setCol2(endCol);
+                    anchor.setRow1(reportObj.Sheets[reportObjSheetCounter].Image[imgCounter].StartRow);
+                    anchor.setRow2(endRow);
+
+                    pict = drawing.createPicture(anchor, pictureIndex);
+
+                    if (reportObj.Sheets[reportObjSheetCounter].Image[imgCounter].ScaleX != null && reportObj.Sheets[reportObjSheetCounter].Image[imgCounter].ScaleY != null)
+                         pict.resize(reportObj.Sheets[reportObjSheetCounter].Image[imgCounter].ScaleX,reportObj.Sheets[reportObjSheetCounter].Image[imgCounter].ScaleY);
+                    else if (reportObj.Sheets[reportObjSheetCounter].Image[imgCounter].Scale != null)
+                         pict.resize(reportObj.Sheets[reportObjSheetCounter].Image[imgCounter].Scale);
+                    else
+                         pict.resize();
+               }
           }
-     }
+          // *** END OF WRITING AN IMAGE ***
+     } // *** Start of Loop through the report object for each sheet object ***
 	   
      var fos = new FileOutputStream(reportObj.FileName);
      
