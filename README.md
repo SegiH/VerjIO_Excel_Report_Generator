@@ -7,7 +7,7 @@ Features
 3. Merge cells
 4. Add hyperlinks in each sheet
 5. Add custom text anywhere that you specify
-6. Add custom styling
+6. Many custom style options
 7. Re-useable named style definitions
 8. Password protect a sheet
 9. Specify conditional formatting rules.
