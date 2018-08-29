@@ -263,7 +263,7 @@ but not all of them are required.All of the optional properties have a comment i
                     EndColumn: 1, // Optional. Defaults to StartColumn if not provided
                     ScaleX: 2.92, // Optional. Scales the width of the image based on an integer. 1 is 100%, 2 is 200% and so on
                     ScaleY: 1.38, // Optional. Scales the height of the image based on an integer. 1 is 100%, 2 is 200% and so on
-		    Scale: Scales both the width and height of the image based on an integer. 1 is 100%, 2 is 200% and so on
+                    Scale: Scales both the width and height of the image based on an integer. 1 is 100%, 2 is 200% and so on
                },],
           ],
           CustomCellText: [{
