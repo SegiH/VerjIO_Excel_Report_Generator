@@ -1,311 +1,312 @@
-// Returns color 
-function getColor(color) {
-     // If color is not specified, it will default to black
-     if (color==null)
-           color="black";
-
-     // RGB color
-     if (color.indexOf(",") != -1) {
-     	    var colorArr=color.split(",");
-     	    
-          return new XSSFColor(new java.awt.Color(parseFloat(colorArr[0]/255),parseFloat(colorArr[1]/255),parseFloat(colorArr[2]/255)))  
-     }
-
-     // Predefined color
-     switch(color.toString().toUpperCase()) {
- 		      case "AQUA":
-    			      return HSSFColor.HSSFColorPredefined.AQUA.index;
-    			      break;
- 		      case "AUTOMATIC":
-    			      return HSSFColor.HSSFColorPredefined.AUTOMATIC.index;
-    			      break;
- 		      case "BLACK":
-    			      return HSSFColor.HSSFColorPredefined.BLACK.index;
-    			      break;
- 		      case "BLUE":
-    			      return HSSFColor.HSSFColorPredefined.BLUE.index;
-    			      break;
- 		      case "BLUE_GREY":
-    			      return HSSFColor.HSSFColorPredefined.BLUE_GREY.index;
-    			      break;
- 		      case "BRIGHT_GREEN":
-    			      return HSSFColor.HSSFColorPredefined.BRIGHT_GREEN.index;
-    			      break;
- 		      case "BROWN":
-    			      return HSSFColor.HSSFColorPredefined.BROWN.index;
-    			      break;
- 		      case "CORAL":
-    			      return HSSFColor.HSSFColorPredefined.CORAL.index;
-    			      break;
- 		      case "CORNFLOWER_BLUE":
-    			      return HSSFColor.HSSFColorPredefined.CORNFLOWER_BLUE.index;
-    			      break;
- 		      case "DARK_BLUE":
-    			      return HSSFColor.HSSFColorPredefined.DARK_BLUE.index;
-    			      break;
- 		      case "DARK_GREEN":
-    			      return HSSFColor.HSSFColorPredefined.DARK_GREEN.index;
-    			      break;
- 		      case "DARK_RED":
-    			      return HSSFColor.HSSFColorPredefined.DARK_RED.index;
-    			      break;
- 		      case "DARK_TEAL":
-    			      return HSSFColor.HSSFColorPredefined.DARK_TEAL.index;
-    			      break;
- 		      case "DARK_YELLOW":
-    			      return HSSFColor.HSSFColorPredefined.DARK_YELLOW.index;
-    			      break;
- 		      case "GOLD":
-    			      return HSSFColor.HSSFColorPredefined.GOLD.index;
-    			      break;
- 		      case "GREEN":
-    			      return HSSFColor.HSSFColorPredefined.GREEN.index;
-    			      break;
- 		      case "GREY_25_PERCENT":
-    			      return HSSFColor.HSSFColorPredefined.GREY_25_PERCENT.index;
-    			      break;
- 		      case "GREY_40_PERCENT":
-    			      return HSSFColor.HSSFColorPredefined.GREY_40_PERCENT.index;
-    			      break;
- 		      case "GREY_50_PERCENT":
-    			      return HSSFColor.HSSFColorPredefined.GREY_50_PERCENT.index;
-    			      break;
- 		      case "GREY_80_PERCENT":
-    			      return HSSFColor.HSSFColorPredefined.GREY_80_PERCENT.index;
-    			      break;
- 		      case "INDIGO":
-    			      return HSSFColor.HSSFColorPredefined.INDIGO.index;
-    			      break;
- 		      case "LAVENDER":
-    			      return HSSFColor.HSSFColorPredefined.LAVENDER.index;
-    			      break;
- 		      case "LEMON_CHIFFON":
-    			      return HSSFColor.HSSFColorPredefined.LEMON_CHIFFON.index;
-    			      break;
- 		      case "LIGHT_BLUE":
-    			      return HSSFColor.HSSFColorPredefined.LIGHT_BLUE.index;
-    			      break;
- 		      case "LIGHT_CORNFLOWER_BLUE":
-    			      return HSSFColor.HSSFColorPredefined.LIGHT_CORNFLOWER_BLUE.index;
-    			      break;
- 		      case "LIGHT_GREEN":
-    			      return HSSFColor.HSSFColorPredefined.LIGHT_GREEN.index;
-    			      break;
- 		      case "LIGHT_ORANGE":
-    			      return HSSFColor.HSSFColorPredefined.LIGHT_ORANGE.index;
-    			      break;
- 		      case "LIGHT_TURQUOISE":
-    			      return HSSFColor.HSSFColorPredefined.LIGHT_TURQUOISE.index;
-    			      break;
- 		      case "LIGHT_YELLOW":
-    			      return HSSFColor.HSSFColorPredefined.LIGHT_YELLOW.index;
-    			      break;
- 		      case "LIME":
-    			      return HSSFColor.HSSFColorPredefined.LIME.index;
-    			      break;
- 		      case "MAROON":
-    			      return HSSFColor.HSSFColorPredefined.MAROON.index;
-    			      break;
- 		      case "OLIVE_GREEN":
-    			      return HSSFColor.HSSFColorPredefined.OLIVE_GREEN.index;
-    			      break;
- 		      case "ORANGE":
-    			      return HSSFColor.HSSFColorPredefined.ORANGE.index;
-    			      break;
- 		      case "ORCHID":
-    			      return HSSFColor.HSSFColorPredefined.ORCHID.index;
-    			      break;
- 		      case "PALE_BLUE":
-    			      return HSSFColor.HSSFColorPredefined.PALE_BLUE.index;
-    			      break;
- 		      case "PINK":
-    			      return HSSFColor.HSSFColorPredefined.PINK.index;
-    			      break;
- 		      case "PLUM":
-    			      return HSSFColor.HSSFColorPredefined.PLUM.index;
-    			      break;
- 		      case "RED":
-    			      return HSSFColor.HSSFColorPredefined.RED.index;
-    			      break;
- 		      case "ROSE":
-    			      return HSSFColor.HSSFColorPredefined.ROSE.index;
-    			      break;
- 		      case "ROYAL_BLUE":
-    			      return HSSFColor.HSSFColorPredefined.ROYAL_BLUE.index;
-    			      break;
- 		      case "SEA_GREEN":
-    			      return HSSFColor.HSSFColorPredefined.SEA_GREEN.index;
-    			      break;
- 		      case "SKY_BLUE":
-    			      return HSSFColor.HSSFColorPredefined.SKY_BLUE.index;
-    			      break;
- 		      case "TAN":
-    			      return HSSFColor.HSSFColorPredefined.TAN.index;
-    			      break;
- 		      case "TEAL":
-    			      return HSSFColor.HSSFColorPredefined.TEAL.index;
-    			      break;
- 		      case "TURQUOISE":
-    			      return HSSFColor.HSSFColorPredefined.TURQUOISE.index;
-    			      break;
- 		      case "VIOLET":
-    			      return HSSFColor.HSSFColorPredefined.VIOLET.index;
-    			      break;
- 		      case "WHITE":
-    			      return HSSFColor.HSSFColorPredefined.WHITE.index;
-    			      break;
- 		      case "YELLOW":
-    			      return HSSFColor.HSSFColorPredefined.YELLOW.index;
- 		default:
- 		           return HSSFColor.HSSFColorPredefined.BLACK.index;
-      } 		     
-}
-
-// Creates style from specified object
-function createStyleFormat(wb,styleDefinition) {	
-     var alignmentStylesObject = {
-          "CENTER": HorizontalAlignment.CENTER,
-          "FILL": HorizontalAlignment.FILL,
-          "GENERAL": HorizontalAlignment.GENERAL,
-          "JUSTIFY": HorizontalAlignment.JUSTIFY,
-          "LEFT": HorizontalAlignment.LEFT,
-          "RIGHT": HorizontalAlignment.RIGHT,
-     }
-     
-     var borderStylesObject = {
-          "DASH_DOT" : BorderStyle.DASH_DOT,
-          "DASH_DOT_DOT" : BorderStyle.DASH_DOT_DOT,
-          "DASHED" : BorderStyle.DASHED,
-          "DOTTED" : BorderStyle.DOTTED,
-          "DOUBLE" : BorderStyle.DOUBLE,
-          "HAIR" : BorderStyle.HAIR,
-          "MEDIUM" : BorderStyle.MEDIUM,
-          "MEDIUM_DASH_DOT" : BorderStyle.MEDIUM_DASH_DOT,
-          "MEDIUM_DASH_DOT_DOT" : BorderStyle.MEDIUM_DASH_DOT_DOT,
-          "MEDIUM_DASHED" : BorderStyle.MEDIUM_DASHED,
-          "NONE" : BorderStyle.NONE,
-          "SLANTED_DASH_DOT" : BorderStyle.SLANTED_DASH_DOT,
-          "THICK" : BorderStyle.THICK,
-          "THIN" : BorderStyle.THIN,
-     }
-     
-     var underlineStylesObject = {
-          "DOUBLE" : Packages.org.apache.poi.ss.usermodel.U_DOUBLE,
-          "DOUBLE_ACCOUNTING" : Packages.org.apache.poi.ss.usermodel.U_DOUBLE_ACCOUNTING,
-          "NO_UNDERLINE" : Packages.org.apache.poi.ss.usermodel.U_NONE,
-          "SINGLE" : Packages.org.apache.poi.ss.usermodel.U_SINGLE,
-          "SINGLE_ACCOUNTING" : Packages.org.apache.poi.ss.usermodel.U_SINGLE_ACCOUNTING,
-     }
-
-     var verticalAlignmentStylesObject = {
-          "BOTTOM": Packages.org.apache.poi.ss.usermodel.BOTTOM,
-          "CENTER": Packages.org.apache.poi.ss.usermodel.CENTER,
-          "DISTRIBUTED": Packages.org.apache.poi.ss.usermodel.DISTRIBUTED,
-          "JUSTIFY": Packages.org.apache.poi.ss.usermodel.JUSTIFY,
-          "TOP": Packages.org.apache.poi.ss.usermodel.TOP,
-     }
-     
-     var style=wb.createCellStyle();
-
-     // Set the background color
-     if (styleDefinition.BackgroundColor != null) {
-          style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-          style.setFillForegroundColor(getColor(styleDefinition.BackgroundColor));
-     }
-
-     // A font object is needed for font specific styles
-     var font=wb.createFont();
-
-     // Set the foreground color
-     if (styleDefinition.Color != null)
-          font.setColor(getColor(styleDefinition.Color));
-     else
-     	    font.setColor(getColor("BLACK"));
-
-     // Set the font size
-     if (styleDefinition.Size != null)
-          font.setFontHeightInPoints(styleDefinition.Size);
-     else
-          font.setFontHeightInPoints(12);
-
-     // Set bold style
-     if (styleDefinition.Bold == true)
-          font.setBold(true);
-     else
-     	    font.setBold(false);
-
-     // Set italic
-     if (styleDefinition.Italic == true)
-          font.setItalic(true);
-     else
-          font.setItalic(false);
-
-     // Set underline
-     if (styleDefinition.Underline == true)
-          if (styleDefinition.UnderlineStyle != null && underlineStylesObject[styleDefinition.UnderlineStyle.toString().toUpperCase()] != null)
-               font.setUnderline(underlineStylesObject[styleDefinition.UnderlineStyle.toString().toUpperCase()]);
-           else
-               font.setUnderline(underlineStylesObject["SINGLE"]);    
-
-     // Set strikeout
-     if (styleDefinition.Strikeout == true)
-          font.setStrikeout(true);
-      else
-          font.setStrikeout(false);
-
-     // Set borders
-     if (styleDefinition.Borders == true) {
-          if (styleDefinition.BorderStyle != null && borderStylesObject[styleDefinition.Borders.toString().toUpperCase()] != null) {
-               style.setBorderTop(borderStylesObject[styleDefinition.Borders.toString().toUpperCase()]);
-               style.setBorderBottom(borderStylesObject[styleDefinition.Borders.toString().toUpperCase()]);
-               style.setBorderLeft(borderStylesObject[styleDefinition.Borders.toString().toUpperCase()]);
-               style.setBorderRight(borderStylesObject[styleDefinition.Borders.toString().toUpperCase()]);
-          } else {
-               style.setBorderTop(borderStylesObject["THIN"]);
-               style.setBorderBottom(borderStylesObject["THIN"]);
-               style.setBorderLeft(borderStylesObject["THIN"]);
-               style.setBorderRight(borderStylesObject["THIN"]);
-          }
-     }
-
-     // Set alignment          
-     if (styleDefinition.Alignment != null && alignmentStylesObject[styleDefinition.Alignment.toString().toUpperCase()] != null)
-          style.setAlignment(alignmentStylesObject[styleDefinition.Alignment.toString().toUpperCase()]);
-     else
-          style.setAlignment(alignmentStylesObject["LEFT"]);
-
-     // Set specific data format - Currently, only CURRENCY data type is supported
-     if (styleDefinition.DataFormat != null) {
-          df=wb.createDataFormat();
-          
-          switch (styleDefinition.DataFormat.toString().toUpperCase()) {
-               case "CURRENCY":
-                    style.setDataFormat(df.getFormat("##,###,##0.00"));
-                    break;
-          }
-     }
-
-     // Set wrap style
-     if (styleDefinition.Wrap == true) {
-          style.setWrapText(true);
-     }
-
-     // Set vertical orientation
-     if (styleDefinition.VerticalAlignment != null && verticalAlignmentStylesObject[styleDefinition.VerticalAlignment.toString().toUpperCase()] != null) {
-          style.setVerticalAlignment(verticalAlignmentStylesObject[styleDefinition.VerticalAlignment.toString().toUpperCase()]);
-     }
-
-     // Set Rotation style 
-     if (styleDefinition.Rotation != null && isInt(styleDefinition.Rotation) ) {
-          style.setRotation(styleDefinition.Rotation);
-     }
-     
-     style.setFont(font);
-     
-     return style;
-}
-
 function createExcelReport(reportObj) {	
+     // Returns color object
+     var getColor=function(color) {
+          // If color is not specified, it will default to black
+          if (color==null)
+                color="black";
+
+          // RGB color
+          if (color.indexOf(",") != -1) {
+     	         var colorArr=color.split(",");
+     	    
+               return new XSSFColor(new java.awt.Color(parseFloat(colorArr[0]/255),parseFloat(colorArr[1]/255),parseFloat(colorArr[2]/255)))  
+          }
+
+          // Predefined color
+          switch(color.toString().toUpperCase()) {
+               case "AQUA":
+    			          return HSSFColor.HSSFColorPredefined.AQUA.index;
+    			          break;
+ 		           case "AUTOMATIC":
+    			          return HSSFColor.HSSFColorPredefined.AUTOMATIC.index;
+    			          break;
+ 		           case "BLACK":
+    			          return HSSFColor.HSSFColorPredefined.BLACK.index;
+    			          break;
+ 		           case "BLUE":
+    			          return HSSFColor.HSSFColorPredefined.BLUE.index;
+    			          break;
+ 		           case "BLUE_GREY":
+    			          return HSSFColor.HSSFColorPredefined.BLUE_GREY.index;
+    			          break;
+ 		           case "BRIGHT_GREEN":
+    			          return HSSFColor.HSSFColorPredefined.BRIGHT_GREEN.index;
+         			      break;
+ 		           case "BROWN":
+    			          return HSSFColor.HSSFColorPredefined.BROWN.index;
+    			          break;
+ 		           case "CORAL":
+    			          return HSSFColor.HSSFColorPredefined.CORAL.index;
+    			          break;
+ 		           case "CORNFLOWER_BLUE":
+    			          return HSSFColor.HSSFColorPredefined.CORNFLOWER_BLUE.index;
+    			          break;
+     		       case "DARK_BLUE":
+    			          return HSSFColor.HSSFColorPredefined.DARK_BLUE.index;
+    			          break;
+ 		           case "DARK_GREEN":
+    			          return HSSFColor.HSSFColorPredefined.DARK_GREEN.index;
+    			          break;
+ 		           case "DARK_RED":
+    			          return HSSFColor.HSSFColorPredefined.DARK_RED.index;
+    			          break;
+ 		           case "DARK_TEAL":
+    			          return HSSFColor.HSSFColorPredefined.DARK_TEAL.index;
+    			          break;
+ 		           case "DARK_YELLOW":
+    			          return HSSFColor.HSSFColorPredefined.DARK_YELLOW.index;
+    			          break;
+ 		           case "GOLD":
+    			          return HSSFColor.HSSFColorPredefined.GOLD.index;
+    			          break;
+ 		           case "GREEN":
+    			          return HSSFColor.HSSFColorPredefined.GREEN.index;
+    			          break;
+ 		           case "GREY_25_PERCENT":
+    			          return HSSFColor.HSSFColorPredefined.GREY_25_PERCENT.index;
+    			          break;
+ 		           case "GREY_40_PERCENT":
+         			      return HSSFColor.HSSFColorPredefined.GREY_40_PERCENT.index;
+    	     		      break;
+ 		           case "GREY_50_PERCENT":
+    			          return HSSFColor.HSSFColorPredefined.GREY_50_PERCENT.index;
+    			          break;
+ 		           case "GREY_80_PERCENT":
+    			          return HSSFColor.HSSFColorPredefined.GREY_80_PERCENT.index;
+           		      break;
+ 		           case "INDIGO":
+    			          return HSSFColor.HSSFColorPredefined.INDIGO.index;
+    			          break;
+ 		           case "LAVENDER":
+    			          return HSSFColor.HSSFColorPredefined.LAVENDER.index;
+    			          break;
+ 		           case "LEMON_CHIFFON":
+    			          return HSSFColor.HSSFColorPredefined.LEMON_CHIFFON.index;
+    			          break;
+ 		           case "LIGHT_BLUE":
+    			          return HSSFColor.HSSFColorPredefined.LIGHT_BLUE.index;
+    			          break;
+ 		           case "LIGHT_CORNFLOWER_BLUE":
+    			          return HSSFColor.HSSFColorPredefined.LIGHT_CORNFLOWER_BLUE.index;
+    			          break;
+ 		           case "LIGHT_GREEN":
+    			          return HSSFColor.HSSFColorPredefined.LIGHT_GREEN.index;
+    			          break;
+ 		           case "LIGHT_ORANGE":
+    			          return HSSFColor.HSSFColorPredefined.LIGHT_ORANGE.index;
+    			          break;
+ 		           case "LIGHT_TURQUOISE":
+    			          return HSSFColor.HSSFColorPredefined.LIGHT_TURQUOISE.index;
+    			          break;
+ 		           case "LIGHT_YELLOW":
+    			          return HSSFColor.HSSFColorPredefined.LIGHT_YELLOW.index;
+    			          break;
+ 		           case "LIME":
+    			          return HSSFColor.HSSFColorPredefined.LIME.index;
+    			          break;
+ 		           case "MAROON":
+    			          return HSSFColor.HSSFColorPredefined.MAROON.index;
+    			          break;
+ 		           case "OLIVE_GREEN":
+         			      return HSSFColor.HSSFColorPredefined.OLIVE_GREEN.index;
+    			          break;
+ 		           case "ORANGE":
+    			          return HSSFColor.HSSFColorPredefined.ORANGE.index;
+    			          break;
+ 		           case "ORCHID":
+    			          return HSSFColor.HSSFColorPredefined.ORCHID.index;
+    			          break;
+ 		           case "PALE_BLUE":
+    			          return HSSFColor.HSSFColorPredefined.PALE_BLUE.index;
+    			          break;
+ 		           case "PINK":
+    			          return HSSFColor.HSSFColorPredefined.PINK.index;
+    			          break;
+ 		           case "PLUM":
+    			          return HSSFColor.HSSFColorPredefined.PLUM.index;
+    			          break;
+ 		           case "RED":
+    			          return HSSFColor.HSSFColorPredefined.RED.index;
+    			          break;
+ 		           case "ROSE":
+    			          return HSSFColor.HSSFColorPredefined.ROSE.index;
+    			          break;
+ 		           case "ROYAL_BLUE":
+    			          return HSSFColor.HSSFColorPredefined.ROYAL_BLUE.index;
+    			          break;
+ 		           case "SEA_GREEN":
+    			          return HSSFColor.HSSFColorPredefined.SEA_GREEN.index;
+    			          break;
+ 		           case "SKY_BLUE":
+    			          return HSSFColor.HSSFColorPredefined.SKY_BLUE.index;
+    			          break;
+ 		           case "TAN":
+    			          return HSSFColor.HSSFColorPredefined.TAN.index;
+    			          break;
+ 		           case "TEAL":
+    			          return HSSFColor.HSSFColorPredefined.TEAL.index;
+    			          break;
+ 		           case "TURQUOISE":
+    			          return HSSFColor.HSSFColorPredefined.TURQUOISE.index;
+    			          break;
+ 		           case "VIOLET":
+    			          return HSSFColor.HSSFColorPredefined.VIOLET.index;
+    			          break;
+ 		           case "WHITE":
+    			          return HSSFColor.HSSFColorPredefined.WHITE.index;
+    			          break;
+ 		           case "YELLOW":
+    			          return HSSFColor.HSSFColorPredefined.YELLOW.index;
+ 		           default:
+ 		                return HSSFColor.HSSFColorPredefined.BLACK.index;
+          }
+     }
+
+     // Returns style object
+     // Creates style from specified object
+     var createStyleFormat=function (wb,styleDefinition) {	
+          var alignmentStylesObject = {
+               "CENTER": HorizontalAlignment.CENTER,
+               "FILL": HorizontalAlignment.FILL,
+               "GENERAL": HorizontalAlignment.GENERAL,
+               "JUSTIFY": HorizontalAlignment.JUSTIFY,
+               "LEFT": HorizontalAlignment.LEFT,
+               "RIGHT": HorizontalAlignment.RIGHT,
+          }
+     
+          var borderStylesObject = {
+               "DASH_DOT" : BorderStyle.DASH_DOT,
+               "DASH_DOT_DOT" : BorderStyle.DASH_DOT_DOT,
+               "DASHED" : BorderStyle.DASHED,
+               "DOTTED" : BorderStyle.DOTTED,
+               "DOUBLE" : BorderStyle.DOUBLE,
+               "HAIR" : BorderStyle.HAIR,
+               "MEDIUM" : BorderStyle.MEDIUM,
+               "MEDIUM_DASH_DOT" : BorderStyle.MEDIUM_DASH_DOT,
+               "MEDIUM_DASH_DOT_DOT" : BorderStyle.MEDIUM_DASH_DOT_DOT,
+               "MEDIUM_DASHED" : BorderStyle.MEDIUM_DASHED,
+               "NONE" : BorderStyle.NONE,
+               "SLANTED_DASH_DOT" : BorderStyle.SLANTED_DASH_DOT,
+               "THICK" : BorderStyle.THICK,
+               "THIN" : BorderStyle.THIN,
+          }
+     
+          var underlineStylesObject = {
+               "DOUBLE" : Packages.org.apache.poi.ss.usermodel.U_DOUBLE,
+               "DOUBLE_ACCOUNTING" : Packages.org.apache.poi.ss.usermodel.U_DOUBLE_ACCOUNTING,
+               "NO_UNDERLINE" : Packages.org.apache.poi.ss.usermodel.U_NONE,
+               "SINGLE" : Packages.org.apache.poi.ss.usermodel.U_SINGLE,
+               "SINGLE_ACCOUNTING" : Packages.org.apache.poi.ss.usermodel.U_SINGLE_ACCOUNTING,
+          }
+
+          var verticalAlignmentStylesObject = {
+               "BOTTOM": Packages.org.apache.poi.ss.usermodel.BOTTOM,
+               "CENTER": Packages.org.apache.poi.ss.usermodel.CENTER,
+               "DISTRIBUTED": Packages.org.apache.poi.ss.usermodel.DISTRIBUTED,
+               "JUSTIFY": Packages.org.apache.poi.ss.usermodel.JUSTIFY,
+               "TOP": Packages.org.apache.poi.ss.usermodel.TOP,
+          }
+     
+          var style=wb.createCellStyle();
+
+          // Set the background color
+          if (styleDefinition.BackgroundColor != null) {
+               style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+               style.setFillForegroundColor(getColor(styleDefinition.BackgroundColor));
+          }
+
+          // A font object is needed for font specific styles
+          var font=wb.createFont();
+
+          // Set the foreground color
+          if (styleDefinition.Color != null)
+               font.setColor(getColor(styleDefinition.Color));
+          else
+     	         font.setColor(getColor("BLACK"));
+
+          // Set the font size
+          if (styleDefinition.Size != null)
+               font.setFontHeightInPoints(styleDefinition.Size);
+          else
+               font.setFontHeightInPoints(12);
+
+          // Set bold style
+          if (styleDefinition.Bold == true)
+               font.setBold(true);
+          else
+     	         font.setBold(false);
+
+          // Set italic
+          if (styleDefinition.Italic == true)
+               font.setItalic(true);
+          else
+               font.setItalic(false);
+
+          // Set underline
+          if (styleDefinition.Underline == true)
+               if (styleDefinition.UnderlineStyle != null && underlineStylesObject[styleDefinition.UnderlineStyle.toString().toUpperCase()] != null)
+                    font.setUnderline(underlineStylesObject[styleDefinition.UnderlineStyle.toString().toUpperCase()]);
+                else
+                    font.setUnderline(underlineStylesObject["SINGLE"]);    
+
+          // Set strikeout
+          if (styleDefinition.Strikeout == true)
+               font.setStrikeout(true);
+           else
+               font.setStrikeout(false);
+
+          // Set borders
+          if (styleDefinition.Borders == true) {
+               if (styleDefinition.BorderStyle != null && borderStylesObject[styleDefinition.Borders.toString().toUpperCase()] != null) {
+                    style.setBorderTop(borderStylesObject[styleDefinition.Borders.toString().toUpperCase()]);
+                    style.setBorderBottom(borderStylesObject[styleDefinition.Borders.toString().toUpperCase()]);
+                    style.setBorderLeft(borderStylesObject[styleDefinition.Borders.toString().toUpperCase()]);
+                    style.setBorderRight(borderStylesObject[styleDefinition.Borders.toString().toUpperCase()]);
+               } else {
+                    style.setBorderTop(borderStylesObject["THIN"]);
+                    style.setBorderBottom(borderStylesObject["THIN"]);
+                    style.setBorderLeft(borderStylesObject["THIN"]);
+                    style.setBorderRight(borderStylesObject["THIN"]);
+               }
+          }
+
+          // Set alignment          
+          if (styleDefinition.Alignment != null && alignmentStylesObject[styleDefinition.Alignment.toString().toUpperCase()] != null)
+               style.setAlignment(alignmentStylesObject[styleDefinition.Alignment.toString().toUpperCase()]);
+          else
+               style.setAlignment(alignmentStylesObject["LEFT"]);
+
+          // Set specific data format - Currently, only CURRENCY data type is supported
+          if (styleDefinition.DataFormat != null) {
+               df=wb.createDataFormat();
+               
+               switch (styleDefinition.DataFormat.toString().toUpperCase()) {
+                    case "CURRENCY":
+                         style.setDataFormat(df.getFormat("##,###,##0.00"));
+                         break;
+               }
+          }
+
+          // Set wrap style
+          if (styleDefinition.Wrap == true) {
+               style.setWrapText(true);
+          }
+
+          // Set vertical orientation
+          if (styleDefinition.VerticalAlignment != null && verticalAlignmentStylesObject[styleDefinition.VerticalAlignment.toString().toUpperCase()] != null) {
+               style.setVerticalAlignment(verticalAlignmentStylesObject[styleDefinition.VerticalAlignment.toString().toUpperCase()]);
+          }
+
+          // Set Rotation style 
+          if (styleDefinition.Rotation != null && isInt(styleDefinition.Rotation) ) {
+               style.setRotation(styleDefinition.Rotation);
+          }
+     
+          style.setFont(font);
+     
+          return style;
+     }
+
      var allRows,rows;
      var blacklistedColumn, blacklistedColumnCounter;
      var blacklistColumnIndexes=[];
@@ -360,6 +361,18 @@ function createExcelReport(reportObj) {
      // *** START OF VALIDATION ***
 	   if (typeof reportObj.FileName == 'undefined')
 	        return ["ERROR","The property FileName was not specified"];
+
+     // Remove these characters if they are going to be in the generated file name because they aren't isn't allowed in Windows
+     reportObj.FileName=reportObj.FileName.replaceAll("\"","");
+     reportObj.FileName=reportObj.FileName.replace("*",""); // This is here twice on purpose. Using replaceAll leads to an error Invalid quantifier * in the regex used by ReplaceAll
+     reportObj.FileName=reportObj.FileName.replace("*","");
+     reportObj.FileName=reportObj.FileName.replaceAll("/","");
+     reportObj.FileName=reportObj.FileName.replaceAll("\\\\","");
+     reportObj.FileName=reportObj.FileName.replaceAll(":","");
+     reportObj.FileName=reportObj.FileName.replace("?","");
+     reportObj.FileName=reportObj.FileName.replaceAll("<","");
+     reportObj.FileName=reportObj.FileName.replaceAll(">","");
+     reportObj.FileName=reportObj.FileName.replaceAll("|","");
 
      // If named styles was provided
      if (typeof reportObj.NamedStyles != 'undefined') {
