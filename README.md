@@ -43,7 +43,7 @@ Initial Installation
 
         importPackage(Packages.org.apache.poi.hssf.util);
 	
-9. Paste the contents of createExcelReport.js into the script replacing the previous version if it is there.
+9. Paste the contents of createExcelReport.js into the script.
 
 Upgrading createExcelReport
 ---------------------------
