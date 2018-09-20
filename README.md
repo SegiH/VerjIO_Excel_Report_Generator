@@ -13,14 +13,23 @@ Features
 9. Specify conditional formatting rules.
 10. Insert an image into a sheet.
 
-Installation
-------------
-1. Download the latest version of Apache POI from https://poi.apache.org/, extract the zip file and locate the following JAR files: poi-3.17.jar,poi-excelant-3.17.jar, poi-ooxml-3.17.jar and poi-ooxml-schemas-3.17.jar.
-2. Download the latest version of commons-collections from https://commons.apache.org/proper/commons-collections/ ,extract the zip and locate commons-collections which is currently at version 4.2.
-2. Copy all 5 jar files to VerjIO\UfsServer\tomcat\webapps\ufs\WEB-INF\lib. You wil have 2 different versions of commons-collections. This is ok.
-3. Restart Verj IO
-4. Create shared JavaScript script
-5. Add the following imports at the top of the script:
+Initial Installation
+--------------------
+1. Download the latest version of Apache POI from https://poi.apache.org/, extract the zip file and locate the following JAR files: poi-X.jar,poi-excelant-X.jar, poi-ooxml-X.jar and poi-ooxml-schemas-X.jar where X is the current version number.
+
+2. Download the latest version of commons-collections from https://commons.apache.org/proper/commons-collections/, extract the zip and locate commons-collections which is currently at version 4.2.
+
+3. Download the latest version of commons-compress from https://commons.apache.org/proper/commons-compress/download_compress.cgi, extract the zip and locate commons-compress which is currently at version 1.18.
+
+4. Download the latest version of XML Beans from https://xmlbeans.apache.org/download/index.html#XMLBeans-3.0.1, extract the zip and locate the jar lib\xbean.jar
+
+5. Copy all the jar files that you extracted above to VerjIO\UfsServer\tomcat\webapps\ufs\WEB-INF\lib. You wil have 2 different versions of commons-collections. This is ok.
+
+6. Restart Verj IO
+
+7. Create shared JavaScript script
+
+8. Add the following imports at the top of the script:
 
         importPackage(java.io);
 	
@@ -34,7 +43,13 @@ Installation
 
         importPackage(Packages.org.apache.poi.hssf.util);
 	
-6. Paste the contents of createExcelReport.js into the script replacing the previous version if it is there.
+9. Paste the contents of createExcelReport.js into the script replacing the previous version if it is there.
+
+Upgrading createExcelReport
+---------------------------
+If you are using POI 3.X jar files, you need to update POI to 4.0 or higher using the instructions above. If you try to use the newest version of createExcelReport with POI 3.X jar files, you will most likely run into errors or issues because there are some breaking changes between POI 3 and 4.
+
+If you are already using POI 4.X jar files, you can update createExcelReport only.
 
 Usage
 -----
