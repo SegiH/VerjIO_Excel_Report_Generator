@@ -1,15 +1,27 @@
 function createExcelReport(reportObj) {	
+     // Gets CellType based on name. Because of changes to referencing a cell type in POI 4, we have to get all Cell types and return the index for the cell type that we are looking for
+     var getCellType=function(name) {
+          var cellTypes=Packages.org.apache.poi.ss.usermodel.CellType.values();
+
+          for (var i=0;i<cellTypes.length;i++) {
+               if (cellTypes[i]==name)
+                    return cellTypes[i];
+          }
+     }
+     
      // Returns color object
      var getColor=function(color) {
           // If color is not specified, it will default to black
-          if (color==null)
+          if (color==null) {
+          	    print("Color not provided. Defaulting to black");
                 color="black";
+          }
 
           // RGB color
           if (color.indexOf(",") != -1) {
      	         var colorArr=color.split(",");
-     	    
-               return new XSSFColor(new java.awt.Color(parseFloat(colorArr[0]/255),parseFloat(colorArr[1]/255),parseFloat(colorArr[2]/255)))  
+                
+               return new XSSFColor(new java.awt.Color(parseFloat(colorArr[0]/255),parseFloat(colorArr[1]/255),parseFloat(colorArr[2]/255)), new org.apache.poi.xssf.usermodel.DefaultIndexedColorMap());
           }
 
           // Predefined color
@@ -276,6 +288,7 @@ function createExcelReport(reportObj) {
           else
                style.setAlignment(alignmentStylesObject["LEFT"]);
 
+
           // Set specific data format - Currently, only CURRENCY data type is supported
           if (styleDefinition.DataFormat != null) {
                df=wb.createDataFormat();
@@ -306,7 +319,7 @@ function createExcelReport(reportObj) {
      
           return style;
      }
-
+     
      var allRows,rows;
      var blacklistedColumn, blacklistedColumnCounter;
      var blacklistColumnIndexes=[];
@@ -321,8 +334,8 @@ function createExcelReport(reportObj) {
      
      var reportObjSheetCounter;
      var rowWritten=false;
-     var sheet, workbook;
-
+     var sheet, workbook;     
+     
      // anchor types when placing an image in the sheet
      var anchorTypesObject = {
           "DONT_MOVE_AND_RESIZE" : Packages.org.apache.poi.ss.usermodel.ClientAnchor.AnchorType.DONT_MOVE_AND_RESIZE,
@@ -1054,13 +1067,14 @@ function createExcelReport(reportObj) {
                               } else {
                                    cell.setCellStyle((styledFormat != null ? styledFormat : cellFormat));
                               }
-
-                              cell.setCellType(org.apache.poi.ss.usermodel.Cell.CELL_TYPE_NUMERIC);
+                              
+                              cell.setCellType(getCellType("NUMERIC"));
                               
                               break;
                          case "CHAR":
                               rowWritten=true;
-                               if (data[dataCounter][colCounter][1] != null) {                            
+
+                              if (data[dataCounter][colCounter][1] != null) {                    
                                    cell.setCellValue(data[dataCounter][colCounter][1]);
                                    cell.setCellStyle((styledFormat != null ? styledFormat : cellFormat));
                               } else {
@@ -1080,7 +1094,7 @@ function createExcelReport(reportObj) {
                     	         } else
                                    cell.setCellStyle((styledFormat != null ? styledFormat : cellFormat));
 
-                               cell.setCellType(org.apache.poi.ss.usermodel.Cell.CELL_TYPE_NUMERIC);
+                               cell.setCellType(getCellType("NUMERIC"));
                                
                     	         break;
                     	   case "DATE":
@@ -1290,7 +1304,7 @@ function createExcelReport(reportObj) {
           }
 
           // If 1 or more custom celll texts were specified, validate the custom cell text properties
-          if (typeof reportObj.CustomCellText != 'undefined') {         
+          if (typeof reportObj.CustomCellText != 'undefined') {
                for (customCellTextCounter=0;customCellTextCounter < reportObj.CustomCellText.length;customCellTextCounter++) {
                     try {
                     	   // Skip if the destination sheet name doesn't match the sheet that we are on
@@ -1347,7 +1361,7 @@ function createExcelReport(reportObj) {
 
                               cell.setCellValue(parseFloat(value));
 
-                              cell.setCellType(org.apache.poi.ss.usermodel.Cell.CELL_TYPE_NUMERIC);
+                              cell.setCellType(getCellType("NUMERIC"));
 
                               if (styledFormat != null) cell.setCellStyle(styledFormat);
                               break;
@@ -1357,8 +1371,7 @@ function createExcelReport(reportObj) {
 
                               cell.setCellValue(dateVal);
                     	        if (styledFormat != null) cell.setCellStyle(styledFormat);
-                    	         
-                    	        //destinationSheet.addCell(new Label(columnNum,rowNum,dateVal,(styledFormat != null ? styledFormat : null)));
+                    	        
                     	        break;
                          case "CHAR":
                          default: 
@@ -1395,8 +1408,15 @@ function createExcelReport(reportObj) {
                }
           } else { // When ColumnSize isn't provided, default first 100 columns to autosize
                // Autosize all of the columns
-               for (columnSizeCounter=0;columnSizeCounter<reportObj.Sheets[reportObjSheetCounter].Columns.length;columnSizeCounter++) {
-                    sheet.autoSizeColumn(columnSizeCounter);
+               
+               for (var columnSizeCounter=0;columnSizeCounter<reportObj.Sheets[reportObjSheetCounter].Columns.length;columnSizeCounter++) {
+               	    try {
+               	    	   //print("columnSizeCounter="+ columnSizeCounter + " and the var" + (isInt(columnSizeCounter) ? " is an int" : " is not an int"));
+               	    	   
+                         sheet.autoSizeColumn(columnSizeCounter);
+               	    } catch(e) {
+               	         //print("An error occurred sizing column " + columnSizeCounter + " when " + (reportObj.Sheets[reportObjSheetCounter].SQL != null ? "the SQL=" + reportObj.Sheets[reportObjSheetCounter].SQL : " the table is " + reportObj.Sheets[reportObjSheetCounter].TableData) + " with the error" + e);
+               	    }
                }
           }
           // *** END OF OF SETTING THE COLUMN WIDTHS ***
