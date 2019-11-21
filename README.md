@@ -206,12 +206,12 @@ but not all of them are required.All of the optional properties have a comment i
                AllMargins: "1,0.5,1.5,2", // Optional. Providing 4 values applies the 1st value to the top, 2nd value to the bottom , 3rd value to the left and 4th value to the right margin
                HeaderMargin: 1, // Optional header margin
                FooterMargin: 1, // Optional footer margin
-			   HeaderLeft: "Left header string goes here", // Optional left header
-			   HeaderCenter: "Center header string goes here", // Optional center header
-			   HeaderRight: "Right header string goes here", // Optional right header
-			   FooterLeft: "Left footer string goes here", // Optional left footer
-			   FooterCenter: "Center footer string goes here", // Optional center footer
-			   FooterRight: "Right footer string goes here", // Optional right footer
+               HeaderLeft: "Left header string goes here", // Optional left header
+               HeaderCenter: "Center header string goes here", // Optional center header
+               HeaderRight: "Right header string goes here", // Optional right header
+               FooterLeft: "Left footer string goes here", // Optional left footer
+               FooterCenter: "Center footer string goes here", // Optional center footer
+               FooterRight: "Right footer string goes here", // Optional right footer
                FitWidth: true, // Optional. Will force sheet to fit all columns on the page width-wise
                FitHeight: true, // Optional. Will force sheet to fit all columns on the page height-wise
                FitToPages: true, // Optional. Will force sheet to fit all of the content into 1 page
