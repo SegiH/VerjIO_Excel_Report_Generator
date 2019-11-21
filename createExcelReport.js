@@ -3,10 +3,9 @@ function createExcelReport(reportObj) {
      var getCellType=function(name) {
           var cellTypes=Packages.org.apache.poi.ss.usermodel.CellType.values();
 
-          for (var i=0;i<cellTypes.length;i++) {
+          for (var i=0;i<cellTypes.length;i++)
                if (cellTypes[i]==name)
-                    return cellTypes[i];
-          }
+                    return cellTypes[i];          
      }
      
      // Returns color object
@@ -330,11 +329,14 @@ function createExcelReport(reportObj) {
      var header, footer;
      var rowCounter=0;
      var today=new Date();
-     var todayStr=((today.getMonth()+1) < 10 ? "0" + (today.getMonth() + 1) : (today.getMonth()+1)) + "-" + (today.getDate() < 10 ? "0" + today.getDate() : today.getDate()) + "-" + today.getFullYear() + " " + today.getHours() + "-" + (today.getMinutes() < 10 ? "0" : "") + today.getMinutes() + "-" + today.getSeconds();     
+     //var todayStr=((today.getMonth()+1) < 10 ? "0" + (today.getMonth() + 1) : (today.getMonth()+1)) + "-" + (today.getDate() < 10 ? "0" + today.getDate() : today.getDate()) + "-" + today.getFullYear() + " " + today.getHours() + "-" + (today.getMinutes() < 10 ? "0" : "") + today.getMinutes() + "-" + today.getSeconds();     
+     var todayStr=((today.getMonth()+1) < 10 ? "0" : "") + (today.getMonth() + 1) + "-" + (today.getDate() < 10 ? "0" : "") + today.getDate() + "-" + today.getFullYear() + " " + (today.getHours() < 10 ? "0" : "") + today.getHours() + "-" + (today.getMinutes() < 10 ? "0" : "") + today.getMinutes() + "-" + (today.getSeconds() < 10 ? "0" : "") + today.getSeconds();     
      
      var reportObjSheetCounter;
      var rowWritten=false;
-     var sheet, workbook;     
+     var sheet, workbook;
+     var noData=false;
+     var anyRowWritten=false;
      
      // anchor types when placing an image in the sheet
      var anchorTypesObject = {
@@ -446,7 +448,7 @@ function createExcelReport(reportObj) {
           }
 
 	        // If the sheet has a header, validate the MergeCells property if defined
-	        if (typeof reportObj.Sheets[reportObjSheetCounter].SheetHeader != 'undefined') {
+	        if (typeof reportObj.Sheets[reportObjSheetCounter].ApprovingSheetHeader != 'undefined') {
 	             // Validate MergeCells length
 	             if (typeof reportObj.Sheets[reportObjSheetCounter].SheetHeader[0].MergeCells != 'undefined') {
                     var len=reportObj.Sheets[reportObjSheetCounter].SheetHeader[0].MergeCells.split(",").length;
@@ -704,13 +706,6 @@ function createExcelReport(reportObj) {
           header = sheet.getHeader();
           footer = sheet.getFooter();
 
-
-          // Set header / footer
-          header.setLeft("&F"); // Add the workbook name to the top right of the header
-          header.setRight("&A"); // Add the sheet name to the top right of the header
-          
-          // Add the page numbers to the footer to Page <current page #> / <Total # of pages>
-          footer.setCenter("Page &P / &N");
           // *** END OF SETTING THE HEADER AND FOOTER ***
 
          // *** START OF SETTING THE MARGINS ***
@@ -762,6 +757,35 @@ function createExcelReport(reportObj) {
                sheet.setMargin(sheet.FooterMargin,parseInt(reportObj.Sheets[reportObjSheetCounter].HeaderMargin));
           // *** END OF SETTING THE MARGINS ***         
 
+          // *** START OF  SETTING THE HEADER ***
+          if (typeof reportObj.Sheets[reportObjSheetCounter].HeaderLeft !== 'undefined')
+               header.setLeft(reportObj.Sheets[reportObjSheetCounter].HeaderLeft);
+          else
+               header.setLeft("&F"); // Add the workbook name to the top right of the header
+
+          if (typeof reportObj.Sheets[reportObjSheetCounter].HeaderCenter !== 'undefined')
+               header.setCenter(reportObj.Sheets[reportObjSheetCounter].HeaderCenter);
+
+          if (typeof reportObj.Sheets[reportObjSheetCounter].HeaderRight !== 'undefined')
+               header.setRight(reportObj.Sheets[reportObjSheetCounter].HeaderRight);
+          else
+               header.setRight("&A"); // Add the sheet name to the top right of the header
+          
+          // *** END OF  SETTING THE HEADER ***
+
+          // *** START OF  SETTING THE FOOTER ***
+          if (typeof reportObj.Sheets[reportObjSheetCounter].FooterLeft !== 'undefined')
+               footer.setLeft(reportObj.Sheets[reportObjSheetCounter].FooterLeft);
+
+          if (typeof reportObj.Sheets[reportObjSheetCounter].FooterCenter !== 'undefined')
+               footer.setCenter(reportObj.Sheets[reportObjSheetCounter].FooterCenter);
+           else
+               footer.setCenter("Page &P / &N"); // Add the page numbers to the footer to Page <current page #> / <Total # of pages>
+
+          if (typeof reportObj.Sheets[reportObjSheetCounter].FooterRight !== 'undefined')
+               footer.setRight(reportObj.Sheets[reportObjSheetCounter].FooterRight);
+          // *** END OF  SETTING THE FOOTER ***
+          
           // *** START OF MISC SHEET OPTIONS ***
           // FitWidth
           if (typeof reportObj.Sheets[reportObjSheetCounter].FitWidth !== 'undefined' && reportObj.Sheets[reportObjSheetCounter].FitWidth == true)
@@ -892,7 +916,7 @@ function createExcelReport(reportObj) {
           // *** START OF GET STYLE FOR CURRENT SHEET ***
           // Get the styled format if provided
           if (reportObj.Sheets[reportObjSheetCounter].Style != null) {
-               styledFormat=createStyleFormat(workbook,eportObj.Sheets[reportObjSheetCounter].Style[0]);
+               styledFormat=createStyleFormat(workbook,reportObj.Sheets[reportObjSheetCounter].Style[0]);
           } else if (reportObj.Sheets[reportObjSheetCounter].NamedStyle != null) {
                for (namedStylesCounter=0;namedStylesCounter <  namedStyles.length;namedStylesCounter++) {
                     if (namedStyles[namedStylesCounter][0].toString().toUpperCase() === reportObj.Sheets[reportObjSheetCounter].NamedStyle.toString().toUpperCase()) {
@@ -922,9 +946,10 @@ function createExcelReport(reportObj) {
           if (reportObj.Sheets[reportObjSheetCounter].SQL != null) { 
                columnNotFound=false;
                invalidColumn="";
-               
+
+               try {
                // Read the data
-               services.database.executeSelectStatement(reportObj.Sheets[reportObjSheetCounter].DBConnection,reportObj.Sheets[reportObjSheetCounter].SQL,     
+               services.database.executeSelectStatement(reportObj.Sheets[reportObjSheetCounter].DBConnection,reportObj.Sheets[reportObjSheetCounter].SQL,
                function (columnData) {
                	   lineArr = [];
                	   rowArr = [];
@@ -937,7 +962,6 @@ function createExcelReport(reportObj) {
                          for (var colName in columnData) { 
                          	    // If the current column is the one we are looking for
                               if (columns[key][0] != null && columns[key][0].toUpperCase() == colName.toUpperCase()) {
-
                                    // add column name, column value, column type and date format for date type
                               	   lineArr = new Array(columns[key][0],(columnData[columns[key][0]] != null ? columnData[columns[key][0]] : null),columns[key][1],columns[key][2]);
 
@@ -961,7 +985,13 @@ function createExcelReport(reportObj) {
                     // push line array
                     data.push(rowArr);
                });
-
+               } catch(e) {
+               	     workbook.close();
+                     if (FileServices.existsFile(reportObj.FileName))
+                          FileServices.deleteFile(reportObj.FileName);
+                         
+                     return ["ERROR","An error occurred generating the report with the error " + e + " while executing the SQL statement " + reportObj.Sheets[reportObjSheetCounter].SQL];
+               }
                if (columnFound == false && invalidColumn != null && invalidColumn != "")
                     return ["ERROR","The sql column " + invalidColumn + " was not found in the database. Please check the spelling of the column name"];
           // *** TABLE BASED DATA *** 
@@ -977,10 +1007,12 @@ function createExcelReport(reportObj) {
                     // Loop through each column for the current row
                     for (columnCounter=0;columnCounter<columnHeaders.length;columnCounter++) {
                          try {
-                         	    if (columns[columnCounter][0] == null)
+                         	    if (columns[columnCounter] == null || typeof columns[columnCounter][0] == 'undefined' || columns[columnCounter][0] == null ) {
                          	         continue;
+                         	    }
                          	         
-                         	    // Make sure htat the column name is valid
+                         	         
+                         	    // Make sure that the column name is valid
                          	    if (tables.getTable(reportObj.Sheets[reportObjSheetCounter].TableData).getColumn(columns[columnCounter][0]) == null)
                          	         return ["ERROR","The table column " + columns[columnCounter][0] + " was not found in the database. Please check the spelling of the column name"];
                               
@@ -1033,9 +1065,15 @@ function createExcelReport(reportObj) {
                
                // Write the data
                for (var colCounter=0;colCounter<columnHeaders.length;colCounter++) {
-               	    if (data[dataCounter][colCounter]==null)
+               	    if (data[dataCounter][colCounter]==null) {
                	         continue;
+               	    }
 
+                    // If the Column is equal to [null], increment currColumnIndex so the data is shifted to the right
+               	    while (reportObj.Sheets[reportObjSheetCounter].Columns[currColumnIndex][0] == null) {               	    
+               	         currColumnIndex++;
+               	    }               	   
+                    
                     // If the type is CHAR but the value is an INT, change the type to an INT so it will be written as an INT so
                     // that Excel doesn't complaign that the field is a number in a text cell
                     if (data[dataCounter][colCounter][2] == "CHAR" && data[dataCounter][colCounter][1] != null && isInt(data[dataCounter][colCounter][1]) && reportObj.Sheets[reportObjSheetCounter].Columns[colCounter][2] != true)
@@ -1397,9 +1435,6 @@ function createExcelReport(reportObj) {
           if (typeof reportObj.Sheets[reportObjSheetCounter].ColumnSize !== 'undefined') {
                // Loop through each item in ColumnSize array. I loop through ColumnHeaders because its length represents the total # of actual columns and this way you can only provide 1 column width and not specify the rest of the column widths
                for (columnSizeCounter=0;columnSizeCounter<reportObj.Sheets[reportObjSheetCounter].ColumnHeaders.length;columnSizeCounter++) {
-                    if (!isInt(columnSizeCounter))
-                         alert("columnSizeCounter="+columnSizeCounter);
-                         
                     // If a non-null value was passed use it. Otherwise default to autosize
                     if (reportObj.Sheets[reportObjSheetCounter].ColumnSize[columnSizeCounter] != null)
                          sheet.setColumnWidth(columnSizeCounter,(reportObj.Sheets[reportObjSheetCounter].ColumnSize[columnSizeCounter]*256) );
@@ -1479,14 +1514,18 @@ function createExcelReport(reportObj) {
                     }
 
                     var endRow=(reportObj.Sheets[reportObjSheetCounter].ConditionalFormatting[cfCounter].EndRow != null ? reportObj.Sheets[reportObjSheetCounter].ConditionalFormatting[cfCounter].EndRow : rowCounter-1);
-                    
-                    region = new org.apache.poi.ss.util.CellRangeAddress(reportObj.Sheets[reportObjSheetCounter].ConditionalFormatting[cfCounter].StartRow,endRow,reportObj.Sheets[reportObjSheetCounter].ConditionalFormatting[cfCounter].StartColumn,reportObj.Sheets[reportObjSheetCounter].ConditionalFormatting[cfCounter].EndColumn);
 
-                    regions = new Array();
+                    try {
+                         var region = new org.apache.poi.ss.util.CellRangeAddress(reportObj.Sheets[reportObjSheetCounter].ConditionalFormatting[cfCounter].StartRow,endRow,reportObj.Sheets[reportObjSheetCounter].ConditionalFormatting[cfCounter].StartColumn,reportObj.Sheets[reportObjSheetCounter].ConditionalFormatting[cfCounter].EndColumn);
 
-                    regions.push(region);
-                    
-                    sheetCF.addConditionalFormatting(regions, rule);
+                         regions = new Array();
+
+                         regions.push(region);
+                     
+                         sheetCF.addConditionalFormatting(regions, rule);
+                    } catch(e) {
+                         sendAdminEmail("An error occurred with the report " + reportObj.FileName,"The error " + e + " occurred with the report " + reportObj.FileName);
+                    }
                } // end of for (cfCounter=0;cfCounter
           } // *** END OF CONDITIONAL FORMATTING ***
 
@@ -1562,5 +1601,9 @@ function createExcelReport(reportObj) {
      fos.close();
      workbook.close();
 
-     return ["OK",reportObj.FileName];
+     if (anyRowWritten == true) {
+          return ["OK",reportObj.FileName];
+     } else {
+          return ["OK-NODATA",reportObj.FileName];
+     }
 }
