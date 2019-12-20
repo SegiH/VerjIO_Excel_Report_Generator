@@ -963,7 +963,7 @@ function createExcelReport(reportObj) {
                          	    // If the current column is the one we are looking for
                               if (columns[key][0] != null && columns[key][0].toUpperCase() == colName.toUpperCase()) {
                                    // add column name, column value, column type and date format for date type
-                              	   lineArr = new Array(columns[key][0],(columnData[columns[key][0]] != null ? columnData[columns[key][0]] : null),columns[key][1],columns[key][2]);
+                              	   lineArr = new Array(columns[key][0],(columnData[columns[key][0]] != null ? columnData[columns[key][0]] : null),columns[key][1],columns[key][2],(reportObj.Sheets[reportObjSheetCounter].Columns[key][2] != null ? reportObj.Sheets[reportObjSheetCounter].Columns[key][2] : null));
 
                                    rowArr.push(lineArr);
                                    
@@ -1031,8 +1031,8 @@ function createExcelReport(reportObj) {
 
                          currColumnIndex=columns[columnCounter][2];
 
-                         // add column name, column value, column type and column index
-                         lineArr = new Array(columns[columnCounter][0],(currColumnValue != null ? currColumnValue : null), currColumnType);
+                         // add column name, column value, column type and force type if set
+                         lineArr = new Array(columns[columnCounter][0],(currColumnValue != null ? currColumnValue : null), currColumnType,(columns[columnCounter][2] != null ? columns[columnCounter][2] : null));
 
                          rowArr.push(lineArr);
                     }                    
@@ -1053,7 +1053,7 @@ function createExcelReport(reportObj) {
           currColumnIndex=0;
           
           rowWritten=false;
-          
+
           // *** START OF LOOP THAT GOES THROUGH DATA ARRAY AND WRITES THE DATA ***
           row = sheet.getRow(rowCounter);
 
@@ -1076,7 +1076,7 @@ function createExcelReport(reportObj) {
                     
                     // If the type is CHAR but the value is an INT, change the type to an INT so it will be written as an INT so
                     // that Excel doesn't complaign that the field is a number in a text cell
-                    if (data[dataCounter][colCounter][2] == "CHAR" && data[dataCounter][colCounter][1] != null && isInt(data[dataCounter][colCounter][1]) && reportObj.Sheets[reportObjSheetCounter].Columns[colCounter][2] != true)
+                    if (data[dataCounter][colCounter][2] == "CHAR" && data[dataCounter][colCounter][1] != null && isInt(data[dataCounter][colCounter][1]) && data[dataCounter][colCounter][3] != true)
                          data[dataCounter][colCounter][2]="INTEGER";
 
                     // If the type is INT but the value is a CHAR, change the type to an CHAR so it will be written as a CHAR. Ignore percentage values because we want to still write them as a number
@@ -1084,7 +1084,6 @@ function createExcelReport(reportObj) {
                          data[dataCounter][colCounter][2]="CHAR";
                    
                    cell = row.createCell(currColumnIndex);
-                    //alert("column=" + data[dataCounter][colCounter][0]  + " value=" + data[dataCounter][colCounter][1] + " and type=" + data[dataCounter][colCounter][2] );
 
                     // In order to prevent errors, always default the type to CHAR if not specified.
                     if (data[dataCounter][colCounter][2]==null) data[dataCounter][colCounter][2]="CHAR";
@@ -1113,8 +1112,8 @@ function createExcelReport(reportObj) {
                               rowWritten=true;
 
                               if (data[dataCounter][colCounter][1] != null) {                    
-                                   cell.setCellValue(data[dataCounter][colCounter][1]);
                                    cell.setCellStyle((styledFormat != null ? styledFormat : cellFormat));
+                                   cell.setCellValue(data[dataCounter][colCounter][1]);
                               } else {
                               	   cell.setCellValue("");
                                    cell.setCellStyle((styledFormat != null ? styledFormat : cellFormat));
@@ -1227,6 +1226,9 @@ function createExcelReport(reportObj) {
           
           // *** END OF LOOP THAT GOES THROUGH DATA ARRAY AND WRITES THE DATA ***          
 
+          // Disable Number stored as text warning
+          sheet.addIgnoredErrors(new Packages.org.apache.poi.ss.util.CellRangeAddress(0, rowCounter, 0,100), IgnoredErrorType.NUMBER_STORED_AS_TEXT);
+          
           // Check to see if any data was written to the current sheet
           if (rowWritten==false) {
                row = sheet.createRow(1);
@@ -1524,7 +1526,7 @@ function createExcelReport(reportObj) {
                      
                          sheetCF.addConditionalFormatting(regions, rule);
                     } catch(e) {
-                         sendAdminEmail("An error occurred with the report " + reportObj.FileName,"The error " + e + " occurred with the report " + reportObj.FileName);
+                         //sendAdminEmail("An error occurred with the report " + reportObj.FileName,"The error " + e + " occurred with the report " + reportObj.FileName);
                     }
                } // end of for (cfCounter=0;cfCounter
           } // *** END OF CONDITIONAL FORMATTING ***

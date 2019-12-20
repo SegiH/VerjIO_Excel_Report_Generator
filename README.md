@@ -1,7 +1,8 @@
-VerjIO_Excel_Report_Generator is a Verj IO function that recieves a JSON object as a parameter and will generate an Excel report based on the provided JSON "recipe" to build the report. A sample JSON object is provided below. The report is saved as an XLSX format Excel document.
+# VerjIO_Excel_Report_Generator
 
-Features
---------
+VerjIO_Excel_Report_Generator is a Verj IO function that will automatically create an Excel report based on an SQL statement or a Verj IO Table. To use it, you need to create a JSON object as a parameter which is a JSON "recipe" to build the report. A sample JSON object is provided below. The report is saved as an XLSX format Excel document.
+
+## Features
 1. Create multiple sheets with a table in each sheet using an SQL statement or a table resource as the data source for each sheet
 2. Add formulas to each sheet including the option to specify that a formula should be written for each row of a table
 3. Merge cells
@@ -13,46 +14,38 @@ Features
 9. Specify conditional formatting rules.
 10. Insert an image into a sheet.
 
-Initial Installation
---------------------
-1. Download the latest version of Apache POI from https://poi.apache.org/, extract the zip file and locate the following JAR files: poi-X.jar,poi-excelant-X.jar, poi-ooxml-X.jar and poi-ooxml-schemas-X.jar where X is the current version number.
+## Initial Installation
+1. Download the latest version of [Apache POI](https://poi.apache.org/), extract the zip file and locate the following JAR files: poi-X.jar,poi-excelant-X.jar, poi-ooxml-X.jar and poi-ooxml-schemas-X.jar where X is the current version number.
 
-2. Download the latest version of commons-collections from https://commons.apache.org/proper/commons-collections/, extract the zip and locate commons-collections which is currently at version 4.2.
+2. Download the latest version of [commons-collections](https://commons.apache.org/proper/commons-collections/), extract the zip and locate commons-collectionsX.jar where X is the current version number.
 
-3. Download the latest version of commons-compress from https://commons.apache.org/proper/commons-compress/download_compress.cgi, extract the zip and locate commons-compress which is currently at version 1.18.
+3. Download the latest version of [commons-compress](https://commons.apache.org/proper/commons-compress/download_compress.cgi), extract the zip and locate commons-compress-X where X is the current version number.
 
-4. Download the latest version of XML Beans from https://xmlbeans.apache.org/download/index.html#XMLBeans-3.0.1, extract the zip and locate the jar lib\xbean.jar
+4. Download the latest version of [XML Beans](https://xmlbeans.apache.org/download/index.html#XMLBeans-3.0.1), extract the zip and locate the jar xbean.jar.
 
-5. Copy all the jar files that you extracted above to VerjIO\UfsServer\tomcat\webapps\ufs\WEB-INF\lib. You wil have 2 different versions of commons-collections. This is ok.
+5. Copy all the jar files that you extracted above to VerjIO's lib folder. On Verj IO 5.6+, the path is C:\VerjIOData\apps\ufs\webapp\WEB-INF\lib. On versions of Verj IO before 5.6, the path is  VerjIO\UfsServer\tomcat\webapps\ufs\WEB-INF\lib. You may have 2 different versions of commons-collections. This is ok.
 
 6. Restart Verj IO
 
 7. Create shared JavaScript script
 
 8. Add the following imports at the top of the script:
-
-        importPackage(java.io);
-	
-        importPackage(Packages.org.apache.poi);
-	
-        importPackage(Packages.org.apache.poi.hssf.usermodel);
-	
-        importPackage(Packages.org.apache.poi.xssf.usermodel);
-
-        importPackage(Packages.org.apache.poi.ss.usermodel);
-
-        importPackage(Packages.org.apache.poi.hssf.util);
+   - importPackage(java.io);
+   - importPackage(Packages.org.apache.poi);
+   - importPackage(Packages.org.apache.poi.hssf.usermodel);
+   - importPackage(Packages.org.apache.poi.xssf.usermodel);
+   - importPackage(Packages.org.apache.poi.ss.usermodel);
+   - importPackage(Packages.org.apache.poi.hssf.util);
 	
 9. Paste the contents of createExcelReport.js into the script.
 
-Upgrading createExcelReport
----------------------------
+## Upgrading VerjIO_Excel_Report_Generator
+
 If you are using POI 3.X jar files, you need to update POI to 4.0 or higher using the instructions above. If you try to use the newest version of createExcelReport with POI 3.X jar files, you will most likely run into errors or issues because there are some breaking changes between POI 3 and 4.
 
-If you are already using POI 4.X jar files, you can update createExcelReport only.
+If you are already using POI 4.X jar files, you only need to replace createExcelReport() with the newer version.
 
-Usage
------
+## Usage
 In order to create an Excel report, you need to build a JSON object to tell the application how to create the Excel document.
 
 Example:
@@ -84,32 +77,31 @@ Example:
 	        event.stopExecution();
      }
      
-     print ("The file name is " + result[1]);
+     print ("The file name is " + result[1]);`
 
 In the example above, the generated Excel file will be named "Sales Report as of 08-01-2018-09-20-10.xlsx". The date will automatically be added to the file name to make sure that each report always has a unique name.
 
-The first sheet will be named Sales Report and will have a table with the 6 columns headings specified in ColumnHeaders. ColumnSize is used to set the size of each column (null values in ColumnSize will autosize that column). The Columns property specify the database column names and their type. This sheet uses an SQL statement as the data source.
+The first sheet will be named Sales Report and will have a table with the 6 columns headings specified in ColumnHeaders. ColumnSize is used to set the size of each column (specifying null for a column size will set that column to autosize). The Columns property specify the database column names and their type. This sheet uses an SQL statement as the data source with the specified database connection called PRODUCTION.
 
-The second sheet will be named Shipment Report and have a table with the 3 columns specified. ColumnSize is not provided so all columns will be set to auto size automatically. This sheet uses a table resource as the data source.
+The second sheet will be named Shipment Report and have a table with the 3 columns specified. ColumnSize is not provided so all columns will auto size automatically. This sheet uses a table resource as the data source instead of an SQL statement.
 
 createExcelReport() will return a 2 dimensional array with the results
 
-The results will be either:
+The return value will be one of the following:
 
-["OK",Somefilename.xlsx"] // Report was successfully created
-["OK-NODATA",""] // There was no data returned from the SQL query or table resource
+["OK","Somefilename.xlsx"] // Report was successfully created and the file was saved as Somefilename.xlsx
+["OK-NODATA",""] // There was no data returned from the SQL query or table resource so the report was not generated
 ["ERROR","Error Message"] // An error occurred during the creation of the report
 
 
-General Tips
-------------
+## General Tips
 1. The number of columns specified in ColumnHeaders must match the number of arrays provided in Columns or an error will be thrown.
 
-2. When an SQL statement is provided as a data source, you must also provide the name of the database connection or an error will be thrown. Since database resources in Verj IO have a link to the database connection name and tables are linked to a database resource, this isn't needed for table data.
+2. When an SQL statement is provided as a data source, you must also provide the name of the database connection or an error will be thrown. Since Verj IO tables are already linked to a database connection, you don't need to specify the database connection name when providing a table source.
 
 3. ColumnSize is optional and can be used to specify the column width. If you do not provide ColumnSize, all columns will be set to autosize the width automatically. If you provide an array with null for any values like in the example above, the columns that have null for the width will be set to autosize the width automatically.
 
-4. Valid data types are "BOOLEAN", "CHAR", "CURRENCY", "DATE", "DATETIME", "INTEGER" (or "INT" as an alias for INTEGER") and "NUMERIC". If you specify that a column data type is CHAR but the value is an INTEGER, it will be written as an INTEGER. IF you want to force the column to always be written as CHAR, add a true parameter after the CHAR data type. Ex. ["SOMECOLUMN","CHAR",true]. If the data type is specified as INT but the data value is a CHAR, it will be written as a CHAR.
+4. Valid data types are "BOOLEAN", "CHAR", "CURRENCY", "DATE", "DATETIME", "INTEGER" (or "INT" as an alias for INTEGER") and "NUMERIC". If you specify that a column data type is CHAR but the value that is going to be written to the Excel document is an INTEGER, it will be written as an INTEGER. IF you want to force the column to always be written as CHAR, add a true parameter after the CHAR data type. Ex. ["SOMECOLUMN","CHAR",true]. If the data type is specified as INT but the data value is not an INT, it will be written to the Excel document as a CHAR unless you add a true parameter. Ex ["SOMECOLUMN","INT",true].
 
 5. Valid color values can be found in the object colorObject defined in getColor(). You can also supply an RGB string ike "83,162,240" as the color value to use a specific RGB value instead of a predefined color.
 
@@ -119,7 +111,7 @@ General Tips
 
 8. Valid alignment styles can be found in alignmentStylesObject defined in createStyleFormat().
 
-9. When checking the return value of createExcelReport(), if the call to createExcelReport() is made from a client side function, the result array returned by createExcelReport() must be passed down to the client control that called the server side function. Otherwise, the user will not see the result message. In the server side function that gets called from the client, the call to createExcelReport() might look like this:
+9. If you are calling createExcelReport() in a client callable function, you cannot alert the result using event.owner.addWarningMessage on the server side. Instead you must return the warning message to the script that called the client side function that executes createExcelReport(). In the server side function that gets called from the client, the call to createExcelReport() might look like this:
        
        // Part of the logic from the server side function generateKPIReport() that gets called from the client side
        var result=createExcelReport(excelReportObj);
@@ -131,50 +123,52 @@ General Tips
 	   // Do something like email the report here if you want
 	   
 	   return ["OK","The report has been generated"];
-	   } // End of generateKPIReport() server side shared function
+	   }
 	   
-      In the HTML entities for the control that calls createExcelReport() directly or calls another server side function which calls createExcelReport() you would need to have something like this:
+      In the HTML entities of the control that called the client side function, you would need to have something like this:
 
        var result=$eb.executeFunction("generateKPIReport",reportYear,false,true); // Call from client to server side function that calls createExcelReport()
       
-       if (result[0]=="ERROR" || result[0]=="OK")
+       if (result[0]=="ERROR"")
             alert(result[1]);
        else if (result[0]=="OK-NODATA")
             alert("There is no data available for the report");
+       else if (result[0]=="OK")
+            alert("The name of the file is " + result[1]);
 
 10. If the call to createExcelReport() in a script that is run in a before form event, you should print the result if an error occurs.
        
-            var result=createExcelReport(excelReportObj);	
+         var result=createExcelReport(excelReportObj);	
 	    
 	    if (result[0]=="ERROR")
                  print(result[1]);
             else if (result[0]=="OK-NODATA")
-                 print("There is data available for the report");
+                 print("There is data available for the report");`
 
 11. If the call to createExcelReport() is made in a server side script, you can check the return value as follows:
      
-            var result=createExcelReport(excelReportObj);	
+         `var result=createExcelReport(excelReportObj);	
 	    
 	    if (result[0]=="ERROR") {
-                 alert(result[1]);
-		 event.stopExecution();
-            } else if (result[0]=="OK-NODATA")
-                 alert("There is data available for the report");
-		 event.stopExecution();
-            else if (result[0]=="OK")
-	         alert(result[1]);
-12. If you have a table with a formula for each row of the table, you  can use a line formula to specify that a formula is to be written for each row. When doing this, you will have a column header such as Total. In order to make sure that the number of columns and column headers match, put [null] as a place holder in the Columns property in place of an actual column name.
+              alert(result[1]);
+              event.stopExecution();
+          } else if (result[0]=="OK-NODATA")
+              alert("There is data available for the report");
+              event.stopExecution();
+          else if (result[0]=="OK")
+              alert(result[1]);`
+12. If you have a column with a formula for each row, you  can use a line formula to specify that a formula is to be written for each row. When doing this, you will have a column header such as Total in ColumnHeader. In order to make sure that the number of columns and column headers match, put [null] as a place holder in the Columns property in place of an actual column name. Ex Columns: [["OrderNum","INTEGER"],**[null]**,["StatusDescription","CHAR"],["Customer","CHAR"],["PartNum","CHAR"],["PartDescription","CHAR"]], ColumnHeaders: "Order Number,Order Count,Status,Customer,Part Num,Part Description",
 
-13. When using a TableData source, the column names are case sensitive and must be provided in the same case that they appear in the table resource or they will be located.
+13. When using a TableData source, the column names are case sensitive and must be provided in the same case that they appear in the table resource or they will not be located.
 
 14. If you are using custom formatting, make sure to use a formula that evaluates to a boolean true or false value. Use $ in front of the column letter to allow the formula to be evaluated correctly for each row of a table.
 
 JSON Reference
 --------------
 The report object below contains all of the possible properties that you can pass to createExcelReport()
-but not all of them are required.All of the optional properties have a comment indicated that they are optional.
+but not all of them are required. All of the optional properties have a comment indicated that they are optional.
 
-     var reportObj = {
+     `var reportObj = {
           FileName: "EOL Report",
           NamedStyles: [{ // Optional named style. All of the style options are listed below
           Name: "Heading",
@@ -307,7 +301,7 @@ but not all of them are required.All of the optional properties have a comment i
                     BorderStyle: "THICK", // Optional. Defaults to THIN if not specified but Borders: true is specified
                }],
           },],
-     };
+     };`
 
 Known Issues
 ------------
