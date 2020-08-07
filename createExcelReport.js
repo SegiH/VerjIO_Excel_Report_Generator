@@ -362,6 +362,17 @@ function createExcelReport(reportObj) {
      var alignLeftFormat=createStyleFormat(workbook,{Size:12,Borders: true, Alignment: "left"});
      
      var cellCurrencyFormat=createStyleFormat(workbook,{DataFormat: "currency",Borders: true});
+
+     var timeFont = workbook.createCellStyle();
+     font = workbook.createFont();
+     font.setFontHeightInPoints(12);
+     timeFont.setFont(font);
+		 timeFont.setDataFormat(workbook.createDataFormat().getFormat("hh:mm"));
+		 timeFont.setBorderTop(BorderStyle.THIN);
+     timeFont.setBorderBottom(BorderStyle.THIN);
+     timeFont.setBorderLeft(BorderStyle.THIN);
+     timeFont.setBorderRight(BorderStyle.THIN);
+		 
      // *** END OF STYLE DEFINITIONS ***
 
      // Add all named styles to an array. Used with the validation
@@ -476,6 +487,10 @@ function createExcelReport(reportObj) {
                          return ["ERROR","The NamedStyle property " + reportObj.Sheets[reportObjSheetCounter].SheetHeader[0].NamedStyle + " in sheet " + reportObjSheetCounter + " does not appear to be a valid NamedStyle. Please refer to a valid named style"];
                }
 	        }
+
+          if (typeof reportObj.Sheets[reportObjSheetCounter].FreezePane != 'undefined' && reportObj.Sheets[reportObjSheetCounter].FreezePane.length != 2) {
+               return ["ERROR","The property FreezePane in Sheet " + reportObjSheetCounter + " need to specify a start and end row in the format FreezePane: [0,1]"];
+          }
           
 	        // Validate that TableData or SQL query was provided
 	        if (typeof reportObj.Sheets[reportObjSheetCounter].TableData == 'undefined' && typeof reportObj.Sheets[reportObjSheetCounter].SQL == 'undefined')
@@ -642,7 +657,7 @@ function createExcelReport(reportObj) {
           }
 	   }
 
-	   // If 1 or more custom celll texts were specified, validate the custom cell text properties
+	   // If 1 or more custom cell texts were specified, validate the custom cell text properties
      if (typeof reportObj.CustomCellText != 'undefined') {
           for (customCellTextCounter=0;customCellTextCounter < reportObj.CustomCellText.length;customCellTextCounter++) {
                // Validate that DestinationSheet was provided	                       
@@ -809,6 +824,10 @@ function createExcelReport(reportObj) {
           // Password
           if (typeof reportObj.Sheets[reportObjSheetCounter].Password !== 'undefined')
                sheet.protectSheet(reportObj.Sheets[reportObjSheetCounter].Password);
+
+          if (typeof reportObj.Sheets[reportObjSheetCounter].FreezePane != 'undefined') {
+               sheet.createFreezePane(reportObj.Sheets[reportObjSheetCounter].FreezePane[0],reportObj.Sheets[reportObjSheetCounter].FreezePane[1]);
+          }
           
           // *** END OF MISC SHEET OPTIONS ***
 
@@ -897,6 +916,17 @@ function createExcelReport(reportObj) {
           for (columnCounter=0;columnCounter<columnHeaders.length;columnCounter++) {
                try {                    
                     if (columnHeaders[columnCounter].toUpperCase() != "WHERECLAUSE") {
+                    	   // When TableData is passed to createExcelReport() validate the supplied data type vs the actual data type
+                    	   if (reportObj.Sheets[reportObjSheetCounter].TableData != null && tables.getTable(reportObj.Sheets[reportObjSheetCounter].TableData) != null && tables.getTable(reportObj.Sheets[reportObjSheetCounter].TableData).getColumn(columnHeaders[columnCounter]) != null) {
+                    	        actualDataType=tables.getTable(reportObj.Sheets[reportObjSheetCounter].TableData).getColumn(columnHeaders[columnCounter]).type;
+                    	        reportedDataType=reportObj.Sheets[reportObjSheetCounter].Columns[columnCounter][1];
+
+                    	        if (reportedDataType != reportedDataType) {
+                    	             if (actualDataType == "DATE" && reportedDataType != "DATE")
+                    	                  print("Data type error found in createExcelReport for the report " + reportObj.FileName + ": The column " + reportObj.Sheets[reportObjSheetCounter].Columns[columnCounter][0] + " has a data type of " + tables.getTable(reportObj.Sheets[reportObjSheetCounter].TableData).getColumn(reportObj.Sheets[reportObjSheetCounter].Columns[columnCounter][0]).type + " but the data type passed to createExcelReport() is " + reportObj.Sheets[reportObjSheetCounter].Columns[columnCounter][1]);
+                    	        }
+                    	   }
+
                          row.createCell(columnCounter).setCellValue(columnHeaders[columnCounter]);
 
                          row.getCell(columnCounter).setCellStyle(headerFormat);
@@ -906,7 +936,7 @@ function createExcelReport(reportObj) {
                     if (FileServices.existsFile(reportObj.FileName))
                          FileServices.deleteFile(reportObj.FileName);
                     
-                    return ["ERROR","An error occurred when columnHeaders= " + columnHeaders + ", length=" + columnHeaders.length + ",columnCounter="+columnCounter+ " and value=" + columnHeaders[columnCounter]];
+                    return ["ERROR","The error " + e + " occurred when table is " + reportObj.Sheets[reportObjSheetCounter].TableData + ", columnHeaders= " + columnHeaders + ", length=" + columnHeaders.length + ",columnCounter="+columnCounter+ " and value=" + columnHeaders[columnCounter]];
                }
           }
 
@@ -1009,13 +1039,12 @@ function createExcelReport(reportObj) {
                          try {
                          	    if (columns[columnCounter] == null || typeof columns[columnCounter][0] == 'undefined' || columns[columnCounter][0] == null ) {
                          	         continue;
-                         	    }
-                         	         
+                         	    }                         	         
                          	         
                          	    // Make sure that the column name is valid
                          	    if (tables.getTable(reportObj.Sheets[reportObjSheetCounter].TableData).getColumn(columns[columnCounter][0]) == null)
                          	         return ["ERROR","The table column " + columns[columnCounter][0] + " was not found in the database. Please check the spelling of the column name"];
-                              
+
                               currColumnValue=tables.getTable(reportObj.Sheets[reportObjSheetCounter].TableData).getColumn(columns[columnCounter][0]).displayValue;
                               
                               if (currColumnValue != null)
@@ -1134,6 +1163,12 @@ function createExcelReport(reportObj) {
                                cell.setCellType(getCellType("NUMERIC"));
                                
                     	         break;
+                    	   case "TIME":
+                    	   			 if (data[dataCounter][colCounter][1] != null) {
+                    	   			      cell.setCellValue(data[dataCounter][colCounter][1]);
+                    	   			      cell.setCellStyle(timeFont);
+                    	   			 }
+                    	   		   break;												                     	         
                     	   case "DATE":
                     	   case "DATETIME":
                     	         rowWritten=true;
