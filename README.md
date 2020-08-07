@@ -13,6 +13,7 @@ VerjIO_Excel_Report_Generator is a Verj IO function that will automatically crea
 8. Password protect a sheet
 9. Specify conditional formatting rules.
 10. Insert an image into a sheet.
+11. Freeze the first row or column of the sheet
 
 ## Initial Installation
 1. Download the latest version of [Apache POI](https://poi.apache.org/), extract the zip file and locate the following JAR files: poi-X.jar,poi-excelant-X.jar, poi-ooxml-X.jar and poi-ooxml-schemas-X.jar where X is the current version number.
@@ -101,7 +102,7 @@ The return value will be one of the following:
 
 3. ColumnSize is optional and can be used to specify the column width. If you do not provide ColumnSize, all columns will be set to autosize the width automatically. If you provide an array with null for any values like in the example above, the columns that have null for the width will be set to autosize the width automatically.
 
-4. Valid data types are "BOOLEAN", "CHAR", "CURRENCY", "DATE", "DATETIME", "INTEGER" (or "INT" as an alias for INTEGER") and "NUMERIC". If you specify that a column data type is CHAR but the value that is going to be written to the Excel document is an INTEGER, it will be written as an INTEGER. IF you want to force the column to always be written as CHAR, add a true parameter after the CHAR data type. Ex. ["SOMECOLUMN","CHAR",true]. If the data type is specified as INT but the data value is not an INT, it will be written to the Excel document as a CHAR unless you add a true parameter. Ex ["SOMECOLUMN","INT",true].
+4. Valid data types are "BOOLEAN", "CHAR", "CURRENCY", "DATE", "DATETIME", "TIME", "INTEGER" (or "INT" as an alias for INTEGER") and "NUMERIC". If you specify that a column data type is CHAR but the value that is going to be written to the Excel document is an INTEGER, it will be written as an INTEGER. IF you want to force the column to always be written as CHAR, add a true parameter after the CHAR data type. Ex. ["SOMECOLUMN","CHAR",true]. If the data type is specified as INT but the data value is not an INT, it will be written to the Excel document as a CHAR unless you add a true parameter. Ex ["SOMECOLUMN","INT",true].
 
 5. Valid color values can be found in the object colorObject defined in getColor(). You can also supply an RGB string ike "83,162,240" as the color value to use a specific RGB value instead of a predefined color.
 
@@ -252,7 +253,8 @@ but not all of them are required. All of the optional properties have a comment 
                },],
                MergeCells: ["1,2","3,1,4,1"], // Optional. Merges columns 1 & 2 on the last row after data has been writtem. The second merge merges columns 3 & 4 on row 1. 
                SQL: "SELECT * FROM EOL", // SQL based data
-               DBConnection: "PRODUCTION", // (Mandatory if SQL statement is provided          
+               DBConnection: "PRODUCTION", // (Mandatory if SQL statement is provided   
+	       FreezePane: [0,1], // The first parameter should be 1 to freeze the first column, the second parameter should be 1 to freeze the first row
                Formulas: [{
                     Column: 0, // Column A since columns start with 0
                     Row: 10, // Optional. Will be written after last row of data if not specified               
