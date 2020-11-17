@@ -14,6 +14,7 @@ VerjIO_Excel_Report_Generator is a Verj IO function that will automatically crea
 9. Specify conditional formatting rules.
 10. Insert an image into a sheet.
 11. Freeze the first row or column of the sheet
+12. Now supports nested tables (currently supports SQL based data and not Table data)
 
 ## Initial Installation
 1. Download the latest version of [Apache POI](https://poi.apache.org/), extract the zip file and locate the following JAR files: poi-X.jar,poi-excelant-X.jar, poi-ooxml-X.jar and poi-ooxml-schemas-X.jar where X is the current version number.
@@ -80,7 +81,9 @@ Example:
      
      print ("The file name is " + result[1]);`
 
-In the example above, the generated Excel file will be named "Sales Report as of 08-01-2018-09-20-10.xlsx". The date will automatically be added to the file name to make sure that each report always has a unique name.
+In the example above, the generated Excel file will be named "Sales Report as of 11-16-2020-09-20-10.xlsx". The date & time will automatically be added to the file name to make sure that each report always has a unique name.
+
+The generated document will have 2 sheets. 
 
 The first sheet will be named Sales Report and will have a table with the 6 columns headings specified in ColumnHeaders. ColumnSize is used to set the size of each column (specifying null for a column size will set that column to autosize). The Columns property specify the database column names and their type. This sheet uses an SQL statement as the data source with the specified database connection called PRODUCTION.
 
@@ -90,10 +93,35 @@ createExcelReport() will return a 2 dimensional array with the results
 
 The return value will be one of the following:
 
-["OK","Somefilename.xlsx"] // Report was successfully created and the file was saved as Somefilename.xlsx
+["OK","Filename.xlsx"] // Report was successfully created and the file was saved as Filename.xlsx
 ["OK-NODATA",""] // There was no data returned from the SQL query or table resource so the report was not generated
-["ERROR","Error Message"] // An error occurred during the creation of the report
+["ERROR","Error Message"] // An error occurred during the creation of the report with the exact message provided
 
+Example 2: Nested tables
+    
+    var reportObj = {
+          FileName: "TEST",
+          Sheets: [{ 
+               SheetName: "TEST",
+               SheetIndex: 0,
+               NestedTables:true,   
+               ColumnHeadersParent: "User ID,Name,User name",
+               ColumnsParent: [["UserID","CHAR"],["RealName","CHAR"],["Username","CHAR"]],
+               SQLParent: "SELECT RealName,Username,UserID FROM Users",
+               DBConnectionParent: "ParentDBCOnnection",
+               ColumnHeadersChild: "Menu Name,Menu Description",
+               ColumnsChild: [["MenuName","CHAR"],["MenuDescription","CHAR"]],
+               SQLChild: "SELECT UserID,MenuName,MenuDescription FROM Menus_Auth",
+               DBConnectionChild: "ChildDBCOnnection",
+               JoinWhereClause: ["UserID",0], // Index 0 = column that links the 2 queries and 0 is the index of the column starting with 0 for the first column
+               ChildIndent: 1 
+          },
+          ]
+     };
+     var result=createExcelReport(reportObj);
+
+In the example above, the generated Excel file will be named "Test as of 11-16-2020-09-20-10.xlsx". 
+When using nested tables, you have to specify the column headers, columns, SQL and DB Connection for the parent and child tables. In addition you need to specify JoinWhereClause as an array with 2 values; the name of the column that joins the parent and child tables and the index in the parent column headers (ColumnsParent). If you want to shift the child table to the right (which I recommend because it makes it easier to read the data) you can set ChildIndent/
 
 ## General Tips
 1. The number of columns specified in ColumnHeaders must match the number of arrays provided in Columns or an error will be thrown.
@@ -137,18 +165,18 @@ The return value will be one of the following:
        else if (result[0]=="OK")
             alert("The name of the file is " + result[1]);
 
-10. If the call to createExcelReport() in a script that is run in a before form event, you should print the result if an error occurs.
+10. If the call to createExcelReport() in a script that is run in a before form event, you should print the result if an error occurs using print instead of using event.owner.addErrorMessage or event.owner.addWarningMessage because you cannot initiate these types of alerts in a Before Form event.
        
-         var result=createExcelReport(excelReportObj);	
+        var result=createExcelReport(excelReportObj);	
 	    
 	    if (result[0]=="ERROR")
                  print(result[1]);
             else if (result[0]=="OK-NODATA")
-                 print("There is data available for the report");`
+                 print("There is data available for the report");
 
 11. If the call to createExcelReport() is made in a server side script, you can check the return value as follows:
      
-         `var result=createExcelReport(excelReportObj);	
+         var result=createExcelReport(excelReportObj);	
 	    
 	    if (result[0]=="ERROR") {
               alert(result[1]);
@@ -157,17 +185,20 @@ The return value will be one of the following:
               alert("There is data available for the report");
               event.stopExecution();
           else if (result[0]=="OK")
-              alert(result[1]);`
-12. If you have a column with a formula for each row, you  can use a line formula to specify that a formula is to be written for each row. When doing this, you will have a column header such as Total in ColumnHeader. In order to make sure that the number of columns and column headers match, put [null] as a place holder in the Columns property in place of an actual column name. Ex Columns: [["OrderNum","INTEGER"],**[null]**,["StatusDescription","CHAR"],["Customer","CHAR"],["PartNum","CHAR"],["PartDescription","CHAR"]], ColumnHeaders: "Order Number,Order Count,Status,Customer,Part Num,Part Description",
+              alert(result[1]);
+12. If you have a column with a formula for each row, you  can use a line formula to specify that a formula is to be written for each row. When doing this, you will have a column header such as Total in ColumnHeader. In order to make sure that the number of columns and column headers match, put [null] as a place holder in the Columns property in place of an actual column name. Ex.
 
-13. When using a TableData source, the column names are case sensitive and must be provided in the same case that they appear in the table resource or they will not be located.
+        Columns: [["OrderNum","INTEGER"],[null],["StatusDescription","CHAR"],["Customer","CHAR"],["PartNum","CHAR"],["PartDescription","CHAR"]], 
+    ColumnHeaders: "Order Number,Order Count,Status,Customer,Part Num,Part Description",
+
+13. When using a TableData source, the column names are case sensitive and must be provided in the same case that they appear in the table resource or this script will throw an error because the coulmn could not be located.
 
 14. If you are using custom formatting, make sure to use a formula that evaluates to a boolean true or false value. Use $ in front of the column letter to allow the formula to be evaluated correctly for each row of a table.
 
 JSON Reference
 --------------
 The report object below contains all of the possible properties that you can pass to createExcelReport()
-but not all of them are required. All of the optional properties have a comment indicated that they are optional.
+but not all of them are required. All of the optional properties have a comment indicating that they are optional.
 
      `var reportObj = {
           FileName: "EOL Report",
@@ -212,6 +243,17 @@ but not all of them are required. All of the optional properties have a comment 
                FitToPages: true, // Optional. Will force sheet to fit all of the content into 1 page
                Orientation: "landscape", // Optional. Valid values are "landscape" or "portrait"
                Password: "somepassword": // Optional. Will protect the sheet from being edited unless the user enters this password
+               NestedTables: true, // Optional. This is only required if you are using nested tables
+               ColumnHeadersParent: "UserID,RealName,Username", // Optional. This is only required if you are using nested tables. Parent table column headers when using nested tables
+               ColumnsParent: [["UserID","CHAR"],["RealName","CHAR"],["Username","CHAR"]], // Optional. This is only required if you are using nested tables. Parent table columns when using nested tables
+               SQLParent: "SELECT RealName,Username,UserID FROM Users", // Optional. This is only required if you are using nested tables. Parent SQL
+               DBConnectionParent: "ParentDBCOnnection",  // Optional. This is only required if you are using nested tables. Parent DB connection for the SQL statement used above
+               ColumnHeadersChild: "Menu Name,Menu Description", // Optional. This is only required if you are using nested tables. Child table column headers when using nested tables
+               ColumnsChild: [["MenuName","CHAR"],["MenuDescription","CHAR"]], // Optional. This is only required if you are using nested tables. Child table columns when using nested tables
+               SQLChild: "SELECT UserID,MenuName,MenuDescription FROM Menus", // Optional. This is only required if you are using nested tables. Child SQL
+               DBConnectionChild: "GENESIS_INTRANET", // Optional. This is only required if you are using nested tables. Child DB connection for the SQL statement used above
+               JoinWhereClause: ["UserID",0], // Optional. This is only required if you are using nested tables. Index 0 is the joining column name that links the parent and child
+               ChildIndent: 1 //  Optional. This is only required if you are using nested tables. Shift the child table to the right by this many columns
                SheetHeader: [{ // Add heading in Cell D1
                     Value: "EOL Parts Report as of " + getCurrentDate(),
                     Column: 3,
@@ -305,6 +347,10 @@ but not all of them are required. All of the optional properties have a comment 
           },],
      };`
 
+## CreateExcelReportObj
+
+I have added createExcelReportObj.js which has a helper method. If you call this function with a Verj table name, it wll automatically create the createExcelReport object for you and output it. You can then re-order the columns or change anything if you wish.
+
 Known Issues
 ------------
-This report generator will not work for Verj IO tables that are part of a table repeater.
+This report generator will not work for Verj IO tables that are part of a table repeater but you can use nested SQL statements.
