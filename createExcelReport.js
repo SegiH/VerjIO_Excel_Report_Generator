@@ -1628,14 +1628,9 @@ function createExcelReport(reportObj) {
                     }
 
                     try {
-                         //sheet.addCell(new Formula(columnNum,(rowNum),formula,format));
-                         row=sheet.getRow(rowNum);
-
-                         if (rowNum==null) row=createRow(rowNum);
+                         row=(sheet.getRow(rowNum) != null ? sheet.getRow(rowNum) : sheet.createRow(rowNum));
                          
-                         cell = row.getCell(columnNum);
-
-                         if (cell==null) cell=row.createCell(columnNum);
+                         cell = (row.getCell(columnNum) != null ? row.getCell(columnNum) : row.createCell(columnNum));
 
                          cell.setCellFormula(formula);
                          
