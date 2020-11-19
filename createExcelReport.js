@@ -337,6 +337,7 @@ function createExcelReport(reportObj) {
      var sheet, workbook;
      var noData=false;
      var anyRowWritten=false;
+     var currColumnIndex=0;
      
      // anchor types when placing an image in the sheet
      var anchorTypesObject = {
@@ -1099,8 +1100,10 @@ function createExcelReport(reportObj) {
                invalidColumn="";
 
                try {
+               	    var parentSQL=reportObj.Sheets[reportObjSheetCounter].SQLParent;
+               	    
                     // Read the data
-                    services.database.executeSelectStatement(reportObj.Sheets[reportObjSheetCounter].DBConnectionParent,reportObj.Sheets[reportObjSheetCounter].SQLParent,
+                    services.database.executeSelectStatement(reportObj.Sheets[reportObjSheetCounter].DBConnectionParent,parentSQL,
                     function (columnData) {
                	         lineArr = [];
                	         rowArr = [];
@@ -1112,10 +1115,9 @@ function createExcelReport(reportObj) {
                     	   
                     	        // Loop through each column of the current row
                               for (var colName in columnData) {
-                              //alert("key=" + columnHeadersParent[key] + " and columndata column =" + colName);    	
                          	         // If the current column is the one we are looking for
-                                   if (columnHeadersParent[key] != null && columnHeadersParent[key].toUpperCase() == colName.toUpperCase()) {
-                                   	//alert("found it ");
+                                   if (columnsParent[key][0] != null && columnsParent[key][0].toUpperCase() == colName.toUpperCase()) {
+
                                         // add column name, column value, column type and date format for date type
                               	        // lineArr = new Array(columns[key][0],(columnData[columns[key][0]] != null ? columnData[columns[key][0]] : null),columns[key][1],columns[key][2],(reportObj.Sheets[reportObjSheetCounter].Columns[key][2] != null ? reportObj.Sheets[reportObjSheetCounter].Columns[key][2] : null));
                               	        lineArr = new Array(columnsParent[key][0],(columnData[columnsParent[key][0]] != null ? columnData[columnsParent[key][0]] : null),columnsParent[key][1],columnsParent[key][2],(reportObj.Sheets[reportObjSheetCounter].ColumnsParent[key][2] != null ? reportObj.Sheets[reportObjSheetCounter].ColumnsParent[key][2] : null));
@@ -1217,6 +1219,8 @@ function createExcelReport(reportObj) {
           	        row=sheet.getRow(rowCounter) != null ? sheet.createRow(rowCounter) : sheet.createRow(rowCounter);
           
                     for (columnCounter=0;columnCounter<columnHeadersParent.length;columnCounter++) {
+                    	   //currColumnIndex=0;
+                    	   
                          try {                    
                               row.createCell(columnCounter).setCellValue(columnHeadersParent[columnCounter]);
 
@@ -1234,10 +1238,9 @@ function createExcelReport(reportObj) {
                     rowCounter++;
           	   }
           	   
-          	   // *** START OF LOOP THAT GOES THROUGH DATA ARRAY AND WRITES THE DATA ***
                row = (sheet.getRow(rowCounter) != null ? sheet.getRow(rowCounter) : sheet.createRow(rowCounter));
                
-          	   if (currColumnIndex == (nestedTables == false ? columnHeaders.length : columnHeadersParent.length))
+          	   if (currColumnIndex == (nestedTables == false ? columns.length : columnsParent.length))
           	        currColumnIndex=0;  
 
                var parentMatchingValue=-1;
@@ -1247,10 +1250,10 @@ function createExcelReport(reportObj) {
                	    if (data[dataCounter][colCounter]==null) {
                	         continue;
                	    }                    
-                    
+
                     // If the Column is equal to [null], increment currColumnIndex so the data is shifted to the right
                	    if (nestedTables == false) {
-               	         while (reportObj.Sheets[reportObjSheetCounter].Columns[currColumnIndex][0] == null) {
+               	         while (currColumnIndex<columns.length && columns[currColumnIndex][0] == null) {
                	              currColumnIndex++;
                	         }
                	    } else {
@@ -1271,8 +1274,11 @@ function createExcelReport(reportObj) {
                     // If the type is INT but the value is a CHAR, change the type to an CHAR so it will be written as a CHAR. Ignore percentage values because we want to still write them as a number
                     if ((data[dataCounter][colCounter][2] == "INTEGER" || data[dataCounter][colCounter][2] == "INT") && data[dataCounter][colCounter][1] != null && !isInt(data[dataCounter][colCounter][1]) && data[dataCounter][colCounter][1].indexOf("%") == -1)
                          data[dataCounter][colCounter][2]="CHAR";
-                   
-                   cell = row.createCell(currColumnIndex);
+
+                    if (currColumnIndex >= columns.length)
+                         currColumnIndex=0;
+                         
+                    cell = row.createCell(currColumnIndex);
 
                     // In order to prevent errors, always default the type to CHAR if not specified.
                     if (data[dataCounter][colCounter][2]==null) data[dataCounter][colCounter][2]="CHAR";
@@ -1396,7 +1402,7 @@ function createExcelReport(reportObj) {
 
                     // Write child table data
                     try {
-                         var childSQL=reportObj.Sheets[reportObjSheetCounter].SQLChild + " WHERE " + reportObj.Sheets[reportObjSheetCounter].JoinWhereClause[0] + "=" + parentMatchingValue;
+                         var childSQL=reportObj.Sheets[reportObjSheetCounter].SQLChild.replace("<WHERECLAUSE>",(reportObj.Sheets[reportObjSheetCounter].SQLChild.indexOf("WHERE ") == -1 ?  " WHERE " : " AND ") + reportObj.Sheets[reportObjSheetCounter].JoinWhereClause[0] + "=" + (typeof parentMatchingValue == 'string' ? "'" : "") + parentMatchingValue + (typeof parentMatchingValue == 'string' ? "'" : ""));
 
                          row=(sheet.getRow(rowCounter) != null ? sheet.getRow(rowCounter) : sheet.createRow(rowCounter));
                          
@@ -1415,7 +1421,7 @@ function createExcelReport(reportObj) {
                                              continue;
                                    
                                         // If the Column is equal to [null], increment currColumnIndex so the data is shifted to the right
-                                        while (reportObj.Sheets[reportObjSheetCounter].ColumnsChild[colCounter] == null) {
+                                        while (currColumnIndex<columns.length && reportObj.Sheets[reportObjSheetCounter].ColumnsChild[colCounter] == null) {
                     	                       currColumnIndex++;
                     	                  }
 
@@ -1557,7 +1563,7 @@ function createExcelReport(reportObj) {
                               if (reportObj.Sheets[reportObjSheetCounter].Formulas[formulaCounter].FormulaRowOffset != null)
                                    rowNum+=parseInt(reportObj.Sheets[reportObjSheetCounter].Formulas[formulaCounter].FormulaRowOffset);
                                    
-                              var formula=reportObj.Sheets[reportObjSheetCounter].Formulas[formulaCounter].Formula.replaceAll("<CURRENTROW>",(rowCounter+1));
+                              var formula=reportObj.Sheets[reportObjSheetCounter].Formulas[formulaCounter].Formula.replaceAll("<CURRENTROW>",(rowCounter));
                               var format=(reportObj.Sheets[reportObjSheetCounter].Formulas[formulaCounter].DataType == "CURRENCY" ? cellCurrencyFormat : cellFormat);
                          } catch(e) {
                          	    workbook.close();
@@ -1568,17 +1574,15 @@ function createExcelReport(reportObj) {
                               return ["ERROR","An error occurred when Formulas=" + reportObj.Sheets[reportObjSheetCounter].Formulas];
                          }
 
-                         row=sheet.getRow(rowNum);
+                         row=(sheet.getRow(rowNum) != null ? sheet.getRow(rowNum) : sheet.createRow(rowNum));
 
-                         if (rowNum==null) row=createRow(rowNum);
+                         if (row !=null) {
+                              cell = (row.getCell(columnNum) != null ? row.getCell(columnNum) : row.createCell(columnNum));
+
+                              cell.setCellFormula(formula);
                          
-                         cell = row.getCell(columnNum);
-
-                         if (cell==null) cell=row.createCell(columnNum);
-
-                         cell.setCellFormula(formula);
-                         
-                    	   cell.setCellStyle(format);
+                    	        cell.setCellStyle(format);
+                         }
                     }
                }
           } // end of for (var dataCounter=0;dataCounter<data.length;dataCounter++) {
