@@ -12,9 +12,10 @@ VerjIO_Excel_Report_Generator is a Verj IO function that will automatically crea
 7. Re-useable named style definitions
 8. Password protect a sheet
 9. Specify conditional formatting rules.
-10. Insert an image into a sheet.
+10. Insert images into a sheet.
 11. Freeze the first row or column of the sheet
-12. Now supports nested tables (currently supports SQL based data and not Table data)
+12. Supports nested tables (currently supports SQL based data and not Table data)
+13. Create pivot table
 
 ## Initial Installation
 1. Download the latest version of [Apache POI](https://poi.apache.org/), extract the zip file and locate the following JAR files: poi-X.jar,poi-excelant-X.jar, poi-ooxml-X.jar and poi-ooxml-schemas-X.jar where X is the current version number.
@@ -195,6 +196,8 @@ When using nested tables, you have to specify the column headers, columns, SQL a
 
 14. If you are using custom formatting, make sure to use a formula that evaluates to a boolean true or false value. Use $ in front of the column letter to allow the formula to be evaluated correctly for each row of a table.
 
+15. If you open an Excel document that has a pivot table inside of it from an email client like Outlook, you have to manually click on the pivot table and choose Refresh.
+
 JSON Reference
 --------------
 The report object below contains all of the possible properties that you can pass to createExcelReport()
@@ -243,6 +246,7 @@ but not all of them are required. All of the optional properties have a comment 
                FitToPages: true, // Optional. Will force sheet to fit all of the content into 1 page
                Orientation: "landscape", // Optional. Valid values are "landscape" or "portrait"
                Password: "somepassword": // Optional. Will protect the sheet from being edited unless the user enters this password
+               PivotTable: true // Optional. Creates a pivot table based off of the data in the current sheet
                NestedTables: true, // Optional. This is only required if you are using nested tables
                ColumnHeadersParent: "UserID,RealName,Username", // Optional. This is only required if you are using nested tables. Parent table column headers when using nested tables
                ColumnsParent: [["UserID","CHAR"],["RealName","CHAR"],["Username","CHAR"]], // Optional. This is only required if you are using nested tables. Parent table columns when using nested tables

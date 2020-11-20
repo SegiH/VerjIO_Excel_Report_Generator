@@ -784,6 +784,7 @@ function createExcelReport(reportObj) {
           if (typeof reportObj.Sheets[reportObjSheetCounter].RightMargin !== 'undefined' && isInt(reportObj.Sheets[reportObjSheetCounter].RightMargin))
                sheet.setMargin(sheet.RightMargin,parseInt(reportObj.Sheets[reportObjSheetCounter].RightMargin));
 
+          // All margins
           if (typeof reportObj.Sheets[reportObjSheetCounter].AllMargins !== 'undefined') {
                var len=reportObj.Sheets[reportObjSheetCounter].AllMargins.split(",").length;
 
@@ -956,8 +957,7 @@ function createExcelReport(reportObj) {
                rowCounter=parseInt(reportObj.Sheets[reportObjSheetCounter].StartRow)-1;
 
           // *** START OF TABLE COLUMN HEADERS ***
-          // Non-nested table column headers
-          if (nestedTables == false) {
+          if (nestedTables == false) { // Non-nested table column headers
                var columnHeaders=reportObj.Sheets[reportObjSheetCounter].ColumnHeaders.split(",");
 
                row=sheet.createRow(rowCounter);
@@ -1984,8 +1984,32 @@ function createExcelReport(reportObj) {
                     else
                          pict.resize();
                }
-          }
+          }        
           // *** END OF WRITING AN IMAGE ***
+
+          // *** START OF CREATING PIVOT TABLE ***
+          if (typeof reportObj.Sheets[reportObjSheetCounter].PivotTable != 'undefined' && reportObj.Sheets[reportObjSheetCounter].PivotTable == true) {
+               var firstRow = sheet.getFirstRowNum();
+               var lastRow = sheet.getLastRowNum();
+               var firstCol = sheet.getRow(0).getFirstCellNum();
+               var lastCol = sheet.getRow(0).getLastCellNum();
+
+               var topLeft = new CellReference(firstRow, firstCol);
+               var botRight = new CellReference(lastRow, lastCol - 1);
+
+               var aref = new org.apache.poi.ss.util.AreaReference(topLeft, botRight,null);
+               var pos = new CellReference(firstRow, 0);
+               var pivotSheet = workbook.createSheet("Pivot");
+               
+               var pivotTable = pivotSheet.createPivotTable(aref, pos,sheet);
+                             
+               pivotTable.addRowLabel(0);
+               pivotTable.addRowLabel(1);
+               
+               pivotTable.addColumnLabel(DataConsolidateFunction.SUM,6, "Pass Percent");
+               pivotTable.addColumnLabel(DataConsolidateFunction.SUM,7, "Fail Percent");
+          }
+          // *** END OF CREATING PIVOT TABLE ***
      } // *** Start of Loop through the report object for each sheet object ***
 	   
      var fos = new FileOutputStream(reportObj.FileName);
