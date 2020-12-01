@@ -532,35 +532,58 @@ function createExcelReport(reportObj) {
 	                       return ["ERROR","The property DBConnection in Sheet " + reportObjSheetCounter + " was not specified"];
                }
           } else { // Nested table
-          	   // Nested table is only supported at the moment for SQL not Table data since you can't set filter expression pragmatically
-	             if (typeof reportObj.Sheets[reportObjSheetCounter].TableData != 'undefined')
-	                  return ["ERROR","The property TableData in Sheet " + reportObjSheetCounter + " does not currently support nested tables"];
+          	   // Parent required properties
+          	   
+          	   // Validate that ColumnHeadersParent and ColumnHeadersChild were provided	                       
+	             if (typeof reportObj.Sheets[reportObjSheetCounter].ColumnHeadersParent == 'undefined')
+	                  return ["ERROR","The property ColumnHeadersParent in Sheet " + reportObjSheetCounter + " was not specified"];
 
-	             if (typeof reportObj.Sheets[reportObjSheetCounter].SQLParent == 'undefined')
-	                  return ["ERROR","The property SQLParent in Sheet " + reportObjSheetCounter + " was not specified"];
-
-	             if (typeof reportObj.Sheets[reportObjSheetCounter].SQLChild == 'undefined')
-	                  return ["ERROR","The property SQLChild in Sheet " + reportObjSheetCounter + " was not specified"];
-
-	             if (typeof reportObj.Sheets[reportObjSheetCounter].DBConnectionParent == 'undefined')
-	                  return ["ERROR","The property DBConnectionParent in Sheet " + reportObjSheetCounter + " was not specified"];
-
-	             if (typeof reportObj.Sheets[reportObjSheetCounter].DBConnectionChild == 'undefined')
-	                  return ["ERROR","The property DBConnectionChild in Sheet " + reportObjSheetCounter + " was not specified"];
-	                  
                // Validate that Columns 1 & 2 were provided	                       
 	             if (typeof reportObj.Sheets[reportObjSheetCounter].ColumnsParent == 'undefined')
 	                  return ["ERROR","The property ColumnsParent in Sheet " + reportObjSheetCounter + " was not specified"];
+	                  
+          	   // Child required properties
+          	   if (typeof reportObj.Sheets[reportObjSheetCounter].ColumnHeadersChild == 'undefined')
+	                  return ["ERROR","The property ColumnHeadersChild in Sheet " + reportObjSheetCounter + " was not specified"];
 
 	             if (typeof reportObj.Sheets[reportObjSheetCounter].ColumnsChild == 'undefined')
 	                  return ["ERROR","The property ColumnsChild in Sheet " + reportObjSheetCounter + " was not specified"];
 
-	             // Validate that ColumnHeadersParent and ColumnHeadersChild were provided	                       
-	             if (typeof reportObj.Sheets[reportObjSheetCounter].ColumnHeadersParent == 'undefined')
-	                  return ["ERROR","The property ColumnHeadersParent in Sheet " + reportObjSheetCounter + " was not specified"];
+               if (typeof reportObj.Sheets[reportObjSheetCounter].TableDataParent != 'undefined' && typeof reportObj.Sheets[reportObjSheetCounter].SQLParent == 'undefined') {
+                    return ["ERROR","The properties TableDataParent and SQLParent in Sheet " + reportObjSheetCounter + " cannot be specified together."];
+               }
+               
+               // Nested tables - SQL based data
+               if (typeof reportObj.Sheets[reportObjSheetCounter].TableDataParent == 'undefined') {
+               	    if (typeof reportObj.Sheets[reportObjSheetCounter].SQLParent == 'undefined')
+	                       return ["ERROR","The property SQLParent in Sheet " + reportObjSheetCounter + " was not specified"];
 
-	             if (typeof reportObj.Sheets[reportObjSheetCounter].ColumnHeadersChild == 'undefined')
-	                  return ["ERROR","The property ColumnHeadersChild in Sheet " + reportObjSheetCounter + " was not specified"];
+	                  if (typeof reportObj.Sheets[reportObjSheetCounter].SQLChild == 'undefined')
+	                       return ["ERROR","The property SQLChild in Sheet " + reportObjSheetCounter + " was not specified"];
+
+	                  if (typeof reportObj.Sheets[reportObjSheetCounter].DBConnectionParent == 'undefined')
+	                       return ["ERROR","The property DBConnectionParent in Sheet " + reportObjSheetCounter + " was not specified"];
+
+	                  if (typeof reportObj.Sheets[reportObjSheetCounter].DBConnectionChild == 'undefined')
+	                       return ["ERROR","The property DBConnectionChild in Sheet " + reportObjSheetCounter + " was not specified"];
+               } else { // Nested tables - Table based data
+               	    if (tables.getTable(reportObj.Sheets[reportObjSheetCounter].TableDataParent) == null)
+               	          return ["ERROR","The property TableDataParent in Sheet " + reportObjSheetCounter + " refers to an invalid table"];
+               	          
+	                  if (typeof reportObj.Sheets[reportObjSheetCounter].TableDataChild == 'undefined')
+	                        return ["ERROR","The property TableDataChild in Sheet " + reportObjSheetCounter + " was not specified"];
+
+	                  if (tables.getTable(reportObj.Sheets[reportObjSheetCounter].TableDataChild) == null)
+               	          return ["ERROR","The property TableDataChild in Sheet " + reportObjSheetCounter + " refers to an invalid table"];
+               	          
+	                  if (typeof reportObj.Sheets[reportObjSheetCounter].SQLChild != 'undefined')
+	                       return ["ERROR","The property SQLChild in Sheet " + reportObjSheetCounter + " is not valid when using table data"];	                  
+
+	                  if (typeof reportObj.Sheets[reportObjSheetCounter].DBConnectionChild != 'undefined')
+	                       return ["ERROR","The property DBConnectionChild in Sheet " + reportObjSheetCounter + " is not valid when using table data"];
+               }
+
+               // Validate column sizes	             
 
                // Validate that the size of Columns and ColumnHeaders match
                if (reportObj.Sheets[reportObjSheetCounter].ColumnsParent.length != reportObj.Sheets[reportObjSheetCounter].ColumnHeadersParent.split(",").length)
@@ -569,8 +592,12 @@ function createExcelReport(reportObj) {
                if (reportObj.Sheets[reportObjSheetCounter].ColumnsChild.length != reportObj.Sheets[reportObjSheetCounter].ColumnHeadersChild.split(",").length)
                     return ["ERROR","The properties ColumnsChild and ColumnHeadersChild in Sheet " + reportObjSheetCounter + " are of different lengths. Column2 length=" + reportObj.Sheets[reportObjSheetCounter].ColumnsChild.length + " and ColumnHeadersChild length=" + reportObj.Sheets[reportObjSheetCounter].ColumnHeadersChild.split(",").length];
 
+               // Join Where clause must always be specified and have 2 arguments
                if (typeof reportObj.Sheets[reportObjSheetCounter].JoinWhereClause == 'undefined')
 	                  return ["ERROR","The property JoinWhereClause in Sheet " + reportObjSheetCounter + " was not specified"];
+
+	             if (reportObj.Sheets[reportObjSheetCounter].JoinWhereClause.length != 2)
+	                  return ["ERROR","The property JoinWhereClause in Sheet " + reportObjSheetCounter + " must have 2 properties ['MATCHINGCOLUM',parentIndex]"];
           }
           
           // Validate merge cells
@@ -1015,8 +1042,9 @@ function createExcelReport(reportObj) {
           // *** END OF GET STYLE FOR CURRENT SHEET ***
 
           // *** START OF GET ALL DATA ***
-          // Non-nested table columns
-          if (nestedTables == false) {
+
+          // *** START OF GET ALL COLUMNS ***
+          if (nestedTables == false) { // Non-nested table columns
                // Get all columns
                try {
                     var columns=eval(reportObj.Sheets[reportObjSheetCounter].Columns);
@@ -1037,164 +1065,194 @@ function createExcelReport(reportObj) {
                     return ["ERROR","An error occurred when ColumnsChild= " + reportObj.Sheets[reportObjSheetCounter].ColumnsChild];
                }
           }
+          // *** END OF GET ALL COLUMNS ***
 
           // *** Save all of the data in an array ***
           var data = [];
-          
-          // *** SQL based data ***
-          if (reportObj.Sheets[reportObjSheetCounter].SQL != null) {
-               columnNotFound=false;
-               invalidColumn="";
 
-               try {
-                    // Read the data
-                    services.database.executeSelectStatement(reportObj.Sheets[reportObjSheetCounter].DBConnection,reportObj.Sheets[reportObjSheetCounter].SQL,
-                    function (columnData) {
-               	         lineArr = [];
-               	         rowArr = [];
+          if (nestedTables == false) {
+               // *** SQL based data ***
+               if (reportObj.Sheets[reportObjSheetCounter].SQL != null) {
+                    columnNotFound=false;
+                    invalidColumn="";
 
-               	         // Loop through all columns in provided column list
-                         for (var key in columns) {
-                    	        columnFound=false;
+                    try {
+                         // Read the data
+                         services.database.executeSelectStatement(reportObj.Sheets[reportObjSheetCounter].DBConnection,reportObj.Sheets[reportObjSheetCounter].SQL,
+                         function (columnData) {
+               	              lineArr = [];
+               	              rowArr = [];
+
+               	              // Loop through all columns in provided column list
+                              for (var key in columns) {
+                    	             columnFound=false;
                     	   
-                    	        // Loop through each column of the current row
-                              for (var colName in columnData) {
-                              	  
-                         	         // If the current column is the one we are looking for
-                                   if (columns[key][0] != null && columns[key][0].toUpperCase() == colName.toUpperCase()) {
-                                        // add column name, column value, column type and date format for date type
-                              	        lineArr = new Array(columns[key][0],(columnData[columns[key][0]] != null ? columnData[columns[key][0]] : null),columns[key][1],columns[key][2],(reportObj.Sheets[reportObjSheetCounter].Columns[key][2] != null ? reportObj.Sheets[reportObjSheetCounter].Columns[key][2] : null));
+                    	             // Loop through each column of the current row
+                                   for (var colName in columnData) {
+                         	              // If the current column is the one we are looking for
+                                        if (columns[key][0] != null && columns[key][0].toUpperCase() == colName.toUpperCase()) {
+                                             // add column name, column value, column type and date format for date type
+                              	             lineArr = new Array(columns[key][0],(columnData[columns[key][0]] != null ? columnData[columns[key][0]] : null),columns[key][1],columns[key][2],(reportObj.Sheets[reportObjSheetCounter].Columns[key][2] != null ? reportObj.Sheets[reportObjSheetCounter].Columns[key][2] : null));
 
-                                        rowArr.push(lineArr);
+                                             rowArr.push(lineArr);
                                    
-                                        columnFound=true;
+                                             columnFound=true;
                                    
+                                             break;
+                                        }
+                                   }
+
+                                   if (columnFound == false && columns[key][0] != null) {
+                         	              invalidColumn=columns[key][0];
                                         break;
                                    }
                               }
 
-                              if (columnFound == false && columns[key][0] != null) {
-                         	         invalidColumn=columns[key][0];
-                                   break;
-                              }
-                         }
+                              if (columnFound == false && columns[key][0] != null)
+                                   return;
 
-                         if (columnFound == false && columns[key][0] != null)
-                              return;
-
-                         // push line array
-                         data.push(rowArr);
-                    });
-               } catch(e) {
-               	     workbook.close();
-                     if (FileServices.existsFile(reportObj.FileName))
-                          FileServices.deleteFile(reportObj.FileName);
+                              // push line array
+                              data.push(rowArr);
+                         });
+                    } catch(e) {
+               	         workbook.close();
                          
-                     return ["ERROR","An error occurred generating the report with the error " + e + " while executing the SQL statement " + reportObj.Sheets[reportObjSheetCounter].SQL];
-               }
+                         if (FileServices.existsFile(reportObj.FileName))
+                              FileServices.deleteFile(reportObj.FileName);
+                         
+                          return ["ERROR","An error occurred generating the report with the error " + e + " while executing the SQL statement " + reportObj.Sheets[reportObjSheetCounter].SQL];
+                    }
                
-               if (columnFound == false && invalidColumn != null && invalidColumn != "")
-                    return ["ERROR","The sql column " + invalidColumn + " was not found in the database. Please check the spelling of the column name"];
-          } else if (reportObj.Sheets[reportObjSheetCounter].SQLParent != null && reportObj.Sheets[reportObjSheetCounter].SQLChild != null) {
-               columnNotFound=false;
-               invalidColumn="";
-
-               try {
-               	    var parentSQL=reportObj.Sheets[reportObjSheetCounter].SQLParent;
-               	    
-                    // Read the data
-                    services.database.executeSelectStatement(reportObj.Sheets[reportObjSheetCounter].DBConnectionParent,parentSQL,
-                    function (columnData) {
+                    if (columnFound == false && invalidColumn != null && invalidColumn != "")
+                         return ["ERROR","The sql column " + invalidColumn + " was not found in the database. Please check the spelling of the column name"];
+               } else if (reportObj.Sheets[reportObjSheetCounter].TableData != null) { // *** TABLE BASED DATA *** 
+                    allRows=tables.getTable(reportObj.Sheets[reportObjSheetCounter].TableData);
+                    rows=allRows.getRows();               
+               
+                    // Loop through each row
+                    while (rows.next()) {
                	         lineArr = [];
                	         rowArr = [];
-
-               	         // Loop through all columns in provided column list
-                         for (var key in columnHeadersParent) {
-                         	
-                    	        columnFound=false;
-                    	   
-                    	        // Loop through each column of the current row
-                              for (var colName in columnData) {
-                         	         // If the current column is the one we are looking for
-                                   if (columnsParent[key][0] != null && columnsParent[key][0].toUpperCase() == colName.toUpperCase()) {
-
-                                        // add column name, column value, column type and date format for date type
-                              	        // lineArr = new Array(columns[key][0],(columnData[columns[key][0]] != null ? columnData[columns[key][0]] : null),columns[key][1],columns[key][2],(reportObj.Sheets[reportObjSheetCounter].Columns[key][2] != null ? reportObj.Sheets[reportObjSheetCounter].Columns[key][2] : null));
-                              	        lineArr = new Array(columnsParent[key][0],(columnData[columnsParent[key][0]] != null ? columnData[columnsParent[key][0]] : null),columnsParent[key][1],columnsParent[key][2],(reportObj.Sheets[reportObjSheetCounter].ColumnsParent[key][2] != null ? reportObj.Sheets[reportObjSheetCounter].ColumnsParent[key][2] : null));
-
-                                        rowArr.push(lineArr);
-                                   
-                                        columnFound=true;
-                                   
-                                        break;
-                                   }
-                              }
-
-                              if (columnFound == false && columnHeadersParent[key][0] != null) {
-                         	         invalidColumn=columnHeadersParent[key][0];
-                                   break;
-                              }
-                         }
-
-                         if (columnFound == false && columnHeadersParent[key][0] != null)
-                              return;
-
-                         // push line array
-                         data.push(rowArr);
-                    });
-               } catch(e) {
-               	     workbook.close();
-                     if (FileServices.existsFile(reportObj.FileName))
-                          FileServices.deleteFile(reportObj.FileName);
-                         
-                     return ["ERROR","An error occurred generating the report with the error " + e + " while executing the SQL statement " + reportObj.Sheets[reportObjSheetCounter].SQLParent];
-               }
-               
-               //if (columnFound == false && invalidColumn != null && invalidColumn != "")
-               //     return ["ERROR","The sql column " + invalidColumn + " was not found in the database. Please check the spelling of the column name"];
-          } else if (reportObj.Sheets[reportObjSheetCounter].TableData != null) { // *** TABLE BASED DATA *** 
-               allRows=tables.getTable(reportObj.Sheets[reportObjSheetCounter].TableData);
-               rows=allRows.getRows();               
-               
-               // Loop through each row
-               while (rows.next()) {
-               	    lineArr = [];
-               	    rowArr = [];
                	    
-                    // Loop through each column for the current row
-                    for (columnCounter=0;columnCounter<columnHeaders.length;columnCounter++) {
-                         try {
-                         	    if (columns[columnCounter] == null || typeof columns[columnCounter][0] == 'undefined' || columns[columnCounter][0] == null ) {
-                         	         continue;
-                         	    }                         	         
+                         // Loop through each column for the current row
+                         for (columnCounter=0;columnCounter<columnHeaders.length;columnCounter++) {
+                              try {
+                         	         if (columns[columnCounter] == null || typeof columns[columnCounter][0] == 'undefined' || columns[columnCounter][0] == null ) {
+                         	              continue;
+                         	         }                         	         
                          	         
-                         	    // Make sure that the column name is valid
-                         	    if (tables.getTable(reportObj.Sheets[reportObjSheetCounter].TableData).getColumn(columns[columnCounter][0]) == null)
-                         	         return ["ERROR","The table column " + columns[columnCounter][0] + " was not found in the database. Please check the spelling of the column name"];
+                         	         // Make sure that the column name is valid
+                         	         if (tables.getTable(reportObj.Sheets[reportObjSheetCounter].TableData).getColumn(columns[columnCounter][0]) == null)
+                              	         return ["ERROR","The table column " + columns[columnCounter][0] + " was not found in the database. Please check the spelling of the column name"];
 
-                              currColumnValue=tables.getTable(reportObj.Sheets[reportObjSheetCounter].TableData).getColumn(columns[columnCounter][0]).displayValue;
+                                   currColumnValue=tables.getTable(reportObj.Sheets[reportObjSheetCounter].TableData).getColumn(columns[columnCounter][0]).displayValue;
                               
-                              if (currColumnValue != null)
-                                   currColumnValue=currColumnValue.replaceAll("<BR>","");
-                         } catch(e) {
-                         	    workbook.close();
-                              if (FileServices.existsFile(reportObj.FileName)) FileServices.deleteFile(reportObj.FileName);
+                                   if (currColumnValue != null)
+                                        currColumnValue=currColumnValue.replaceAll("<BR>","");
+                              } catch(e) {
+                                   workbook.close();
+                                   
+                                   if (FileServices.existsFile(reportObj.FileName)) FileServices.deleteFile(reportObj.FileName);
                               
-                              return ["ERROR","An error occurred when columnCounter=" + columnCounter + ", columns[columnCounter][0]=" + columns[columnCounter][0] + ", columns[columnCounter]=" + columns[columnCounter] + " for the index " + columnCounter + " when columns=" + reportObj.Sheets[reportObjSheetCounter].Columns + " with the error message " + e];
+                                   return ["ERROR","An error occurred when columnCounter=" + columnCounter + ", columns[columnCounter][0]=" + columns[columnCounter][0] + ", columns[columnCounter]=" + columns[columnCounter] + " for the index " + columnCounter + " when columns=" + reportObj.Sheets[reportObjSheetCounter].Columns + " with the error message " + e];
+                              }
+
+                              currColumnType=columns[columnCounter][1];
+
+                              currColumnIndex=columns[columnCounter][2];
+
+                              // add column name, column value, column type and force type if set
+                              lineArr = new Array(columns[columnCounter][0],(currColumnValue != null ? currColumnValue : null), currColumnType,(columns[columnCounter][2] != null ? columns[columnCounter][2] : null));
+
+                              rowArr.push(lineArr);
+                         }                    
+
+                         // push line array
+                         data.push(rowArr);
+                    }
+               }
+          } else { // Nested tables
+          	   columnNotFound=false;
+               invalidColumn="";
+
+          	   if (typeof reportObj.Sheets[reportObjSheetCounter].SQLParent != 'undefined') {
+                    try {
+               	         var parentSQL=reportObj.Sheets[reportObjSheetCounter].SQLParent;
+               	    
+                         // Read the data
+                         services.database.executeSelectStatement(reportObj.Sheets[reportObjSheetCounter].DBConnectionParent,parentSQL,
+                         function (columnData) {
+               	              lineArr = [];
+               	              rowArr = [];
+
+               	              // Loop through all columns in provided column list
+                              for (var key in columnsParent) {
+                    	             columnFound=false;
+                    	   
+                    	             // Loop through each column of the current row
+                                   for (var colName in columnData) {
+                         	              // If the current column is the one we are looking for
+                                        if (columnsParent[key][0] != null && columnsParent[key][0].toUpperCase() == colName.toUpperCase()) {
+                                             // add column name, column value, column type and date format for date type
+                              	             lineArr = new Array(columnsParent[key][0],(columnData[columnsParent[key][0]] != null ? columnData[columnsParent[key][0]] : null),columnsParent[key][1],columnsParent[key][2],(reportObj.Sheets[reportObjSheetCounter].ColumnsParent[key][2] != null ? reportObj.Sheets[reportObjSheetCounter].ColumnsParent[key][2] : null),(reportObj.Sheets[reportObjSheetCounter].ColumnsParent[key][3] != null ? reportObj.Sheets[reportObjSheetCounter].ColumnsParent[key][3] : null));
+
+                                             rowArr.push(lineArr);
+                                   
+                                             columnFound=true;
+                                   
+                                             break;
+                                        }
+                                   }
+
+                                   // Exit for loop if invalid column was found
+                                   if (columnFound == false && columnsParent[key][0] != null) {
+                         	              invalidColumn=columnsParent[key][0];
+                                        break;
+                                   }
+                              }
+
+                              // Exit function loop if invalid column was found
+                              if (columnFound == false && columnsParent[key][0] != null)
+                                   return;
+
+                              // push line array
+                              data.push(rowArr);
+                         });
+                    } catch(e) {
+               	         workbook.close();
+                         
+                         if (FileServices.existsFile(reportObj.FileName))
+                              FileServices.deleteFile(reportObj.FileName);
+                         
+                         return ["ERROR","An error occurred generating the report with the error " + e + " while executing the SQL statement " + reportObj.Sheets[reportObjSheetCounter].SQLParent];
+                    }
+               
+                    //if (columnFound == false && invalidColumn != null && invalidColumn != "")
+                    //     return ["ERROR","The sql column " + invalidColumn + " was not found in the database. Please check the spelling of the column name"];
+               } else if (typeof reportObj.Sheets[reportObjSheetCounter].TableDataParent != 'undefined') {
+                    var allRows=tables.getTable(reportObj.Sheets[reportObjSheetCounter].TableDataParent);
+                    var rows=allRows.getRows();
+
+                    while (rows.next()) {
+                    	   lineArr = [];
+               	         rowArr = [];
+               	         
+                         // Loop through all columns in provided column list
+                         for (var key in columnsParent) {
+                              if (allRows.getColumn(columnsParent[key][0]) != null) {
+                                   // add column name, column value, column type and date format for date type
+                              	   lineArr = new Array(columnsParent[key][0],(allRows.getColumn(columnsParent[key][0]).value != null ? allRows.getColumn(columnsParent[key][0]).value : null),columnsParent[key][1],columnsParent[key][2],(reportObj.Sheets[reportObjSheetCounter].ColumnsParent[key][2] != null ? reportObj.Sheets[reportObjSheetCounter].ColumnsParent[key][2] : null),(reportObj.Sheets[reportObjSheetCounter].ColumnsParent[key][3] != null ? reportObj.Sheets[reportObjSheetCounter].ColumnsParent[key][3] : null));
+
+                                   rowArr.push(lineArr);
+                              } else {
+                                   invalidColumn=columnsParent[key][0];
+                                   break;
+                              }
                          }
 
-                         currColumnType=columns[columnCounter][1];
-
-                         currColumnIndex=columns[columnCounter][2];
-
-                         // add column name, column value, column type and force type if set
-                         lineArr = new Array(columns[columnCounter][0],(currColumnValue != null ? currColumnValue : null), currColumnType,(columns[columnCounter][2] != null ? columns[columnCounter][2] : null));
-
-                         rowArr.push(lineArr);
-                    }                    
-
-                    // push line array
-                    data.push(rowArr);
+                         // push line array
+                         data.push(rowArr); 
+                    }                                        
                }
           }
           // *** END OF GET ALL DATA ***
@@ -1217,8 +1275,11 @@ function createExcelReport(reportObj) {
           	             rowCounter++;
           	        
           	        row=sheet.getRow(rowCounter) != null ? sheet.createRow(rowCounter) : sheet.createRow(rowCounter);
-          
+
+                    // Write column headers
                     for (columnCounter=0;columnCounter<columnHeadersParent.length;columnCounter++) {
+                         if (reportObj.Sheets[reportObjSheetCounter].ColumnsParent[columnCounter] != null && reportObj.Sheets[reportObjSheetCounter].ColumnsParent[columnCounter][3] == true)
+                              continue;
                     	   //currColumnIndex=0;
                     	   
                          try {                    
@@ -1244,12 +1305,12 @@ function createExcelReport(reportObj) {
           	        currColumnIndex=0;  
 
                var parentMatchingValue=-1;
-               
-               // Write the data
+
+               // Write the data (or parent data if using nested tables)
                for (var colCounter=0;colCounter<(nestedTables == false ? columnHeaders.length : columnHeadersParent.length);colCounter++) {               	    
                	    if (data[dataCounter][colCounter]==null) {
                	         continue;
-               	    }                    
+               	    }
 
                     // If the Column is equal to [null], increment currColumnIndex so the data is shifted to the right
                	    if (nestedTables == false) {
@@ -1265,6 +1326,10 @@ function createExcelReport(reportObj) {
                	              currColumnIndex++;
                	         }
                	    }
+
+               	    if (data[dataCounter][colCounter][5]==true) {
+               	         continue;
+               	    }
                     
                     // If the type is CHAR but the value is an INT, change the type to an INT so it will be written as an INT so
                     // that Excel doesn't complaign that the field is a number in a text cell
@@ -1275,7 +1340,7 @@ function createExcelReport(reportObj) {
                     if ((data[dataCounter][colCounter][2] == "INTEGER" || data[dataCounter][colCounter][2] == "INT") && data[dataCounter][colCounter][1] != null && !isInt(data[dataCounter][colCounter][1]) && data[dataCounter][colCounter][1].indexOf("%") == -1)
                          data[dataCounter][colCounter][2]="CHAR";
 
-                    if (currColumnIndex >= columns.length)
+                    if (currColumnIndex >= (!nestedTables ? columns.length : columnsParent))
                          currColumnIndex=0;
                          
                     cell = row.createCell(currColumnIndex);
@@ -1365,9 +1430,10 @@ function createExcelReport(reportObj) {
                     if (rowWritten==true)
                          currColumnIndex++;
                } // end of for (var colCounter=0;colCounter<columnHeaders.length;colCounter++) {
-
-               rowCounter++;
                
+               rowCounter++;
+
+               // write child data if we are using nested tables
                if (nestedTables == true) {
                     // Write child table headers
                     var columnHeadersChild=reportObj.Sheets[reportObjSheetCounter].ColumnHeadersChild.split(",");
@@ -1378,6 +1444,7 @@ function createExcelReport(reportObj) {
 
                     try {
                          childIndent=(typeof reportObj.Sheets[reportObjSheetCounter].ChildIndent !== 'undefined' ? parseInt(reportObj.Sheets[reportObjSheetCounter].ChildIndent) : 0);
+                         childIntent=parseInt(childIndent);
                     } catch (e) {
                     }
                          
@@ -1401,142 +1468,184 @@ function createExcelReport(reportObj) {
                     rowCounter++;                    
 
                     // Write child table data
-                    try {
-                         var childSQL=reportObj.Sheets[reportObjSheetCounter].SQLChild.replace("<WHERECLAUSE>",(reportObj.Sheets[reportObjSheetCounter].SQLChild.indexOf("WHERE ") == -1 ?  " WHERE " : " AND ") + reportObj.Sheets[reportObjSheetCounter].JoinWhereClause[0] + "=" + (typeof parentMatchingValue == 'string' ? "'" : "") + parentMatchingValue + (typeof parentMatchingValue == 'string' ? "'" : ""));
+                    var rowArr=[];
 
-                         row=(sheet.getRow(rowCounter) != null ? sheet.getRow(rowCounter) : sheet.createRow(rowCounter));
+                    // SQL Based nested table
+                    if (reportObj.Sheets[reportObjSheetCounter].SQLChild != null) {
+                         try {
+                              var childSQL=reportObj.Sheets[reportObjSheetCounter].SQLChild.replace("<WHERECLAUSE>",(reportObj.Sheets[reportObjSheetCounter].SQLChild.indexOf("WHERE ") == -1 ?  " WHERE " : " AND ") + reportObj.Sheets[reportObjSheetCounter].JoinWhereClause[0] + "=" + (typeof parentMatchingValue == 'string' ? "'" : "") + parentMatchingValue + (typeof parentMatchingValue == 'string' ? "'" : ""));
+
+                              row=(sheet.getRow(rowCounter) != null ? sheet.getRow(rowCounter) : sheet.createRow(rowCounter));
+                              
+                              // Read the data and save it into childData array
+                              var childData=[];
+                              
+                              services.database.executeSelectStatement(reportObj.Sheets[reportObjSheetCounter].DBConnectionChild,childSQL,
+                              function (columnData) {                              	   
+                              	   for (var colCounter=0;colCounter<columnsChild.length;colCounter++) {
+                              	        for (var colName in columnData) {                       	        
+                              	        	   if (columnsChild[colCounter][0] === colName) {
+                              	        	   	    if (columnsChild[colCounter] == null) {
+                              	        	   	         currColumnIndex++;
+                              	        	   	         continue
+                              	        	   	    }
+
+                              	        	        // add column name, column value, column type and date format for date type
+                                   	              var lineArr = new Array(columnsChild[colCounter][0],(columnData[colName] != null ? columnData[colName] : null),columnsChild[colCounter][1],(columnsChild[colCounter][2] != null ? columnsChild[colCounter][2] : null));
+                                   	              rowArr.push(lineArr);
+                              	        	   }
+                              	        }
+                              	   }
+
+                              	   childData.push(rowArr);
+                              	   rowArr=[];
+                             });
+                        } catch(e) {
+               	             workbook.close();
+                              
+                             if (FileServices.existsFile(reportObj.FileName))
+                                  FileServices.deleteFile(reportObj.FileName);
                          
-                         // Read the data
-                         services.database.executeSelectStatement(reportObj.Sheets[reportObjSheetCounter].DBConnectionChild,childSQL,
-                         function (columnData) {
-                         	    //for (var colName in columnData) { alert("Column Name: " + columnData[colName]); }
-                         	    
-                              for (var colCounter=0;colCounter<columnsChild.length;colCounter++) {
-                                   
-                                   //print(getCurrentTime() + " Column name=" + columnsChild[colCounter]);
-                                   
-                                   for (var colName in columnData) {
-                                   	    //print(getCurrentTime() + " Data column name=" + colName);
-                                        if (colName != columnsChild[colCounter][0])
-                                             continue;
-                                   
-                                        // If the Column is equal to [null], increment currColumnIndex so the data is shifted to the right
-                                        while (currColumnIndex<columns.length && reportObj.Sheets[reportObjSheetCounter].ColumnsChild[colCounter] == null) {
-                    	                       currColumnIndex++;
-                    	                  }
+                             return ["ERROR","An error occurred generating the report with the error " + e + " while executing the SQL statement " + reportObj.Sheets[reportObjSheetCounter].SQLChild + " WHERE " + reportObj.Sheets[reportObjSheetCounter].JoinWhereClause[0] + "=" + parentMatchingValue];
+                        }
+                   } else if (reportObj.Sheets[reportObjSheetCounter].TableDataChild != null) {
+                        row=(sheet.getRow(rowCounter) != null ? sheet.getRow(rowCounter) : sheet.createRow(rowCounter));
 
-                                        // If the type is INT but the value is a CHAR, change the type to an CHAR so it will be written as a CHAR. Ignore percentage values because we want to still write them as a number
-                                        if ((columnsChild[colCounter][2] == "INTEGER" || columnsChild[colCounter][2] == "INT") && columnData[colName] != null && !isInt(columnData[colName]) && columnData[colName].indexOf("%") == -1)
-                                             columnsChild[2]="CHAR";
+                        // Read the data and save it into childData array
+                        var childData=[];
 
-                                        // If the type is INT but the value is a CHAR, change the type to an CHAR so it will be written as a CHAR. Ignore percentage values because we want to still write them as a number
-                                        if ((columnsChild[2] == "INTEGER" || columnsChild[colCounter][2] == "INT") && columnData[colName] != null && !isInt(columnData[colName]) && columnData[colName].indexOf("%") == -1)
-                                             columnsChild[2]="CHAR";
+                        var allRows=tables.getTable(reportObj.Sheets[reportObjSheetCounter].TableDataChild);
+                        var rows=allRows.getRows();
 
-                                        cell = row.createCell(colCounter+childIndent);
+                        while (rows.next()) {
+                    	       lineArr = [];
+               	             rowArr = [];
+               	         
+                             // Loop through all columns in provided column list  reportObj.Sheets[reportObjSheetCounter].JoinWhereClause[0]
+                             for (var key in columnsChild) {
+                                  if (allRows.getColumn(columnsChild[key][0]) != null && allRows.getColumn(reportObj.Sheets[reportObjSheetCounter].JoinWhereClause[0]) != null && allRows.getColumn(reportObj.Sheets[reportObjSheetCounter].JoinWhereClause[0]).value == parentMatchingValue) {
+                                       // add column name, column value, column type and date format for date type
+                              	       lineArr = new Array(columnsChild[key][0],(allRows.getColumn(columnsChild[key][0]).value != null ? allRows.getColumn(columnsChild[key][0]).value : null),columnsChild[key][1],columnsChild[key][2],(reportObj.Sheets[reportObjSheetCounter].ColumnsChild[key][2] != null ? reportObj.Sheets[reportObjSheetCounter].ColumnsChild[key][2] : null),(reportObj.Sheets[reportObjSheetCounter].ColumnsChild[key][3] != null ? reportObj.Sheets[reportObjSheetCounter].ColumnsChild[key][3] : null));
 
-                                        // In order to prevent errors, always default the type to CHAR if not specified.
-                                        if (columnsChild[colCounter][2]==null) columnsChild[2]="CHAR";
-                                    
-                                        // Type
-                                        switch(columnsChild[2].toUpperCase()) {
-                                             case "BOOLEAN":
-                                             case "INT":
-                                             case "INTEGER":
-                                             case "NUMERIC":
-                                                  // If the data is null, don't attempt to write a null value as a number because it will throw an error message
-                                                  // Instead, write empty string if its null
-                                                  rowWritten=true;                              
+                                       rowArr.push(lineArr);
+                                   } else {
+                                       invalidColumn=columnsParent[key][0];
+                                       break;
+                                   }
+                             }
+
+                             // push into line array
+                             if (rowArr.length > 0)
+                                  childData.push(rowArr); 
+                        }
+                   }
+
+                   // Write the child data
+                   for (var childDataCounter=0;childDataCounter<childData.length;childDataCounter++) {                                  
+                        for (var columnItem=0;columnItem<childData[childDataCounter].length;columnItem++) {
+                             var item=childData[childDataCounter][columnItem];                                      
+                                       
+                             cell = row.createCell(childIndent+columnItem);
+                                                                              
+                             // If the type is INT but the value is a CHAR, change the type to an CHAR so it will be written as a CHAR. Ignore percentage values because we want to still write them as a number
+                             if ((item[2] == "INTEGER" || item[2] == "INT") && item[1] != null && !isInt(item[1]) && item[1].indexOf("%") == -1)
+                                  item[2]="CHAR";                                        
+
+                             // In order to prevent errors, always default the type to CHAR if not specified.
+                             if (item[2]==null) item[2]="CHAR";
+
+                             // Type
+                             switch(item[2].toUpperCase()) {
+                                  case "BOOLEAN":
+                                  case "INT":
+                                  case "INTEGER":
+                                  case "NUMERIC":
+                                       // If the data is null, don't attempt to write a null value as a number because it will throw an error message
+                                       // Instead, write empty string if its null
+                                       rowWritten=true;                              
                               
-                                                  if (columnData[colName] != null) {                            
-                                                       cell.setCellValue(parseInt(columnData[colName]));
-                                                       cell.setCellStyle((styledFormat != null ? styledFormat : cellFormat));
-                                                  } else {
-                                                       cell.setCellStyle((styledFormat != null ? styledFormat : cellFormat));
-                                                  }
+                                       if (item[1] != null) {                            
+                                            cell.setCellValue(parseInt(item[1]));
+                                            cell.setCellStyle((styledFormat != null ? styledFormat : cellFormat));
+                                       } else {
+                                            cell.setCellStyle((styledFormat != null ? styledFormat : cellFormat));
+                                       }
                               
-                                                  cell.setCellType(getCellType("NUMERIC"));
+                                       cell.setCellType(getCellType("NUMERIC"));
                               
-                                                  break;
-                                             case "CHAR":
-                                                  rowWritten=true;
+                                       break;
+                                  case "CHAR":
+                                       rowWritten=true;
 
-                                                  if (columnData[colName] != null) {                    
-                                                       cell.setCellStyle((styledFormat != null ? styledFormat : cellFormat));
-                                                       cell.setCellValue(columnData[colName]);
-                                                  } else {
-                          	                           cell.setCellValue("");
-                                                       cell.setCellStyle((styledFormat != null ? styledFormat : cellFormat));
-                                                  }
+                                       if (item[1] != null) {                    
+                                            cell.setCellStyle((styledFormat != null ? styledFormat : cellFormat));
+                                            cell.setCellValue(item[1]);
+                                       } else {
+                         	                  cell.setCellValue("");
+                                            cell.setCellStyle((styledFormat != null ? styledFormat : cellFormat));
+                                       }
                                              
-                                                  break;
-                                             case "CURRENCY":
-                    	                            rowWritten=true;
+                                       break;
+                                 case "CURRENCY":
+                    	                 rowWritten=true;
 
-                    	                            // If the data is null, don't attempt to write a null value as a number because it will throw an error message
-                                                  // Instead, write empty string if its null
-                    	                            if (columnData[colName] != null) {
-                    	                                cell.setCellValue(parseFloat(columnData[colName]));
-                                                      cell.setCellStyle((styledFormat != null ? styledFormat : cellCurrencyFormat));
-                    	                            } else
-                                                       cell.setCellStyle((styledFormat != null ? styledFormat : cellFormat));
+                    	                 // If the data is null, don't attempt to write a null value as a number because it will throw an error message
+                                       // Instead, write empty string if its null
+                    	                 if (item[1] != null) {
+                    	                      cell.setCellValue(parseFloat(item[1]));
+                                            cell.setCellStyle((styledFormat != null ? styledFormat : cellCurrencyFormat));
+                    	                 } else
+                                            cell.setCellStyle((styledFormat != null ? styledFormat : cellFormat));
                                                   
-                                                  cell.setCellType(getCellType("NUMERIC"));
+                                       cell.setCellType(getCellType("NUMERIC"));
                                
-                    	                            break;
-                    	                       case "TIME":
-                    	                            rowWritten=true;
+                    	                 break;
+                    	            case "TIME":
+                    	                 rowWritten=true;
                     	   			          
-                    	   			                    if (columnData[colName] != null) {
-                    	   			                         cell.setCellValue(columnData[colName]);
-                    	   			                         cell.setCellStyle(timeFont);
-                    	   			                    }
+                    	   			         if (item[1] != null) {
+                    	   			              cell.setCellValue(item[1]);
+                    	   			              cell.setCellStyle(timeFont);
+                    	   			         }
                     	   		                  
-                    	   		                      break;												                     	         
-                    	                       case "DATE":
-                    	                       case "DATETIME":
-                    	                            rowWritten=true;
+                    	   		           break;												                     	         
+                    	            case "DATE":
+                    	            case "DATETIME":
+                    	                 rowWritten=true;
     
-                        	                        var dateVal="";
+                        	             var dateVal="";
 
-                                                  // If index 1 (value) isn't null and [3] (date format) isn't null
-                        	                        if (columnData[colName] != null && columnsChild[colCounter][3] != null) {
-                        	                             switch (columnsChild[colCounter][3]) {
-                        	                                  case "yyyymmdd":
-                    	                                           dateVal=new Date(columnData[colName]).yyyymmdd();
-                    	                  	                       break;
-                    	                                      case "mmddyy":
-                    	                  	                       dateVal=new Date(columnData[colName]).mmddyy();
-                    	                  	                       break;
-                    	                  	                  case "mm/dd/yyyy":
-                    	                  	                  default:
-                    	                  	                       dateVal=new Date(columnData[colName]).mmddyyyy();
-                    	                                 }
-                    	                            } else if (columnData[colName] != null)
-                    	                                 dateVal=new Date(columnData[colName]).mmddyyyy();
+                                       // If index 1 (value) isn't null and [3] (date format) isn't null
+                        	             if (item[1] != null && item[3] != null) {
+                        	                  switch (item[3]) {
+                        	                       case "yyyymmdd":
+                         	                            dateVal=new Date(item[1]).yyyymmdd();
+                         	                  	        break;
+                         	                       case "mmddyy":
+                         	                  	        dateVal=new Date(item[1]).mmddyy();
+                         	                  	        break;
+                    	                       	   case "mm/dd/yyyy":
+                    	                       	   default:
+                    	                       	        dateVal=new Date(item[1]).mmddyyyy();
+                    	                           }
+                    	                 } else if (item[1] != null)
+                    	                      dateVal=new Date(item[1]).mmddyyyy();
 
-                    	                            // dateVal shouldn't ever be null
-                    	                            cell.setCellValue(dateVal);
-                    	                            cell.setCellStyle((styledFormat != null ? styledFormat : cellFormat));
-                                        } // end of switch                                    
-                                   } // End of for (var colName in columnData) {
-                               } // end of for
-                          });
+                    	                 // dateVal shouldn't ever be null
+                    	                 cell.setCellValue(dateVal);
+                    	                 cell.setCellStyle((styledFormat != null ? styledFormat : cellFormat));
+                                  } // end of switch                                   
+                             } 
 
-                          rowCounter++;
-                    } catch(e) {
-               	         workbook.close();
-                              
-                         if (FileServices.existsFile(reportObj.FileName))
-                              FileServices.deleteFile(reportObj.FileName);
-                         
-                          return ["ERROR","An error occurred generating the report with the error " + e + " while executing the SQL statement " + reportObj.Sheets[reportObjSheetCounter].SQLChild + " WHERE " + reportObj.Sheets[reportObjSheetCounter].JoinWhereClause[0] + "=" + parentMatchingValue];
-                    }
-               
-                    if (columnFound == false && invalidColumn != null && invalidColumn != "")
-                         return ["ERROR","The sql column " + invalidColumn + " was not found in the database. Please check the spelling of the column name"];
+                             rowCounter++;
+
+                             row=(sheet.getRow(rowCounter) != null ? sheet.getRow(rowCounter) : sheet.createRow(rowCounter));
+                        }
+
+                        if (columnFound == false && invalidColumn != null && invalidColumn != "")
+                             return ["ERROR","The column " + invalidColumn + " was not found in the database. Please check the spelling of the column name"];
                }
-                    
+
                // *** Merge cells if MergeCells was specified ***
                if (typeof reportObj.Sheets[reportObjSheetCounter].MergeCells != 'undefined') {
                     for (var mergeCounter=0;mergeCounter < reportObj.Sheets[reportObjSheetCounter].MergeCells.length;mergeCounter++) {

@@ -4,35 +4,35 @@ VerjIO_Excel_Report_Generator is a Verj IO function that will automatically crea
 
 ## Features
 1. Create multiple sheets with a table in each sheet using an SQL statement or a table resource as the data source for each sheet
-2. Add formulas to each sheet including the option to specify that a formula should be written for each row of a table
-3. Merge cells
-4. Add hyperlinks in each sheet
-5. Add custom text anywhere that you specify
-6. Many custom style options
-7. Re-useable named style definitions
-8. Password protect a sheet
-9. Specify conditional formatting rules.
-10. Insert images into a sheet.
-11. Freeze the first row or column of the sheet
-12. Supports nested tables (currently supports SQL based data and not Table data)
-13. Create pivot table
+1. Add formulas to each sheet including the option to specify that a formula should be written for each row of a table
+1. Merge cells
+1. Add hyperlinks in each sheet
+1. Add custom text anywhere that you specify
+1. Many custom style options
+1. Re-useable named style definitions
+1. Password protect a sheet
+1. Specify conditional formatting rules.
+1. Insert images into a sheet.
+1. Freeze the first row or column of the sheet
+1. Supports nested tables using SQL or table resource
+1. Create pivot table
 
 ## Initial Installation
 1. Download the latest version of [Apache POI](https://poi.apache.org/), extract the zip file and locate the following JAR files: poi-X.jar,poi-excelant-X.jar, poi-ooxml-X.jar and poi-ooxml-schemas-X.jar where X is the current version number.
 
-2. Download the latest version of [commons-collections](https://commons.apache.org/proper/commons-collections/), extract the zip and locate commons-collectionsX.jar where X is the current version number.
+1. Download the latest version of [commons-collections](https://commons.apache.org/proper/commons-collections/), extract the zip and locate commons-collectionsX.jar where X is the current version number.
 
-3. Download the latest version of [commons-compress](https://commons.apache.org/proper/commons-compress/download_compress.cgi), extract the zip and locate commons-compress-X where X is the current version number.
+1. Download the latest version of [commons-compress](https://commons.apache.org/proper/commons-compress/download_compress.cgi), extract the zip and locate commons-compress-X where X is the current version number.
 
-4. Download the latest version of [XML Beans](https://xmlbeans.apache.org/download/index.html#XMLBeans-3.0.1), extract the zip and locate the jar xbean.jar.
+1. Download the latest version of [XML Beans](https://xmlbeans.apache.org/download/index.html#XMLBeans-3.0.1), extract the zip and locate the jar xbean.jar.
 
-5. Copy all the jar files that you extracted above to VerjIO's lib folder. On Verj IO 5.6+, the path is C:\VerjIOData\apps\ufs\webapp\WEB-INF\lib. On versions of Verj IO before 5.6, the path is  VerjIO\UfsServer\tomcat\webapps\ufs\WEB-INF\lib. You may have 2 different versions of commons-collections. This is ok.
+1. Copy all the jar files that you extracted above to VerjIO's lib folder. On Verj IO 5.6+, the path is C:\VerjIOData\apps\ufs\webapp\WEB-INF\lib. On versions of Verj IO before 5.6, the path is  VerjIO\UfsServer\tomcat\webapps\ufs\WEB-INF\lib. You may have 2 different versions of commons-collections. This is ok.
 
-6. Restart Verj IO
+1. Restart Verj IO
 
-7. Create shared JavaScript script
+1. Create shared JavaScript script
 
-8. Add the following imports at the top of the script:
+1. Add the following imports at the top of the script:
    - importPackage(java.io);
    - importPackage(Packages.org.apache.poi);
    - importPackage(Packages.org.apache.poi.hssf.usermodel);
@@ -40,7 +40,7 @@ VerjIO_Excel_Report_Generator is a Verj IO function that will automatically crea
    - importPackage(Packages.org.apache.poi.ss.usermodel);
    - importPackage(Packages.org.apache.poi.hssf.util);
 	
-9. Paste the contents of createExcelReport.js into the script.
+1. Paste the contents of createExcelReport.js into the script.
 
 ## Upgrading VerjIO_Excel_Report_Generator
 
@@ -51,7 +51,7 @@ If you are already using POI 4.X jar files, you only need to replace createExcel
 ## Usage
 In order to create an Excel report, you need to build a JSON object to tell the application how to create the Excel document.
 
-Example:
+Example 1: Non-nested single table with 2 sheets
 
      var excelReportObj = {
           FileName: "Sales Report",
@@ -86,7 +86,7 @@ In the example above, the generated Excel file will be named "Sales Report as of
 
 The generated document will have 2 sheets. 
 
-The first sheet will be named Sales Report and will have a table with the 6 columns headings specified in ColumnHeaders. ColumnSize is used to set the size of each column (specifying null for a column size will set that column to autosize). The Columns property specify the database column names and their type. This sheet uses an SQL statement as the data source with the specified database connection called PRODUCTION.
+The first sheet will be named Sales Report and will have a table with the 6 columns headings specified in ColumnHeaders. ColumnSize is used to set the size of each column (specifying null for a column size will cause that column to autosize). The Columns property specify the database column names and their type. This sheet uses an SQL statement as the data source with the specified database connection called PRODUCTION.
 
 The second sheet will be named Shipment Report and have a table with the 3 columns specified. ColumnSize is not provided so all columns will auto size automatically. This sheet uses a table resource as the data source instead of an SQL statement.
 
@@ -98,7 +98,7 @@ The return value will be one of the following:
 ["OK-NODATA",""] // There was no data returned from the SQL query or table resource so the report was not generated
 ["ERROR","Error Message"] // An error occurred during the creation of the report with the exact message provided
 
-Example 2: Nested tables
+Example 2: Nested tables using SQL data
     
     var reportObj = {
           FileName: "TEST",
@@ -114,34 +114,66 @@ Example 2: Nested tables
                ColumnsChild: [["MenuName","CHAR"],["MenuDescription","CHAR"]],
                SQLChild: "SELECT UserID,MenuName,MenuDescription FROM Menus_Auth",
                DBConnectionChild: "ChildDBCOnnection",
-               JoinWhereClause: ["UserID",0], // Index 0 = column that links the 2 queries and 0 is the index of the column starting with 0 for the first column
+               JoinWhereClause: ["UserID",0], // Index 0 is the column that links the 2 queries and 0 is the index of the column starting with 0 for the first column
                ChildIndent: 1 
           },
           ]
      };
+
      var result=createExcelReport(reportObj);
 
-In the example above, the generated Excel file will be named "Test as of 11-16-2020-09-20-10.xlsx". 
-When using nested tables, you have to specify the column headers, columns, SQL and DB Connection for the parent and child tables. In addition you need to specify JoinWhereClause as an array with 2 values; the name of the column that joins the parent and child tables and the index in the parent column headers (ColumnsParent). If you want to shift the child table to the right (which I recommend because it makes it easier to read the data) you can set ChildIndent/
+In the example above, the generated Excel file will be named "Test as of 11-16-2020-09-20-10.xlsx".
+
+When using nested tables using SQL based data, you have to specify the column headers, columns, SQL and DB Connection for the parent and child tables. You also need to specify JoinWhereClause as an array with 2 values; the name of the column that joins the parent and child tables and the index in the parent column headers (ColumnsParent). If you want to shift the child table to the right (which I recommend because it makes it easier to read the data) you can set ChildIndent. The first index of JoinWhereClause: ["UserID",0] which is UserID in this example must be selected in the parent SQL in order to link the parent and child SQL statements.
+
+Example 3: Nested tables using table data
+    
+    var reportObj = {
+          FileName: "TEST",
+          Sheets: [{ 
+               SheetName: "TEST",
+               SheetIndex: 0,
+               NestedTables:true,   
+               TableDataParent: "PARENTTABLE",
+               ColumnHeadersParent: "RealName,Job Title,UserID",
+               ColumnsParent: [["Realname","CHAR"],["JobTitle","CHAR"],["UserID","INTEGER",null,true]], // true as the 4th parameter tells createExcelReport to not write this column on the report
+               
+               TableDataParent: "CHILDTABLE",
+               ColumnHeadersChild: "RealName,Job Title",               
+               ColumnsChild: [["Realname","CHAR"],["JobTitle","CHAR"]],
+               JoinWhereClause: ["ManagerUserID",2], // The condition to include the child row is where Child.ManagerUserID=Parent.UserID because index 2 of ColumnsParent is the UserId column
+               JoinWhereClause: ["UserID",0], // Index 0 is the column that links the 2 queries and 0 is the index of the column starting with 0 for the first column
+               ChildIndent: 1 
+          },
+          ]
+     };
+
+     var result=createExcelReport(reportObj);
+
+In the example above, the generated Excel file will be named "Test as of 11-30-2020-11-08-51.xlsx".
+
+When using nested tables based on table data, you have to specify the column headers, columns and the table name for the parent and child tables. In addition you need to specify JoinWhereClause as an array with 2 values; the name of the column that joins the parent and child tables and the index in the parent column headers (ColumnsParent). If you want to shift the child table to the right (which I recommend because it makes it easier to read the data) you can set ChildIndent. The first index of JoinWhereClause: ["UserID",0] which is UserID in this example must be one of the columns added to the table resource in the parent table in order to link the parent and child tables.
 
 ## General Tips
 1. The number of columns specified in ColumnHeaders must match the number of arrays provided in Columns or an error will be thrown.
 
-2. When an SQL statement is provided as a data source, you must also provide the name of the database connection or an error will be thrown. Since Verj IO tables are already linked to a database connection, you don't need to specify the database connection name when providing a table source.
+1. When an SQL statement is provided as a data source, you must also provide the name of the database connection or an error will be thrown. Since Verj IO tables are already linked to a database connection, you don't need to specify the database connection name when providing a table source.
 
-3. ColumnSize is optional and can be used to specify the column width. If you do not provide ColumnSize, all columns will be set to autosize the width automatically. If you provide an array with null for any values like in the example above, the columns that have null for the width will be set to autosize the width automatically.
+1. ColumnSize is optional and can be used to specify the column width. If you do not provide ColumnSize, all columns will be set to autosize the width automatically. If you provide an array with null for any values like in the example above, the columns that have null for the width will be set to autosize the width automatically.
 
-4. Valid data types are "BOOLEAN", "CHAR", "CURRENCY", "DATE", "DATETIME", "TIME", "INTEGER" (or "INT" as an alias for INTEGER") and "NUMERIC". If you specify that a column data type is CHAR but the value that is going to be written to the Excel document is an INTEGER, it will be written as an INTEGER. IF you want to force the column to always be written as CHAR, add a true parameter after the CHAR data type. Ex. ["SOMECOLUMN","CHAR",true]. If the data type is specified as INT but the data value is not an INT, it will be written to the Excel document as a CHAR unless you add a true parameter. Ex ["SOMECOLUMN","INT",true].
+1. Valid data types are "BOOLEAN", "CHAR", "CURRENCY", "DATE", "DATETIME", "TIME", "INTEGER" (or "INT" as an alias for INTEGER") and "NUMERIC". If you specify that a column data type is CHAR but the value that is going to be written to the Excel document is an INTEGER, it will be written as an INTEGER. IF you want to force the column to always be written as CHAR, add a true parameter after the CHAR data type. Ex. ["SOMECOLUMN","CHAR",true]. If the data type is specified as INT but the data value is not an INT, it will be written to the Excel document as a CHAR unless you add a true parameter. Ex ["SOMECOLUMN","INT",true].
 
-5. Valid color values can be found in the object colorObject defined in getColor(). You can also supply an RGB string ike "83,162,240" as the color value to use a specific RGB value instead of a predefined color.
+1. When using nested tables, you have to add the column that joins the parent and child tables using JoinWhereClause. If you do not want this column to show up on the report, you can specify true for the 4th parameter.
 
-6. Valid border styles can be found in the object borderStylesObject defined in createStyleFormat(). 
+1. Valid color values can be found in the object colorObject defined in getColor(). You can also supply an RGB string ike "83,162,240" as the color value to use a specific RGB value instead of a predefined color.
 
-7. Valid underline styles can be found in underlineStyleObject defined in createStyleFormat().
+1. Valid border styles can be found in the object borderStylesObject defined in createStyleFormat(). 
 
-8. Valid alignment styles can be found in alignmentStylesObject defined in createStyleFormat().
+1. Valid underline styles can be found in underlineStyleObject defined in createStyleFormat().
 
-9. If you are calling createExcelReport() in a client callable function, you cannot alert the result using event.owner.addWarningMessage on the server side. Instead you must return the warning message to the script that called the client side function that executes createExcelReport(). In the server side function that gets called from the client, the call to createExcelReport() might look like this:
+1. Valid alignment styles can be found in alignmentStylesObject defined in createStyleFormat().
+
+1. If you are calling createExcelReport() in a client callable function, you cannot alert the result using event.owner.addWarningMessage on the server side. Instead you must return the warning message to the script that called the client side function that executes createExcelReport(). In the server side function that gets called from the client, the call to createExcelReport() might look like this:
        
        // Part of the logic from the server side function generateKPIReport() that gets called from the client side
        var result=createExcelReport(excelReportObj);
@@ -166,7 +198,7 @@ When using nested tables, you have to specify the column headers, columns, SQL a
        else if (result[0]=="OK")
             alert("The name of the file is " + result[1]);
 
-10. If the call to createExcelReport() in a script that is run in a before form event, you should print the result if an error occurs using print instead of using event.owner.addErrorMessage or event.owner.addWarningMessage because you cannot initiate these types of alerts in a Before Form event.
+1. If the call to createExcelReport() in a script that is run in a before form event, you should print the result if an error occurs using print instead of using event.owner.addErrorMessage or event.owner.addWarningMessage because you cannot initiate these types of alerts in a Before Form event.
        
         var result=createExcelReport(excelReportObj);	
 	    
@@ -175,7 +207,7 @@ When using nested tables, you have to specify the column headers, columns, SQL a
             else if (result[0]=="OK-NODATA")
                  print("There is data available for the report");
 
-11. If the call to createExcelReport() is made in a server side script, you can check the return value as follows:
+1. If the call to createExcelReport() is made in a server side script, you can check the return value as follows:
      
          var result=createExcelReport(excelReportObj);	
 	    
@@ -187,16 +219,16 @@ When using nested tables, you have to specify the column headers, columns, SQL a
               event.stopExecution();
           else if (result[0]=="OK")
               alert(result[1]);
-12. If you have a column with a formula for each row, you  can use a line formula to specify that a formula is to be written for each row. When doing this, you will have a column header such as Total in ColumnHeader. In order to make sure that the number of columns and column headers match, put [null] as a place holder in the Columns property in place of an actual column name. Ex.
+1. If you have a column with a formula for each row, you  can use a line formula to specify that a formula is to be written for each row. When doing this, you will have a column header such as Total in ColumnHeader. In order to make sure that the number of columns and column headers match, put [null] as a place holder in the Columns property in place of an actual column name. Ex.
 
         Columns: [["OrderNum","INTEGER"],[null],["StatusDescription","CHAR"],["Customer","CHAR"],["PartNum","CHAR"],["PartDescription","CHAR"]], 
     ColumnHeaders: "Order Number,Order Count,Status,Customer,Part Num,Part Description",
 
-13. When using a TableData source, the column names are case sensitive and must be provided in the same case that they appear in the table resource or this script will throw an error because the coulmn could not be located.
+1. When using a TableData source, the column names are case sensitive and must be provided in the same case that they appear in the table resource or this script will throw an error because the coulmn could not be located.
 
-14. If you are using custom formatting, make sure to use a formula that evaluates to a boolean true or false value. Use $ in front of the column letter to allow the formula to be evaluated correctly for each row of a table.
+1. If you are using custom formatting, make sure to use a formula that evaluates to a boolean true or false value. Use $ in front of the column letter to allow the formula to be evaluated correctly for each row of a table.
 
-15. If you open an Excel document that has a pivot table inside of it from an email client like Outlook, you have to manually click on the pivot table and choose Refresh.
+1. If you open an Excel document that has a pivot table inside of it from an email client like Outlook, you have to manually click on the pivot table and choose Refresh.
 
 JSON Reference
 --------------
@@ -226,6 +258,8 @@ but not all of them are required. All of the optional properties have a comment 
                StartRow: 3, // Optional: Start on row 3
                SheetName: "EOL Parts",
                SheetIndex: 0,
+
+               // Margin related properties
                TopMargin: 1, // Optional top margin
                BottomMargin: 1, // Optional bottom margin
                LeftMargin: 1, // Optional left margin
@@ -235,23 +269,31 @@ but not all of them are required. All of the optional properties have a comment 
                AllMargins: "1,0.5,1.5,2", // Optional. Providing 4 values applies the 1st value to the top, 2nd value to the bottom , 3rd value to the left and 4th value to the right margin
                HeaderMargin: 1, // Optional header margin
                FooterMargin: 1, // Optional footer margin
+               
+               // Header & footer values. Assign values to the left, right and center of the header or footer
                HeaderLeft: "Left header string goes here", // Optional left header
                HeaderCenter: "Center header string goes here", // Optional center header
                HeaderRight: "Right header string goes here", // Optional right header
                FooterLeft: "Left footer string goes here", // Optional left footer
                FooterCenter: "Center footer string goes here", // Optional center footer
                FooterRight: "Right footer string goes here", // Optional right footer
+
+
                FitWidth: true, // Optional. Will force sheet to fit all columns on the page width-wise
                FitHeight: true, // Optional. Will force sheet to fit all columns on the page height-wise
                FitToPages: true, // Optional. Will force sheet to fit all of the content into 1 page
                Orientation: "landscape", // Optional. Valid values are "landscape" or "portrait"
                Password: "somepassword": // Optional. Will protect the sheet from being edited unless the user enters this password
                PivotTable: true // Optional. Creates a pivot table based off of the data in the current sheet
-               NestedTables: true, // Optional. This is only required if you are using nested tables
+               
+               // Nested Tables 
+               NestedTables: true, // Optional. This is only required if you are using nested tables               
                ColumnHeadersParent: "UserID,RealName,Username", // Optional. This is only required if you are using nested tables. Parent table column headers when using nested tables
                ColumnsParent: [["UserID","CHAR"],["RealName","CHAR"],["Username","CHAR"]], // Optional. This is only required if you are using nested tables. Parent table columns when using nested tables
-               SQLParent: "SELECT RealName,Username,UserID FROM Users", // Optional. This is only required if you are using nested tables. Parent SQL
-               DBConnectionParent: "ParentDBCOnnection",  // Optional. This is only required if you are using nested tables. Parent DB connection for the SQL statement used above
+               SQLParent: "SELECT RealName,Username,UserID FROM Users", // Required when using nested tables. Parent table SQL
+               DBConnectionParent: "ParentDBCOnnection",  // Required when using nested tables. Parent DB connection for the SQL statement used above
+               TableDataParent: "PARENTTABLE",  // Required when using nested tables. Do not use with 
+
                ColumnHeadersChild: "Menu Name,Menu Description", // Optional. This is only required if you are using nested tables. Child table column headers when using nested tables
                ColumnsChild: [["MenuName","CHAR"],["MenuDescription","CHAR"]], // Optional. This is only required if you are using nested tables. Child table columns when using nested tables
                SQLChild: "SELECT UserID,MenuName,MenuDescription FROM Menus", // Optional. This is only required if you are using nested tables. Child SQL
