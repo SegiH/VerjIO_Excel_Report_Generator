@@ -1091,8 +1091,13 @@ function createExcelReport(reportObj) {
                                    for (var colName in columnData) {
                          	              // If the current column is the one we are looking for
                                         if (columns[key][0] != null && columns[key][0].toUpperCase() == colName.toUpperCase()) {
-                                             // add column name, column value, column type and date format for date type
-                              	             lineArr = new Array(columns[key][0],(columnData[columns[key][0]] != null ? columnData[columns[key][0]] : null),columns[key][1],columns[key][2],(reportObj.Sheets[reportObjSheetCounter].Columns[key][2] != null ? reportObj.Sheets[reportObjSheetCounter].Columns[key][2] : null));
+                                             // Added try catch around this line because there seems to be a global recursion on it
+                                             try {
+                                                  // add column name, column value, column type and date format for date type
+                              	                  lineArr = new Array(columns[key][0],(columnData[columns[key][0]] != null ? columnData[columns[key][0]] : null),columns[key][1],columns[key][2],(reportObj.Sheets[reportObjSheetCounter].Columns[key][2] != null ? reportObj.Sheets[reportObjSheetCounter].Columns[key][2] : null));
+                                             } catch (e) {
+                                                  return ["ERROR","An error occurred generating the report with the error " + e + " while adding the current row to lineArr"];
+                                             }
 
                                              rowArr.push(lineArr);
                                    
