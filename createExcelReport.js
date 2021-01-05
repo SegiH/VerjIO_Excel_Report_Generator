@@ -2125,8 +2125,14 @@ function createExcelReport(reportObj) {
           }
           // *** END OF CREATING PIVOT TABLE ***
      } // *** Start of Loop through the report object for each sheet object ***
-	   
-     var fos = new FileOutputStream(reportObj.FileName);
+
+     // Save the report in the temp folder
+     var delimiter=(java.lang.System.getProperty("os.name").indexOf("Windows") != -1 ? "\\" : "/");
+
+     // If the OS is Windows, store it in the temp folder. For Linux/Unix/Mac OS'es, store in /tmp
+     var tempFolder=(java.lang.System.getProperty("os.name").indexOf("Windows") != -1 ? java.lang.System.getenv("TEMP") : "/tmp");
+     var fileNameWithPath=tempFolder + delimiter + reportObj.FileName;
+     var fos = new FileOutputStream(fileNameWithPath);
      
      workbook.write(fos);
      
@@ -2134,8 +2140,8 @@ function createExcelReport(reportObj) {
      workbook.close();
 
      if (anyRowWritten == true) {
-          return ["OK",reportObj.FileName];
+          return ["OK",fileNameWithPath];
      } else {
-          return ["OK-NODATA",reportObj.FileName];
+          return ["OK-NODATA",fileNameWithPath];
      }
 }
