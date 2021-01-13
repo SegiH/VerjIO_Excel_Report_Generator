@@ -561,6 +561,9 @@ function createExcelReport(reportObj) {
 	                  if (typeof reportObj.Sheets[reportObjSheetCounter].SQLChild == 'undefined')
 	                       return ["ERROR","The property SQLChild in Sheet " + reportObjSheetCounter + " was not specified"];
 
+                    if (typeof reportObj.Sheets[reportObjSheetCounter].SQLChild.indexOf("<WHERECLAUSE>") == -1)
+	                       return ["ERROR","The property SQLChild in Sheet " + reportObjSheetCounter + " is missing <WHERECLAUSE>"];
+	                       
 	                  if (typeof reportObj.Sheets[reportObjSheetCounter].DBConnectionParent == 'undefined')
 	                       return ["ERROR","The property DBConnectionParent in Sheet " + reportObjSheetCounter + " was not specified"];
 
@@ -1478,7 +1481,7 @@ function createExcelReport(reportObj) {
                     // SQL Based nested table
                     if (reportObj.Sheets[reportObjSheetCounter].SQLChild != null) {
                          try {
-                              var childSQL=reportObj.Sheets[reportObjSheetCounter].SQLChild.replace("<WHERECLAUSE>",(reportObj.Sheets[reportObjSheetCounter].SQLChild.indexOf("WHERE ") == -1 ?  " WHERE " : " AND ") + reportObj.Sheets[reportObjSheetCounter].JoinWhereClause[0] + "=" + (typeof parentMatchingValue == 'string' ? "'" : "") + parentMatchingValue + (typeof parentMatchingValue == 'string' ? "'" : ""));
+                              var childSQL=reportObj.Sheets[reportObjSheetCounter].SQLChild.replace("<WHERECLAUSE>",(reportObj.Sheets[reportObjSheetCounter].SQLChild.indexOf("EXEC ") == -1 ? (reportObj.Sheets[reportObjSheetCounter].SQLChild.indexOf("WHERE ") == -1 ?  " WHERE " : " AND ") : "") + reportObj.Sheets[reportObjSheetCounter].JoinWhereClause[0] + "=" + (typeof parentMatchingValue == 'string' ? "'" : "") + parentMatchingValue + (typeof parentMatchingValue == 'string' ? "'" : ""));
 
                               row=(sheet.getRow(rowCounter) != null ? sheet.getRow(rowCounter) : sheet.createRow(rowCounter));
                               
@@ -1543,6 +1546,16 @@ function createExcelReport(reportObj) {
                              if (rowArr.length > 0)
                                   childData.push(rowArr); 
                         }
+                   }
+
+                   // If the Child row has no data, hide the parent row
+                   if (childData.length == 0) {
+                        sheet.removeRow(sheet.getRow(rowCounter));
+                        sheet.removeRow(sheet.getRow(rowCounter-1));
+                        sheet.removeRow(sheet.getRow(rowCounter-2));
+                        sheet.removeRow(sheet.getRow(rowCounter-3));
+
+                        rowCounter-=4;
                    }
 
                    // Write the child data
@@ -2126,11 +2139,11 @@ function createExcelReport(reportObj) {
           // *** END OF CREATING PIVOT TABLE ***
      } // *** Start of Loop through the report object for each sheet object ***
 
-     // Save the report in the temp folder
-     var delimiter=(java.lang.System.getProperty("os.name").indexOf("Windows") != -1 ? "\\" : "/");
+	   // Save the report in the temp folder
+	   var delimiter=(java.lang.System.getProperty("os.name").indexOf("Windows") != -1 ? "\\" : "/");
 
-     // If the OS is Windows, store it in the temp folder. For Linux/Unix/Mac OS'es, store in /tmp
-     var tempFolder=(java.lang.System.getProperty("os.name").indexOf("Windows") != -1 ? java.lang.System.getenv("TEMP") : "/tmp");
+	   // If the OS is Windows, store it in the temp folder. For Linux/Unix/Mac OS'es, store in /tmp
+	   var tempFolder=(java.lang.System.getProperty("os.name").indexOf("Windows") != -1 ? java.lang.System.getenv("TEMP") : "/tmp");
      var fileNameWithPath=tempFolder + delimiter + reportObj.FileName;
      var fos = new FileOutputStream(fileNameWithPath);
      
