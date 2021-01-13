@@ -112,9 +112,11 @@ Example 2: Nested tables using SQL data
                DBConnectionParent: "ParentDBCOnnection",
                ColumnHeadersChild: "Menu Name,Menu Description",
                ColumnsChild: [["MenuName","CHAR"],["MenuDescription","CHAR"]],
-               SQLChild: "SELECT UserID,MenuName,MenuDescription FROM Menus_Auth",
+               SQLChild: "SELECT UserID,MenuName,MenuDescription FROM Menus_Auth <WHERECLAUSE>",
+	       //SQLChild: "EXEC GetUsers <WHERECLAUSE>", // Stored procedure
                DBConnectionChild: "ChildDBCOnnection",
                JoinWhereClause: ["UserID",0], // Index 0 is the column that links the 2 queries and 0 is the index of the column starting with 0 for the first column
+	       //JoinWhereClause: ["@UserID",0], // Stored procedure JoinWhereClause which adds @UserID=<UserID> to 
                ChildIndent: 1 
           },
           ]
@@ -296,7 +298,7 @@ but not all of them are required. All of the optional properties have a comment 
 
                ColumnHeadersChild: "Menu Name,Menu Description", // Optional. This is only required if you are using nested tables. Child table column headers when using nested tables
                ColumnsChild: [["MenuName","CHAR"],["MenuDescription","CHAR"]], // Optional. This is only required if you are using nested tables. Child table columns when using nested tables
-               SQLChild: "SELECT UserID,MenuName,MenuDescription FROM Menus", // Optional. This is only required if you are using nested tables. Child SQL
+               SQLChild: "SELECT UserID,MenuName,MenuDescription FROM Menus <WHERECLAUSE>", // Optional. This is only required if you are using nested tables. Child SQL
                DBConnectionChild: "GENESIS_INTRANET", // Optional. This is only required if you are using nested tables. Child DB connection for the SQL statement used above
                JoinWhereClause: ["UserID",0], // Optional. This is only required if you are using nested tables. Index 0 is the joining column name that links the parent and child
                ChildIndent: 1 //  Optional. This is only required if you are using nested tables. Shift the child table to the right by this many columns
