@@ -157,6 +157,8 @@ In the example above, the generated Excel file will be named "Test as of 11-30-2
 When using nested tables based on table data, you have to specify the column headers, columns and the table name for the parent and child tables. In addition you need to specify JoinWhereClause as an array with 2 values; the name of the column that joins the parent and child tables and the index in the parent column headers (ColumnsParent). If you want to shift the child table to the right (which I recommend because it makes it easier to read the data) you can set ChildIndent. The first index of JoinWhereClause: ["UserID",0] which is UserID in this example must be one of the columns added to the table resource in the parent table in order to link the parent and child tables.
 
 ## General Tips
+1. If you want to create a sheet but not populate it with SQL or table data, add the property NoData: true to the Sheets object.
+
 1. The number of columns specified in ColumnHeaders must match the number of arrays provided in Columns or an error will be thrown.
 
 1. When an SQL statement is provided as a data source, you must also provide the name of the database connection or an error will be thrown. Since Verj IO tables are already linked to a database connection, you don't need to specify the database connection name when providing a table source.
@@ -343,8 +345,9 @@ but not all of them are required. All of the optional properties have a comment 
                },],
                MergeCells: ["1,2","3,1,4,1"], // Optional. Merges columns 1 & 2 on the last row after data has been writtem. The second merge merges columns 3 & 4 on row 1. 
                SQL: "SELECT * FROM EOL", // SQL based data
-               DBConnection: "PRODUCTION", // (Mandatory if SQL statement is provided   
-	       FreezePane: [0,1], // The first parameter should be 1 to freeze the first column, the second parameter should be 1 to freeze the first row
+               DBConnection: "PRODUCTION", // (Mandatory if SQL statement is provided
+	       NoData: true, // If provided, create sheet but do not write any table data
+               FreezePane: [0,1], // The first parameter should be 1 to freeze the first column, the second parameter should be 1 to freeze the first row
                Formulas: [{
                     Column: 0, // Column A since columns start with 0
                     Row: 10, // Optional. Will be written after last row of data if not specified               
