@@ -503,7 +503,7 @@ function createExcelReport(reportObj) {
           // Validate columns for Non-nested tables
           if (nestedTables == false) {
                // Validate that TableData or SQL query was provided
-	             if (typeof reportObj.Sheets[reportObjSheetCounter].TableData == 'undefined' && typeof reportObj.Sheets[reportObjSheetCounter].SQL == 'undefined')
+	             if (typeof reportObj.Sheets[reportObjSheetCounter].TableData == 'undefined' && typeof reportObj.Sheets[reportObjSheetCounter].SQL == 'undefined' && reportObj.Sheets[reportObjSheetCounter].NoData != true)
 	                  return ["ERROR","The property TableData or SQL in Sheet " + reportObjSheetCounter + " was not specified"];
 
                // Validate that only TableData or SQL query were provided but not both
@@ -514,19 +514,19 @@ function createExcelReport(reportObj) {
                     return ["ERROR","The table " + reportObj.Sheets[reportObjSheetCounter].TableData + " referenced in sheet " + reportObjSheetCounter + " is not a valid table"]; 	
                
                // Validate that Columns was provided	                       
-	             if (typeof reportObj.Sheets[reportObjSheetCounter].Columns == 'undefined')
+	             if (typeof reportObj.Sheets[reportObjSheetCounter].Columns == 'undefined' && reportObj.Sheets[reportObjSheetCounter].NoData != true)
 	                  return ["ERROR","The property Columns in Sheet " + reportObjSheetCounter + " was not specified"];
 
                // Validate that ColumnHeaders was provided	                       
-	             if (typeof reportObj.Sheets[reportObjSheetCounter].ColumnHeaders == 'undefined')
+	             if (typeof reportObj.Sheets[reportObjSheetCounter].ColumnHeaders == 'undefined' && reportObj.Sheets[reportObjSheetCounter].NoData != true)
 	                  return ["ERROR","The property ColumnHeaders in Sheet " + reportObjSheetCounter + " was not specified"];
 	             
                // Validate that the size of Columns and ColumnHeaders match
-               if (reportObj.Sheets[reportObjSheetCounter].Columns.length != reportObj.Sheets[reportObjSheetCounter].ColumnHeaders.split(",").length)
+               if (reportObj.Sheets[reportObjSheetCounter].NoData != true && reportObj.Sheets[reportObjSheetCounter].Columns.length != reportObj.Sheets[reportObjSheetCounter].ColumnHeaders.split(",").length)
                     return ["ERROR","The properties Columns and ColumnHeaders in Sheet " + reportObjSheetCounter + " are of different lengths. Column length=" + reportObj.Sheets[reportObjSheetCounter].Columns.length + " and ColumnHeaders length=" + reportObj.Sheets[reportObjSheetCounter].ColumnHeaders.split(",").length];
 
                // If SQL was provided, make sure that all of the necessary properties were provided
-               if (typeof reportObj.Sheets[reportObjSheetCounter].SQL != 'undefined') {
+               if (typeof reportObj.Sheets[reportObjSheetCounter].SQL != 'undefined' && reportObj.Sheets[reportObjSheetCounter].NoData != true) {
                     // Validate that DBConnection was provided	                       
 	                  if (typeof reportObj.Sheets[reportObjSheetCounter].DBConnection == 'undefined')
 	                       return ["ERROR","The property DBConnection in Sheet " + reportObjSheetCounter + " was not specified"];
@@ -987,7 +987,7 @@ function createExcelReport(reportObj) {
                rowCounter=parseInt(reportObj.Sheets[reportObjSheetCounter].StartRow)-1;
 
           // *** START OF TABLE COLUMN HEADERS ***
-          if (nestedTables == false) { // Non-nested table column headers
+          if (nestedTables == false && reportObj.Sheets[reportObjSheetCounter].NoData != true) { // Non-nested table column headers
                var columnHeaders=reportObj.Sheets[reportObjSheetCounter].ColumnHeaders.split(",");
 
                row=sheet.createRow(rowCounter);
@@ -1022,7 +1022,8 @@ function createExcelReport(reportObj) {
 
                rowCounter++;
           } else { // We will write the headers later when using nested tables
-               var columnHeadersParent=reportObj.Sheets[reportObjSheetCounter].ColumnHeadersParent.split(",");               
+          	   if (reportObj.Sheets[reportObjSheetCounter].NoData != true)
+                    var columnHeadersParent=reportObj.Sheets[reportObjSheetCounter].ColumnHeadersParent.split(",");               
           }
           
           // *** END OF TABLE COLUMN HEADERS ***
@@ -1720,7 +1721,7 @@ function createExcelReport(reportObj) {
           sheet.addIgnoredErrors(new org.apache.poi.ss.util.CellRangeAddress(0, rowCounter, 0,100), IgnoredErrorType.NUMBER_STORED_AS_TEXT);
           
           // Check to see if any data was written to the current sheet
-          if (rowWritten==false) {
+          if (rowWritten==false && reportObj.Sheets[reportObjSheetCounter].NoData != true) {
                row = sheet.createRow(1);
           	   cell = row.createCell(0);
 
@@ -1939,7 +1940,7 @@ function createExcelReport(reportObj) {
                               sheet.autoSizeColumn(columnSizeCounter+childIndent);
                     }
                }
-          } else { // When ColumnSize isn't provided, default first 100 columns to autosize
+          } else if (reportObj.Sheets[reportObjSheetCounter].NoData != true) { // When ColumnSize isn't provided, default first 100 columns to autosize
                if (nestedTables == false) {
                     // Autosize all of the columns               
                     for (var columnSizeCounter=0;columnSizeCounter<reportObj.Sheets[reportObjSheetCounter].Columns.length;columnSizeCounter++) {
